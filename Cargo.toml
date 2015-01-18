@@ -3,6 +3,7 @@
 name = "seax"
 version = "0.0.1"
 authors = ["Hawk Weisman <hawk@meteorcodelabs.com>"]
+description = "SECD virtual machine for interpreting programs in FP languages"
 
 [dependencies]
 docopt = "0.6.30"
