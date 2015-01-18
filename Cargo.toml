@@ -3,3 +3,6 @@
 name = "seax"
 version = "0.0.1"
 authors = ["Hawk Weisman <hawk@meteorcodelabs.com>"]
+
+[dependencies]
+docopt = "*"
