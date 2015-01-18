@@ -4,6 +4,8 @@ version = "0.0.1"
 dependencies = [
  "docopt 0.6.30 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
+ "seax-scheme 0.0.1",
+ "seax-svm 0.0.1",
 ]
 
 [[package]]
@@ -24,4 +26,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "rustc-serialize"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "seax-scheme"
+version = "0.0.1"
+
+[[package]]
+name = "seax-svm"
+version = "0.0.1"
 
