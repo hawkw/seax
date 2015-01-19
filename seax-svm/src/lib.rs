@@ -64,7 +64,7 @@ pub mod svm {
                 assert_eq!(l.length(), 3);
             }
 
-             #[test]
+            #[test]
             fn test_to_string() {
                 let l: List<i32> = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
                 assert_eq!(l.to_string(), "(1i32, (2i32, (3i32, nil)))");
