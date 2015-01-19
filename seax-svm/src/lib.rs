@@ -5,10 +5,36 @@ fn it_works() {
 
 
 pub mod svm {
-    mod slist {
+    use svm::slist::List;
 
+    mod slist {
         use svm::slist::List::{Cons,Nil};
         use std::fmt::Show;
+
+        pub struct Stack<T> {
+            head: Box<List<T>>
+        }
+
+        impl<T> Stack<T> {
+            fn push(mut self, it: T) -> Stack<T> {
+                Stack { head: Box::new(self.head.prepend(it)) }
+            }
+
+            fn peek(&self) -> Option<&T> {
+                match *self.head {
+                    Nil => None,
+                    Cons(ref it,_) => Some(it)
+                }
+            }
+
+            fn empty() -> Stack<T> {
+                Stack { head: box Nil }
+            }
+
+            fn new(l: List<T>) -> Stack<T> {
+                Stack { head: box l }
+            }
+        }
 
         /// Singly-linked cons list.
         ///
@@ -24,17 +50,17 @@ pub mod svm {
 
 
             /// Creates a new empty list
-            fn new() -> List<T> {
+            pub fn new() -> List<T> {
                 Nil
             }
 
             /// Prepends the given item to the list
-            fn prepend(self, it: T) -> List<T> {
+            pub fn prepend(self, it: T) -> List<T> {
                 Cons(it, box self)
             }
 
             /// Returns the length of the list
-            fn length (&self) -> i32 {
+            pub fn length (&self) -> i32 {
                 match *self {
                     Cons(_, ref tail) => 1 + tail.length(),
                     Nil => 0
@@ -55,19 +81,35 @@ pub mod svm {
 
         #[cfg(test)]
         mod tests {
-            use super::List;
+            use super::{List, Stack};
             use super::List::{Cons,Nil};
 
             #[test]
-            fn test_length() {
+            fn test_list_length() {
                 let l: List<i32> = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
                 assert_eq!(l.length(), 3);
             }
 
             #[test]
-            fn test_to_string() {
+            fn test_list_to_string() {
                 let l: List<i32> = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
                 assert_eq!(l.to_string(), "(1i32, (2i32, (3i32, nil)))");
+            }
+
+            #[test]
+            fn test_stack_peek() {
+                let s: Stack<i32> = Stack::new(Cons(1, Box::new(Cons(2, Box::new(Nil)))));
+                assert_eq!(s.peek(), Some(&1));
+            }
+
+            #[test]
+            fn test_stack_push() {
+                let mut s: Stack<i32> = Stack::empty();
+                assert_eq!(s.peek(), None);
+                s = s.push(1);
+                assert_eq!(s.peek(), Some(&1));
+                s = s.push(6);
+                assert_eq!(s.peek(), Some(&6));
             }
         }
     }
@@ -77,6 +119,6 @@ pub mod svm {
     }
 
     struct Engine {
-        stack: Vec<Exp>
+        stack: List<Exp>
     }
 }
