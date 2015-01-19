@@ -1,3 +1,4 @@
+#![feature(box_syntax)]
 #[test]
 fn it_works() {
 }
@@ -16,8 +17,22 @@ mod SVM {
     /// Public implementation for List.
     impl<T> List<T> {
 
+        /// Creates a new empty list
         fn new() -> List<T> {
             List::Nil
+        }
+
+        /// Prepends the given item to the list
+        fn prepend(self, it: T) -> List<T> {
+            List::Cons(it, box self)
+        }
+
+        /// Returns the length of the list
+        fn length (&self) -> i32 {
+            match *self {
+                List::Cons(_, ref tail) => 1 + tail.length(),
+                List::Nil => 0
+            }
         }
 
     }
