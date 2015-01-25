@@ -1,5 +1,6 @@
 #![feature(box_syntax)]
 #![feature(macro_rules)]
+#![allow(dead_code)]
 
 pub mod svm {
 
