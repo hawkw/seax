@@ -1,9 +1,5 @@
 #![feature(box_syntax)]
 #![feature(macro_rules)]
-#[test]
-fn it_works() {
-}
-
 
 pub mod svm {
 
