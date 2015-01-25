@@ -164,15 +164,63 @@ pub mod svm {
 
     /// SVM instruction types
     pub enum SVMInstruction {
+        /// `nil`
+        ///
+        /// Pushes an empty list (nil) onto the stack
         InstNIL,
+        /// `ldc`: `L`oa`d` `C`onstant. Loads a constant (atom)
         InstLDC(Atom),
+        /// `ld`: `L`oa`d`. Pushes a variable onto the stack.
+        ///
+        /// The variable is indicated by the argument, a pair.
+        /// The pair's `car` specifies the level, the `cdr` the position.
+        /// So `(1 . 3)` gives the current function's (level 1) third parameter.
         InstLD,
+        /// `ldf`: `L`oa`d` `F`unction.
+        ///
+        ///  Takes one list argument representing a function and constructs
+        ///  a closure (a pair containing the function and the current
+        ///  environment) and pushes that onto the stack.
         InstLDF,
+        /// `join`
+        ///
+        /// Pops a list reference from the dump and makes this the new value
+        /// of `C`. This instruction occurs at the end of both alternatives of
+        ///  a `sel`.
         InstJOIN,
+        /// `ap`: `Ap`ply.
+        ///
+        /// Pops a closure and a list of parameter values from the stack.
+        /// The closure is applied to the parameters by installing its
+        /// environment as the current one, pushing the parameter list
+        /// in front of that, clearing the stack, and setting `C` to the
+        /// closure's function pointer. The previous values of `S`, `E`,
+        ///  and the next value of `C` are saved on the dump.
         InstAP,
+        /// `ret`: `Ret`urn.
+        ///
+        /// Pops one return value from the stack, restores
+        /// `S`, `E`, and `C` from the dump, and pushes
+        /// the return value onto the now-current stack.
         InstRET,
+        /// `dum`: `Dum`my.
+        ///
+        /// Pops a dummy environment (an empty list) onto the `E` stack.
         InstDUM,
-        InstRAP
+        /// `rap`: `R`ecursive `Ap`ply.
+        /// Works like `ap`, only that it replaces an occurrence of a
+        /// dummy environment with the current one, thus making recursive
+        ///  functions possible.
+        InstRAP,
+        /// `sel`: `Sel`ect
+        ///
+        /// Expects two list arguments, and pops a value from the stack.
+        /// The first list is executed if the popped value was non-nil,
+        /// the second list otherwise. Before one of these list pointers
+        ///  is made the new `C`, a pointer to the instruction following
+        ///  `sel` is saved on the dump.
+        InstSEL
+        // TODO:
     }
 
     /// Represents a SVM machine state
