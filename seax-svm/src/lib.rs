@@ -1,13 +1,16 @@
 #![feature(box_syntax)]
+#![feature(macro_rules)]
 #[test]
 fn it_works() {
 }
 
 
 pub mod svm {
+
     use svm::slist::List;
 
     mod slist {
+
         use svm::slist::List::{Cons,Nil};
         use std::fmt::Show;
 
@@ -75,9 +78,15 @@ pub mod svm {
                     Cons(ref head, ref tail) => format!("({:?}, {})", head, tail.to_string()),
                     Nil => format!("nil")
                 }
-
             }
+
         }
+
+       macro_rules! list(
+            ( $e:expr, $($rest:expr),+ ) => ( (Cons($e, Box::new(list!( $( $rest ),+ )) )));
+            ( $e:expr ) => ( Cons($e, Box::new(Nil)) );
+            () => ( @Empty )
+        );
 
         #[cfg(test)]
         mod tests {
@@ -110,6 +119,22 @@ pub mod svm {
                 assert_eq!(s.peek(), Some(&1));
                 s = s.push(6);
                 assert_eq!(s.peek(), Some(&6));
+            }
+
+            #[test]
+            fn test_stack_pop() {
+                let mut s: Stack<i32> = Stack::empty();
+                assert_eq!(s.peek(), None);
+                s = s.push(1);
+                assert_eq!(s.peek(), Some(&1));
+                s = s.push(6);
+                assert_eq!(s.peek(), Some(&6));
+            }
+
+            #[test]
+            fn test_list_macro() {
+                let l: List<i32> = list!(1i32, 2i32, 3i32);
+                assert_eq!(l.to_string(), "(1i32, (2i32, (3i32, nil)))")
             }
         }
     }
