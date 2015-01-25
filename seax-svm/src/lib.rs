@@ -161,7 +161,7 @@ pub mod svm {
         AtomUInt(usize),
         AtomSInt(isize),
         AtomFloat(f64),
-        AtomStr(str)
+        AtomStr(String)
     }
 
     /// SVM instruction types
@@ -183,5 +183,31 @@ pub mod svm {
         env: Stack<SVMCell>,
         control: Stack<SVMCell>,
         dump: Stack<SVMCell>
+    }
+
+    impl State {
+
+        /// Creates a new empty state
+        fn new() -> State {
+            State {
+                stack: Stack::empty(),
+                env: Stack::empty(),
+                control: Stack::empty(),
+                dump: Stack::empty()
+            }
+        }
+
+        pub fn eval(self, inst: SVMInstruction) -> State {
+            match inst {
+                SVMInstruction::InstNIL => State {
+                    stack: self.stack.push(SVMCell::ListCell(box List::new())),
+                    env: self.env,
+                    control: self.control,
+                    dump: self.dump
+                },
+                _ => { unimplemented!() }
+            }
+        }
+
     }
 }
