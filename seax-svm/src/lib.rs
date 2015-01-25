@@ -13,7 +13,7 @@ pub mod svm {
     use svm::slist::Stack;
 
     /// Singly-linked list and stack implementations.
-    mod slist {
+    pub mod slist {
 
         use svm::slist::List::{Cons,Nil};
         use std::fmt::Show;
@@ -26,7 +26,7 @@ pub mod svm {
 
         impl<T> Stack<T> {
             /// Push an item to the top of the stack, returning a new stack
-            fn push(self, it: T) -> Stack<T> {
+            pub fn push(self, it: T) -> Stack<T> {
                 Stack { head: Box::new(self.head.prepend(it)) }
             }
 
@@ -34,7 +34,7 @@ pub mod svm {
             ///
             /// Returns Some<T> if there is an item on top of the stack,
             /// and None if the stack is empty.
-            fn peek(&self) -> Option<&T> {
+            pub fn peek(&self) -> Option<&T> {
                 match *self.head {
                     Nil => None,
                     Cons(ref it,_) => Some(it)
@@ -42,12 +42,12 @@ pub mod svm {
             }
 
             /// Returns an empty stack.
-            fn empty() -> Stack<T> {
+            pub fn empty() -> Stack<T> {
                 Stack { head: box Nil }
             }
 
             /// Wraps a list into a stack.
-            fn new(l: List<T>) -> Stack<T> {
+            pub fn new(l: List<T>) -> Stack<T> {
                 Stack { head: box l }
             }
         }
@@ -152,12 +152,12 @@ pub mod svm {
     }
 
     /// SVM item types
-    enum Exp {
+    pub enum Exp {
         Number(i32)
     }
 
     /// Represents a SVM machine state
-    struct State {
+    pub struct State {
         stack: Stack<Exp>,
         env: Stack<Exp>,
         control: Stack<Exp>,
