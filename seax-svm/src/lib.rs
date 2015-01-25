@@ -15,7 +15,7 @@ pub mod svm {
         }
 
         impl<T> Stack<T> {
-            fn push(mut self, it: T) -> Stack<T> {
+            fn push(self, it: T) -> Stack<T> {
                 Stack { head: Box::new(self.head.prepend(it)) }
             }
 
@@ -38,7 +38,6 @@ pub mod svm {
         /// Singly-linked cons list.
         ///
         /// This is used internally to represent list primitives in the machine.
-        #[deriving(Show)]
         pub enum List<T> {
             Cons(T, Box<List<T>>),
             Nil,
@@ -79,7 +78,7 @@ pub mod svm {
         }
 
        macro_rules! list(
-            ( $e:expr, $($rest:expr),+ ) => ( (Cons($e, Box::new(list!( $( $rest ),+ )) )));
+            ( $e:expr, $($rest:expr),+ ) => ( Cons($e, Box::new(list!( $( $rest ),+ )) ));
             ( $e:expr ) => ( Cons($e, Box::new(Nil)) );
             () => ( @Empty )
         );
