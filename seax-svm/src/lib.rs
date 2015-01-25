@@ -1,12 +1,10 @@
 #![crate_id = "seax-svm"]
 #![crate_type="lib"]
-
-//! Contains the Seax Virtual Machine (SVM) and miscellaneous
-//! support code.
-
 #![feature(box_syntax)]
 #![allow(dead_code)]
 
+/// Contains the Seax Virtual Machine (SVM) and miscellaneous
+/// support code.
 pub mod svm {
 
     use svm::slist::List;
