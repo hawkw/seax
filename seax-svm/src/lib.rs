@@ -152,15 +152,36 @@ pub mod svm {
     }
 
     /// SVM item types
-    pub enum Exp {
-        Number(i32)
+    pub enum SVMCell {
+        Atom,
+        ListCell(Box<List<SVMCell>>)
+    }
+
+    pub enum Atom {
+        AtomUInt(usize),
+        AtomSInt(isize),
+        AtomFloat(f64),
+        AtomStr(str)
+    }
+
+    /// SVM instruction types
+    pub enum SVMInstruction {
+        InstNIL,
+        InstLDC(Atom),
+        InstLD,
+        InstLDF,
+        InstJOIN,
+        InstAP,
+        InstRET,
+        InstDUM,
+        InstRAP
     }
 
     /// Represents a SVM machine state
     pub struct State {
-        stack: Stack<Exp>,
-        env: Stack<Exp>,
-        control: Stack<Exp>,
-        dump: Stack<Exp>
+        stack: Stack<SVMCell>,
+        env: Stack<SVMCell>,
+        control: Stack<SVMCell>,
+        dump: Stack<SVMCell>
     }
 }
