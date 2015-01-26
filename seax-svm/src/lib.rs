@@ -68,8 +68,7 @@ pub mod svm {
         ///
         /// This is used internally to represent list primitives in the
         /// machine.
-        #[deriving(Show)]
-        #[deriving(PartialEq)]
+        #[derive(PartialEq)]
         pub enum List<T> {
             Cons(T, Box<List<T>>),
             Nil,
@@ -108,9 +107,9 @@ pub mod svm {
             }
         }
 
-        impl<T> fmt::Show for List<T> {
+        impl<T> fmt::Show for List<T> where T: fmt::Show {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                write!(f, "{}", self.to_string)
+                write!(f, "{}", self.to_string())
             }
         }
 
@@ -189,18 +188,34 @@ pub mod svm {
     }
 
     /// SVM item types
-    #[deriving(Show)]
-    #[deriving(PartialEq)]
+    #[derive(PartialEq)]
     pub enum SVMCell {
         Atom,
         ListCell(Box<List<SVMCell>>)
     }
 
+    impl fmt::Show for SVMCell {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            write!(f, "[{:?}]", self)
+        }
+    }
+
     pub enum Atom {
-        AtomUInt(usize),
-        AtomSInt(isize),
-        AtomFloat(f64),
-        AtomStr(String)
+        UInt(usize),
+        SInt(isize),
+        Float(f64),
+        Str(String)
+    }
+
+    impl fmt::Show for Atom {
+        fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            match self {
+                &Atom::UInt(value) => write!(f, "{}u", value),
+                &Atom::SInt(value) => write!(f, "{}i", value),
+                &Atom::Float(value) => write!(f, "{}f", value),
+                &Atom::Str(ref value) => write!(f, "\"{}\"", value)
+            }
+        }
     }
 
     /// SVM instruction types
@@ -370,7 +385,7 @@ pub mod svm {
     #[cfg(test)]
     mod tests {
         use super::State;
-        use super::SVMInstruction;
+        use super::{SVMInstruction, SVMCell};
         use super::slist::List::{Cons,Nil};
 
         #[test]
@@ -387,7 +402,7 @@ pub mod svm {
             let mut state = State::new();
             assert_eq!(state.stack.peek(), None);
             state = state.eval(SVMInstruction::InstNIL);
-            assert_eq!(state.stack.peek(), Some(&Nil));
+            assert_eq!(state.stack.peek(), Some(&SVMCell::ListCell(box Nil)));
         }
     }
 
