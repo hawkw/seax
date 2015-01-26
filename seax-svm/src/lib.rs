@@ -6,9 +6,9 @@
 /// Contains the Seax Virtual Machine (SVM) and miscellaneous
 /// support code.
 pub mod svm {
-
     use svm::slist::List;
     use svm::slist::Stack;
+    use std::iter::IteratorExt;
 
     /// Singly-linked list and stack implementations.
     pub mod slist {
@@ -174,7 +174,8 @@ pub mod svm {
         ///
         /// The variable is indicated by the argument, a pair.
         /// The pair's `car` specifies the level, the `cdr` the position.
-        /// So `(1 . 3)` gives the current function's (level 1) third parameter.
+        /// So `(1 . 3)` gives the current function's (level 1) third
+        /// parameter.
         InstLD,
         /// `ldf`: `L`oa`d` `F`unction.
         ///
@@ -219,8 +220,64 @@ pub mod svm {
         /// the second list otherwise. Before one of these list pointers
         ///  is made the new `C`, a pointer to the instruction following
         ///  `sel` is saved on the dump.
-        InstSEL
-        // TODO:
+        InstSEL,
+        /// `add`
+        ///
+        /// Pops two numbers off of the stack and adds them, pushing the
+        /// result onto the stack. This will up-convert integers to floating
+        /// point if necessary.
+        ///
+        /// TODO: figure out what happens when you try to add things that aren't
+        /// numbers (maybe the compiler won't let this happen?).
+        InstADD,
+        /// `sub`: `Sub`tract
+        ///
+        /// Pops two numbers off of the stack and subtracts the first from the
+        /// second, pushing the result onto the stack. This will up-convert
+        /// integers to floating point if necessary.
+        ///
+        /// TODO: figure out what happens when you try to subtract things that
+        /// aren't numbers (maybe the compiler won't let this happen?).
+        InstSUB,
+        /// `mul`: `Mul`tiply
+        ///
+        /// Pops two numbers off of the stack and multiplies them, pushing the
+        /// result onto the stack. This will up-convert integers to floating
+        /// point if necessary.
+        ///
+        /// TODO: figure out what happens when you try to multiply things that
+        /// aren't numbers (maybe the compiler won't let this happen?).
+        InstMUL,
+        /// `div`: `Div`ide
+        ///
+        /// Pops two numbers off of the stack and divides the first by the second,
+        /// pushing the result onto the stack. This performs integer division.
+        ///
+        /// TODO: figure out what happens when you try to divide things that
+        /// aren't numbers (maybe the compiler won't let this happen?).
+        InstDIV,
+        /// `fdiv`: `F`loating-point `div`ide
+        ///
+        /// Pops two numbers off of the stack and divides the first by the second,
+        /// pushing the result onto the stack. This performs float division.
+        ///
+        /// TODO: figure out what happens when you try to divide things that
+        /// aren't numbers (maybe the compiler won't let this happen?).
+        ///
+        /// TODO: Not sure if there should be separate float and int divide words
+        /// I guess the compiler can figure this out
+        InstFDIV,
+        /// `mod`: `Mod`ulo
+        ///
+        /// Pops two numbers off of the stack and divides the first by the second,
+        /// pushing the remainder onto the stack.
+        ///
+        /// TODO: figure out what happens when you try to modulo things that
+        /// aren't numbers (maybe the compiler won't let this happen?).
+        InstMOD
+        // TODO: add some hardcoded I/O instructions here so that you can
+        //  do I/O without farming everything out to `stdio`
+        // TODO: add `cons` and `cdr` words
     }
 
     /// Represents a SVM machine state
@@ -243,6 +300,9 @@ pub mod svm {
             }
         }
 
+        /// Evaluates an instruction.
+        ///
+        /// Evaluates an instruction against a state, returning a new state.
         pub fn eval(self, inst: SVMInstruction) -> State {
             match inst {
                 SVMInstruction::InstNIL => State {
@@ -254,6 +314,6 @@ pub mod svm {
                 _ => { unimplemented!() }
             }
         }
-
     }
+
 }
