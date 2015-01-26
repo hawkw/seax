@@ -10,13 +10,21 @@ pub mod svm {
     use svm::slist::Stack;
     use std::iter::IteratorExt;
 
-    /// Singly-linked list and stack implementations.
+    /// Singly-linked list and stack implementations. `List<T>` is a
+    /// singly-linked cons list with boxed items. `Stack<T>` is basically
+    /// just a struct containing a boxed pointer to the head of a list,
+    /// and some methods.
     pub mod slist {
 
         use svm::slist::List::{Cons,Nil};
         use std::fmt::Show;
 
-        /// A stack implementation wrapping a List<T>
+        /// A stack implementation wrapping a `List<T>`
+        ///
+        /// This is essentially just a struct containing a boxed pointer
+        /// to the head of a `List<T>`, so that when items are pushed to or
+        /// popped from the stack, the pointer is changed to point to the
+        /// new head item. There may be saner ways of doing this.
         pub struct Stack<T> {
             /// The head item of the list.
             head: Box<List<T>>
@@ -67,13 +75,13 @@ pub mod svm {
                 Nil
             }
 
-            /// Prepends the given item to the list
+            /// Prepends the given item to the list, returning the new head item.
             pub fn prepend(self, it: T) -> List<T> {
                 Cons(it, box self)
             }
 
-            /// Returns the length of the list
-            pub fn length (&self) -> i32 {
+            /// Returns the length of the list.
+            pub fn length (&self) -> isize {
                 match *self {
                     Cons(_, ref tail) => 1 + tail.length(),
                     Nil => 0
@@ -92,7 +100,11 @@ pub mod svm {
 
         }
 
-       macro_rules! list(
+        /// Convenience macro for making lists.
+        ///
+        /// Usage: `list!(1i32, 2i32, 3i32);` expands to
+        /// `Cons(1i32, Box::new(Cons(2i32, Box::new(Cons(3i32, Box::new(Nil))))));`.
+        macro_rules! list(
             ( $e:expr, $($rest:expr),+ ) => ( Cons($e, Box::new(list!( $( $rest ),+ )) ));
             ( $e:expr ) => ( Cons($e, Box::new(Nil)) );
             () => ( @Empty )
@@ -105,8 +117,10 @@ pub mod svm {
 
             #[test]
             fn test_list_length() {
-                let l: List<i32> = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
-                assert_eq!(l.length(), 3);
+                let full_list: List<i32> = list!(1i32, 2i32, 3i32);
+                let empty_list: List<i32> = List::new();
+                assert_eq!(full_list.length(), 3);
+                assert_eq!(empty_list.length(), 0);
             }
 
             #[test]
@@ -117,7 +131,7 @@ pub mod svm {
 
             #[test]
             fn test_stack_peek() {
-                let s: Stack<i32> = Stack::new(Cons(1, Box::new(Cons(2, Box::new(Nil)))));
+                let s: Stack<i32> = Stack::new(list!(1i32, 2i32, 3i32));
                 assert_eq!(s.peek(), Some(&1));
             }
 
@@ -134,7 +148,7 @@ pub mod svm {
             #[test]
             fn test_stack_pop() {
                 let mut s: Stack<i32> = Stack::empty();
-                assert_eq!(s.peek(), None);
+                assert_eq!(s.peek(), None); // TODO: implement
                 s = s.push(1);
                 assert_eq!(s.peek(), Some(&1));
                 s = s.push(6);
@@ -315,5 +329,15 @@ pub mod svm {
             }
         }
     }
+
+    /*
+    /// Evaluates a program.
+    ///
+    /// Evaluates a program represented as an `Iterator` of `SVMInstruction`s.
+    /// Returns the final machine state at the end of execution
+
+    pub fn evalProgram(insts: Iterator<Item=SVMInstruction>) -> State {
+        insts.fold(State::new(), |last_state: State, inst: SVMInstruction| last_state.eval(inst));
+    }*/
 
 }
