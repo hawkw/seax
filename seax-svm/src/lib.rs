@@ -1,7 +1,6 @@
 #![crate_id = "seax-svm"]
 #![crate_type="lib"]
 #![feature(box_syntax)]
-#![allow(dead_code)]
 
 /// Contains the Seax Virtual Machine (SVM) and miscellaneous
 /// support code.
@@ -9,6 +8,7 @@ pub mod svm {
     use svm::slist::List;
     use svm::slist::Stack;
     use std::iter::IteratorExt;
+    use std::fmt;
 
     /// Singly-linked list and stack implementations. `List<T>` is a
     /// singly-linked cons list with boxed items. `Stack<T>` is basically
@@ -17,7 +17,7 @@ pub mod svm {
     pub mod slist {
 
         use svm::slist::List::{Cons,Nil};
-        use std::fmt::Show;
+        use std::fmt;
 
         /// A stack implementation wrapping a `List<T>`
         ///
@@ -56,11 +56,20 @@ pub mod svm {
             pub fn new(l: List<T>) -> Stack<T> {
                 Stack { head: box l }
             }
+
+            /// Returns the length of the stack. This just calls
+            /// `List::length()` on the wrapped list.
+            pub fn length(&self) -> isize {
+                self.head.length()
+            }
         }
 
         /// Singly-linked cons list.
         ///
-        /// This is used internally to represent list primitives in the machine.
+        /// This is used internally to represent list primitives in the
+        /// machine.
+        #[deriving(Show)]
+        #[deriving(PartialEq)]
         pub enum List<T> {
             Cons(T, Box<List<T>>),
             Nil,
@@ -89,7 +98,7 @@ pub mod svm {
             }
         }
 
-        impl<T> List<T> where T: Show {
+        impl<T> List<T> where T: fmt::Show {
             /// Return a string representation of the list
             fn to_string(&self) -> String {
                 match *self {
@@ -97,8 +106,14 @@ pub mod svm {
                     Nil => format!("nil")
                 }
             }
-
         }
+
+        impl<T> fmt::Show for List<T> {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "{}", self.to_string)
+            }
+        }
+
 
         /// Convenience macro for making lists.
         ///
@@ -130,9 +145,19 @@ pub mod svm {
             }
 
             #[test]
+            fn test_stack_length() {
+                let full_stack: Stack<i32> = Stack::new(list!(1i32, 2i32, 3i32));
+                let empty_stack: Stack<i32> = Stack::empty();
+                assert_eq!(full_stack.length(), 3);
+                assert_eq!(empty_stack.length(), 0);
+            }
+
+            #[test]
             fn test_stack_peek() {
-                let s: Stack<i32> = Stack::new(list!(1i32, 2i32, 3i32));
-                assert_eq!(s.peek(), Some(&1));
+                let full_stack: Stack<i32> = Stack::new(list!(1i32, 2i32, 3i32));
+                let empty_stack: Stack<i32> = Stack::empty();
+                assert_eq!(full_stack.peek(), Some(&1));
+                assert_eq!(empty_stack.peek(), None);
             }
 
             #[test]
@@ -164,6 +189,8 @@ pub mod svm {
     }
 
     /// SVM item types
+    #[deriving(Show)]
+    #[deriving(PartialEq)]
     pub enum SVMCell {
         Atom,
         ListCell(Box<List<SVMCell>>)
@@ -339,5 +366,29 @@ pub mod svm {
     pub fn evalProgram(insts: Iterator<Item=SVMInstruction>) -> State {
         insts.fold(State::new(), |last_state: State, inst: SVMInstruction| last_state.eval(inst));
     }*/
+
+    #[cfg(test)]
+    mod tests {
+        use super::State;
+        use super::SVMInstruction;
+        use super::slist::List::{Cons,Nil};
+
+        #[test]
+        fn test_empty_state() {
+            let state = State::new();
+            assert_eq!(state.stack.length(), 0);
+            assert_eq!(state.env.length(), 0);
+            assert_eq!(state.control.length(), 0);
+            assert_eq!(state.dump.length(), 0);
+        }
+
+        #[test]
+        fn test_eval_nil () {
+            let mut state = State::new();
+            assert_eq!(state.stack.peek(), None);
+            state = state.eval(SVMInstruction::InstNIL);
+            assert_eq!(state.stack.peek(), Some(&Nil));
+        }
+    }
 
 }
