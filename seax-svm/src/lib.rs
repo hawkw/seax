@@ -380,6 +380,12 @@ pub mod svm {
                     control: self.control,
                     dump: self.dump
                 },
+                SVMInstruction::InstLDC(atom) => State {
+                    stack: self.stack.push(SVMCell::AtomCell(atom)),
+                    env: self.env,
+                    control: self.control,
+                    dump: self.dump
+                },
                 _ => { unimplemented!() }
             }
         }
@@ -427,8 +433,7 @@ pub mod svm {
             state = state.eval(SVMInstruction::InstLDC(Atom::Char('a')));
             assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::Char('a'))));
             state = state.eval(SVMInstruction::InstLDC(Atom::Float(1.0f64)));
-            assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::Float(1.0f64)))));
-
+            assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::Float(1.0f64))));
         }
     }
 
