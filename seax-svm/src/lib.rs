@@ -187,10 +187,13 @@ pub mod svm {
         }
     }
 
-    /// SVM item types
+    /// SVM cell types.
+    ///
+    /// A cell in the VM can be either an atom (single item, either unsigned
+    /// int, signed int, float, or string) or a pointer to a list cell.
     #[derive(PartialEq)]
     pub enum SVMCell {
-        Atom,
+        AtomCell(Atom),
         ListCell(Box<List<SVMCell>>)
     }
 
@@ -200,10 +203,19 @@ pub mod svm {
         }
     }
 
+    /// SVM atom types.
+    ///
+    /// A VM atom can be either an unsigned int, signed int, float,
+    /// char, or string.
+    ///
+    /// TODO: Strings could be implemented as char lists rather than
+    /// Rust strings.
+    #[derive(PartialEq)]
     pub enum Atom {
         UInt(usize),
         SInt(isize),
         Float(f64),
+        Char(char),
         Str(String)
     }
 
@@ -213,6 +225,7 @@ pub mod svm {
                 &Atom::UInt(value) => write!(f, "{}u", value),
                 &Atom::SInt(value) => write!(f, "{}i", value),
                 &Atom::Float(value) => write!(f, "{}f", value),
+                &Atom::Char(value) => write!(f, "'{}'", value),
                 &Atom::Str(ref value) => write!(f, "\"{}\"", value)
             }
         }
@@ -385,7 +398,7 @@ pub mod svm {
     #[cfg(test)]
     mod tests {
         use super::State;
-        use super::{SVMInstruction, SVMCell};
+        use super::{SVMInstruction, SVMCell, Atom};
         use super::slist::List::{Cons,Nil};
 
         #[test]
@@ -403,6 +416,19 @@ pub mod svm {
             assert_eq!(state.stack.peek(), None);
             state = state.eval(SVMInstruction::InstNIL);
             assert_eq!(state.stack.peek(), Some(&SVMCell::ListCell(box Nil)));
+        }
+
+        #[test]
+        fn test_eval_ldc () {
+            let mut state = State::new();
+            assert_eq!(state.stack.peek(), None);
+            state = state.eval(SVMInstruction::InstLDC(Atom::SInt(1)));
+            assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::SInt(1))));
+            state = state.eval(SVMInstruction::InstLDC(Atom::Char('a')));
+            assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::Char('a'))));
+            state = state.eval(SVMInstruction::InstLDC(Atom::Float(1.0f64)));
+            assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::Float(1.0f64)))));
+
         }
     }
 
