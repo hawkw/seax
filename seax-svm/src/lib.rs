@@ -113,6 +113,14 @@ pub mod svm {
             }
         }
 
+        impl<T> Iterator for List<T> {
+            type Item = T;
+
+            fn next(&mut self) -> Option<T> {
+                unimplemented!()
+            }
+        }
+
 
         /// Convenience macro for making lists.
         ///
