@@ -191,6 +191,7 @@ pub mod svm {
     ///
     /// A cell in the VM can be either an atom (single item, either unsigned
     /// int, signed int, float, or string) or a pointer to a list cell.
+
     #[derive(PartialEq)]
     pub enum SVMCell {
         AtomCell(Atom),
@@ -216,15 +217,15 @@ pub mod svm {
         SInt(isize),
         Float(f64),
         Char(char),
-        Str(String)
+        Str(String),
     }
 
     impl fmt::Show for Atom {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             match self {
-                &Atom::UInt(value) => write!(f, "{}u", value),
-                &Atom::SInt(value) => write!(f, "{}i", value),
-                &Atom::Float(value) => write!(f, "{}f", value),
+                &Atom::UInt(value) => write!(f, "{}us", value),
+                &Atom::SInt(value) => write!(f, "{}is", value),
+                &Atom::Float(value) => write!(f, "{}f64", value),
                 &Atom::Char(value) => write!(f, "'{}'", value),
                 &Atom::Str(ref value) => write!(f, "\"{}\"", value)
             }
@@ -428,12 +429,35 @@ pub mod svm {
         fn test_eval_ldc () {
             let mut state = State::new();
             assert_eq!(state.stack.peek(), None);
+
             state = state.eval(SVMInstruction::InstLDC(Atom::SInt(1)));
             assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::SInt(1))));
+
             state = state.eval(SVMInstruction::InstLDC(Atom::Char('a')));
             assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::Char('a'))));
+
             state = state.eval(SVMInstruction::InstLDC(Atom::Float(1.0f64)));
             assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::Float(1.0f64))));
+        }
+
+        #[test]
+        fn test_atom_show () {
+            let mut a: Atom;
+
+            a = Atom::Char('a');
+            assert_eq!(format!("{:?}", a), "'a'");
+
+            a = Atom::UInt(1us);
+            assert_eq!(format!("{:?}", a), "1us");
+
+            a = Atom::SInt(42is);
+            assert_eq!(format!("{:?}", a), "42is");
+
+            a = Atom::Float(5.55f64);
+            assert_eq!(format!("{:?}", a), "5.55f64");
+
+            //a = Atom::Str("help I'm trapped in a SECD virtual machine!");
+            //assert_eq!(format!("{:?}", a), "\"help I'm trapped in a SECD virtual machine!\"");
         }
     }
 
