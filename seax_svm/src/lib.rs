@@ -539,8 +539,8 @@ pub mod svm {
                     }
                 },
                 SVMInstruction::InstLD => {
-                    let pop = self.stack.pop().unwrap();
-                    match pop.0 {
+                    let (top, new_stack) = self.stack.pop().unwrap();
+                    match top {
                         SVMCell::ListCell(box Cons(
                             SVMCell::AtomCell(
                                 Atom::SInt(level)
@@ -558,7 +558,7 @@ pub mod svm {
                                 _ => panic!()
                             };
                             State {
-                                stack: pop.1.push(environment[pos-1].clone()),
+                                stack: new_stack.push(environment[pos-1].clone()),
                                 env: self.env,
                                 control: self.control,
                                 dump: self.dump
@@ -568,9 +568,9 @@ pub mod svm {
                     }
                 },
                 SVMInstruction::InstLDF => {
-                    let s = self.stack.pop().unwrap();
+                    let (top, new_stack) = self.stack.pop().unwrap();
                     State {
-                        stack: s.1.push(SVMCell::ListCell(box list!(s.0,self.env[1is].clone()))),
+                        stack: new_stack.push(SVMCell::ListCell(box list!(top,self.env[1is].clone()))),
                         env: self.env,
                         control: self.control,
                         dump: self.dump
