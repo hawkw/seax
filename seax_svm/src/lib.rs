@@ -17,6 +17,7 @@ pub mod svm {
     /// `List<T>` is a singly-linked cons list with boxed items. `Stack<T>` is
     ///  defined as a trait providing stack operations(`push()`, `pop()`, and
     ///  `peek()`), and an implementation for `List`.
+    #[macro_use]
     pub mod slist {
 
         use svm::slist::List::{Cons,Nil};
@@ -72,7 +73,7 @@ pub mod svm {
             ///
             /// # Examples:
             /// ```
-            /// use seax_svm::svm::slist::{List,Stack};
+            /// # use seax_svm::svm::slist::{List,Stack};
             ///
             /// let mut s: List<isize> = Stack::empty();
             /// s = s.push(2);
@@ -102,7 +103,7 @@ pub mod svm {
             ///
             /// # Examples:
             /// ```
-            /// use seax_svm::svm::slist::{List,Stack};
+            /// # use seax_svm::svm::slist::{List,Stack};
             ///
             /// let mut s: List<isize> = Stack::empty();
             /// s = s.push(2);
@@ -222,18 +223,23 @@ pub mod svm {
         }
 
 
+
         /// Convenience macro for making lists.
         ///
         /// # Example:
         ///
         /// ```
-        /// use svm::slist;
-        ///
+        /// # #[macro_use] extern crate seax_svm;
+        /// # use seax_svm::svm::slist;
+        /// # use seax_svm::svm::slist::List::{Cons, Nil};
+        /// # fn main () {
         /// assert_eq!(
         ///     list!(1i32, 2i32, 3i32),
         ///     Cons(1i32, Box::new(Cons(2i32, Box::new(Cons(3i32, Box::new(Nil))))))
         ///     );
+        /// # }
         /// ```
+        #[macro_export]
         macro_rules! list(
             ( $e:expr, $($rest:expr),+ ) => ( Cons($e, Box::new(list!( $( $rest ),+ )) ));
             ( $e:expr ) => ( Cons($e, Box::new(Nil)) );
@@ -525,10 +531,24 @@ pub mod svm {
                 SVMInstruction::InstLD => {
                     let pop = self.stack.pop().unwrap();
                     match pop.0 {
-                        SVMCell::ListCell(box Cons(SVMCell::AtomCell(Atom::SInt(level)), box Cons(SVMCell::AtomCell(Atom::SInt(pos))), Nil)) => {
-                            let environment = self.env[level-1];
+                        SVMCell::ListCell(box Cons(
+                            SVMCell::AtomCell(
+                                Atom::SInt(level)
+                                ),
+                            box Cons(
+                                SVMCell::AtomCell(
+                                    Atom::SInt(pos)
+                                    ),
+                                box Nil
+                                )
+                            )
+                        ) => {
+                            let environment = match self.env[level-1] {
+                                SVMCell::ListCell(ref l) => l.clone(),
+                                _ => panic!()
+                            };
                             State {
-                                stack: pop.1.push(environment[pos-1]),
+                                stack: pop.1.push(environment[pos-1].clone()),
                                 env: self.env,
                                 control: self.control,
                                 dump: self.dump
@@ -554,10 +574,13 @@ pub mod svm {
 
     #[cfg(test)]
     mod tests {
+        use super::slist;
         use super::slist::Stack;
+        use super::slist::List::{Cons,Nil};
         use super::State;
         use super::{SVMInstruction, SVMCell, Atom};
-        use super::slist::List::Nil;
+        use super::SVMCell::{AtomCell, ListCell};
+        use super::Atom::{SInt, Char, Float};
 
         #[test]
         fn test_empty_state() {
@@ -581,14 +604,24 @@ pub mod svm {
             let mut state = State::new();
             assert_eq!(state.stack.peek(), None);
 
-            state = state.eval(SVMInstruction::InstLDC(Atom::SInt(1)));
-            assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::SInt(1))));
+            state = state.eval(SVMInstruction::InstLDC(SInt(1)));
+            assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(1))));
 
-            state = state.eval(SVMInstruction::InstLDC(Atom::Char('a')));
-            assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::Char('a'))));
+            state = state.eval(SVMInstruction::InstLDC(Char('a')));
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Char('a'))));
 
-            state = state.eval(SVMInstruction::InstLDC(Atom::Float(1.0f64)));
-            assert_eq!(state.stack.peek(), Some(&SVMCell::AtomCell(Atom::Float(1.0f64))));
+            state = state.eval(SVMInstruction::InstLDC(Float(1.0f64)));
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.0f64))));
+        }
+
+        #[test]
+        fn test_eval_ld () {
+            let mut state = State{
+                stack: list!(ListCell(box list!(AtomCell(SInt(1)),AtomCell(SInt(2))))),
+                env: Stack::empty(),
+                control: Stack::empty(),
+                dump: Stack::empty()
+            };
         }
 
         #[test]
