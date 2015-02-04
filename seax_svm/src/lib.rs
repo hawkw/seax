@@ -590,7 +590,7 @@ pub mod svm {
         use super::State;
         use super::{SVMInstruction, SVMCell, Atom};
         use super::SVMCell::{AtomCell, ListCell};
-        use super::Atom::{SInt, Char, Float};
+        use super::Atom::{SInt, Char, Float, Str};
 
         #[test]
         fn test_empty_state() {
@@ -626,12 +626,14 @@ pub mod svm {
 
         #[test]
         fn test_eval_ld () {
-            let mut state = State{
+            let mut state = State {
                 stack: list!(ListCell(box list!(AtomCell(SInt(1)),AtomCell(SInt(2))))),
-                env: Stack::empty(),
+                env: list!(ListCell(box list!(AtomCell(Str(String::from_str("load me!"))),AtomCell(Str(String::from_str("don't load me!")))))),
                 control: Stack::empty(),
                 dump: Stack::empty()
             };
+            state = state.eval(SVMInstruction::InstLD);
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Str(String::from_str("load me!")))));
         }
 
         #[test]
