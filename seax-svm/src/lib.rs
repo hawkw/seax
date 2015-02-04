@@ -273,9 +273,9 @@ pub mod svm {
         ListCell(Box<List<SVMCell>>)
     }
 
-    impl fmt::Show for SVMCell {
+    impl fmt::Display for SVMCell {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-            write!(f, "[{:?}]", self)
+            write!(f, "[{}]", self)
         }
     }
 
