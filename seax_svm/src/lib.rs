@@ -221,7 +221,17 @@ pub mod svm {
                 it.next().unwrap()
             }
         }
+        impl<T> Index<isize> for List<T> {
+            type Output = T;
 
+            fn index<'a>(&'a self, _index: &isize) -> &'a T {
+                let mut it = self.iter();
+                for _ in 0..*_index-1 {
+                    it.next();
+                }
+                it.next().unwrap()
+            }
+        }
 
 
         /// Convenience macro for making lists.
