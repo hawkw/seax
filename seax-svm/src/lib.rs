@@ -42,19 +42,19 @@ pub mod svm {
         }
 
         /// Stack implementation using a cons list
-        impl<'a, T> Stack<T> for List<'a, T> {
-            fn push(self, item: T) -> List<'a, T> {
+        impl<T> Stack<T> for List<T> {
+            fn push(self, item: T) -> List<T> {
                 Cons(item, box self)
             }
 
-            fn pop(self) -> Option<(T,List<'a, T>)> {
+            fn pop(self) -> Option<(T,List<T>)> {
                 match self {
                     Cons(item, new_self)    => Some((item, *new_self)),
                     Nil                     => None
                 }
             }
 
-            fn empty() -> List<'a, T> {
+            fn empty() -> List<T> {
                 Nil
             }
 
@@ -71,17 +71,17 @@ pub mod svm {
         /// This is used internally to represent list primitives in the
         /// machine.
         #[derive(PartialEq,Clone)]
-        pub enum List<'a, T> {
-            Cons(T, Box<List<'a, T>>),
+        pub enum List<T> {
+            Cons(T, Box<List<T>>),
             Nil,
         }
 
         /// Public implementation for List.
-        impl<'a, T> List<'a, T> {
+        impl<T> List<T> {
 
 
             /// Creates a new empty list
-            pub fn new() -> List<'a T> {
+            pub fn new() -> List<T> {
                 Nil
             }
 
@@ -89,7 +89,7 @@ pub mod svm {
             ///
             /// Returns the list containing the new  head item.
             /// This is an O(1) operation.
-            pub fn prepend(self, it: T) -> List<'a, T> {
+            pub fn prepend(self, it: T) -> List<T> {
                 Cons(it, box self)
             }
 
@@ -97,7 +97,7 @@ pub mod svm {
             ///
             /// This is an O(n) operation.
             pub fn append(self, it: T) {
-
+                unimplemented!()
             }
 
             /// Returns the length of the list.
@@ -109,7 +109,7 @@ pub mod svm {
             }
         }
 
-        impl<'a, T> List<'a, T> where T: fmt::Show {
+        impl<'a, T> List<T> where T: fmt::Show {
             /// Return a string representation of the list
             fn to_string(&self) -> String {
                 match *self {
@@ -119,11 +119,14 @@ pub mod svm {
             }
         }
 
-        impl<'a, T> fmt::Show for List<'a, T> where T: fmt::Show {
+        impl<'a, T> fmt::Show for List<T> where T: fmt::Show {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                // TODO: replace toString with this
                 write!(f, "{}", self.to_string())
             }
         }
+
+
         /*
 
         struct ListIterator<'a, T:'a> {
@@ -222,12 +225,12 @@ pub mod svm {
     /// int, signed int, float, or string) or a pointer to a list cell.
 
     #[derive(PartialEq,Clone)]
-    pub enum SVMCell<'a> {
+    pub enum SVMCell {
         AtomCell(Atom),
-        ListCell(Box<List<'a, SVMCell<'a>>>)
+        ListCell(Box<List<SVMCell>>)
     }
 
-    impl<'a> fmt::Show for SVMCell<'a> {
+    impl fmt::Show for SVMCell {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             write!(f, "[{:?}]", self)
         }
@@ -380,17 +383,17 @@ pub mod svm {
     }
 
     /// Represents a SVM machine state
-    pub struct State<'a> {
-        stack:  List<'a, SVMCell<'a>>,
-        env:  List<'a, SVMCell<'a>>,
-        control:  List<'a, SVMCell<'a>>,
-        dump:  List<'a, SVMCell<'a>>
+    pub struct State {
+        stack:  List<SVMCell>,
+        env:  List<SVMCell>,
+        control:  List<SVMCell>,
+        dump:  List<SVMCell>
     }
 
-    impl<'a> State<'a> {
+    impl State {
 
         /// Creates a new empty state
-        fn new() -> State<'a> {
+        fn new() -> State {
             State {
                 stack: Stack::empty(),
                 env: Stack::empty(),
@@ -402,7 +405,7 @@ pub mod svm {
         /// Evaluates an instruction.
         ///
         /// Evaluates an instruction against a state, returning a new state.
-        pub fn eval(self, inst: SVMInstruction) -> State<'a> {
+        pub fn eval(self, inst: SVMInstruction) -> State {
             match inst {
                 SVMInstruction::InstNIL => {
                     State {
