@@ -543,8 +543,8 @@ pub mod svm {
             a = Atom::Float(5.55f64);
             assert_eq!(format!("{:?}", a), "5.55f64");
 
-            //a = Atom::Str("help I'm trapped in a SECD virtual machine!");
-            //assert_eq!(format!("{:?}", a), "\"help I'm trapped in a SECD virtual machine!\"");
+            a = Atom::Str(String::from_str("help I'm trapped in a SECD virtual machine!"));
+            assert_eq!(format!("{:?}", a), "\"help I'm trapped in a SECD virtual machine!\"");
         }
     }
 
