@@ -239,11 +239,15 @@ pub mod svm {
             #[test]
             fn test_stack_pop() {
                 let mut s: List<i32> = Stack::empty();
-                assert_eq!(s.peek(), None); // TODO: implement
+                assert_eq!(s.peek(), None);
                 s = s.push(1);
                 assert_eq!(s.peek(), Some(&1));
                 s = s.push(6);
                 assert_eq!(s.peek(), Some(&6));
+                let pop_result = s.pop().unwrap(); // should not break
+                s = pop_result.1;
+                assert_eq!(s.peek(), Some(&1));
+                assert_eq!(pop_result.0, 6);
             }
 
             #[test]
