@@ -567,6 +567,15 @@ pub mod svm {
                         _ => panic!() //TODO: put error on stack instead
                     }
                 },
+                SVMInstruction::InstLDF => {
+                    let s = self.stack.pop().unwrap();
+                    State {
+                        stack: s.1.push(SVMCell::ListCell(box list!(s.0,self.env[1is].clone()))),
+                        env: self.env,
+                        control: self.control,
+                        dump: self.dump
+                    }
+                }
                 _ => { unimplemented!() }
             }
         }
@@ -655,7 +664,7 @@ pub mod svm {
                 control: Stack::empty(),
                 dump: Stack::empty()
             };
-            state = state.eval(SVMInstruction::InstLD);
+            state = state.eval(SVMInstruction::InstLDF);
             assert_eq!(
                 state.stack.peek(),
                 Some(&ListCell(
