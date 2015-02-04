@@ -637,6 +637,47 @@ pub mod svm {
         }
 
         #[test]
+        fn test_eval_ldf () {
+                let mut state = State {
+                stack: list!(ListCell(box list!(AtomCell(Str(String::from_str("i'm in the function")))))),
+                env: list!(
+                    ListCell(
+                        box list!(
+                            AtomCell(
+                                Str(
+                                    String::from_str("load me!")
+                                    )
+                                ),
+                            AtomCell(Str(String::from_str("load me too!")))
+                        )
+                    ),
+                    ListCell(box list!(AtomCell(Str(String::from_str("don't load me!"))),AtomCell(Str(String::from_str("don't load me either!")))))),
+                control: Stack::empty(),
+                dump: Stack::empty()
+            };
+            state = state.eval(SVMInstruction::InstLD);
+            assert_eq!(
+                state.stack.peek(),
+                Some(&ListCell(
+                    box list!(
+                        AtomCell(
+                            Str(
+                                String::from_str("i'm in the function")
+                                )
+                            ),
+                        ListCell(
+                            box list!(
+                                AtomCell(Str(String::from_str("load me!"))),
+                                AtomCell(Str(String::from_str("load me too!")))
+                            ),
+                        )
+                    )
+                )
+            )
+        );
+        }
+
+        #[test]
         fn test_atom_show () {
             let mut a: Atom;
 
