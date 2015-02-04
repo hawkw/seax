@@ -6,6 +6,7 @@
 /// support code.
 pub mod svm {
     use svm::slist::List;
+    use svm::slist::List::{Cons,Nil};
     use svm::slist::Stack;
     use std::iter::IteratorExt;
     use std::fmt;
@@ -519,6 +520,21 @@ pub mod svm {
                         env: self.env,
                         control: self.control,
                         dump: self.dump
+                    }
+                },
+                SVMInstruction::InstLD => {
+                    let pop = self.stack.pop().unwrap();
+                    match pop.0 {
+                        SVMCell::ListCell(box Cons(SVMCell::AtomCell(Atom::SInt(level)), box Cons(SVMCell::AtomCell(Atom::SInt(pos))), Nil)) => {
+                            let environment = self.env[level-1];
+                            State {
+                                stack: pop.1.push(environment[pos-1]),
+                                env: self.env,
+                                control: self.control,
+                                dump: self.dump
+                            }
+                        },
+                        _ => panic!() //TODO: put error on stack instead
                     }
                 },
                 _ => { unimplemented!() }
