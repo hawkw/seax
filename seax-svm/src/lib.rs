@@ -71,7 +71,7 @@ pub mod svm {
         ///
         /// This is used internally to represent list primitives in the
         /// machine.
-        #[derive(PartialEq,Clone)]
+        #[derive(PartialEq,Clone,Debug)]
         pub enum List<T> {
             Cons(T, Box<List<T>>),
             Nil,
@@ -126,7 +126,7 @@ pub mod svm {
             }
         }
 
-        impl<'a, T> fmt::Show for List<T> where T: fmt::Show {
+        impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 // TODO: replace toString with this
                 write!(f, "{}", self.to_string())
@@ -164,7 +164,7 @@ pub mod svm {
 
             fn index<'a>(&'a self, _index: &usize) -> &'a T {
                 let mut it = self.iter();
-                for n in range(0,*_index-1) {
+                for _ in 0..*_index-1 {
                     it.next();
                 }
                 it.next().unwrap()
@@ -292,7 +292,7 @@ pub mod svm {
     ///
     /// TODO: Strings could be implemented as char lists rather than
     /// Rust strings.
-    #[derive(PartialEq,Clone)]
+    #[derive(PartialEq,Clone,Debug)]
     pub enum Atom {
         UInt(usize),
         SInt(isize),
@@ -301,7 +301,7 @@ pub mod svm {
         Str(String),
     }
 
-    impl fmt::Show for Atom {
+    impl fmt::Display for Atom {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             match self {
                 &Atom::UInt(value) => write!(f, "{}us", value),
