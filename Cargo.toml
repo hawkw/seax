@@ -6,11 +6,12 @@ authors = ["Hawk Weisman <hawk@meteorcodelabs.com>"]
 description = "SECD virtual machine for interpreting programs in FP languages"
 
 [dependencies]
-docopt = "0.6.30"
-rustc-serialize = "0.2.8"
+docopt = "*"
+regex = "*"
+rustc-serialize = "*"
 
-[dependencies.seax-svm]
-path = "seax-svm"
+[dependencies.seax_svm]
+path = "seax_svm"
 
-[dependencies.seax-scheme]
-path = "seax-scheme"
+[dependencies.seax_scheme]
+path = "seax_scheme"

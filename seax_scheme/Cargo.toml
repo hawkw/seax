@@ -1,5 +1,5 @@
 [package]
 
-name = "seax-scheme"
+name = "seax_scheme"
 version = "0.0.1"
 authors = ["Hawk Weisman <hawk@meteorcodelabs.com>"]

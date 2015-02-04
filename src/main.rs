@@ -10,7 +10,7 @@ Options:
     -v, --verbose   Enable verbose mode
 ";
 
-#[derive(RustcDecodable, Show)]
+#[derive(RustcDecodable, Debug)]
 struct Args {
     arg_bin: String,
     flag_verbose: bool

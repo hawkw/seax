@@ -1,5 +1,5 @@
 [package]
 
-name = "seax-svm"
+name = "seax_svm"
 version = "0.0.1"
 authors = ["Hawk Weisman <hawk@meteorcodelabs.com>"]
