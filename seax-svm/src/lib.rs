@@ -126,23 +126,25 @@ pub mod svm {
             }
         }
 
-
-        /*
-
+        /// Wraps a List<T> to allow it to be used as an Iterator<T>
         struct ListIterator<'a, T:'a> {
             current: &'a List<T>
         }
 
+        /// Implementation of Iterator for List. This allows iteration by
+        /// link hopping.
         impl<'a, T> Iterator for ListIterator<'a, T> {
-            type Item = &T;
+            type Item = &'a T;
 
-            fn next(&mut self) -> Option<&T> {
+            /// Get the next element from the list. Returns a Some<T>, or Nil
+            /// if at the end of the list.
+            fn next(&mut self) -> Option<&'a T> {
                 match self.current {
                     &Cons(ref head, box ref tail) => { self.current = tail; Some(head) },
                     &Nil => None
                 }
             }
-        }*/
+        }
 
 
         /// Convenience macro for making lists.
@@ -214,6 +216,16 @@ pub mod svm {
             fn test_list_macro() {
                 let l: List<i32> = list!(1i32, 2i32, 3i32);
                 assert_eq!(l.to_string(), "(1i32, (2i32, (3i32, nil)))")
+            }
+
+            #[test]
+            fn test_list_iter() {
+                let l: List<isize> = list!(1,2,3,4,5,6);
+                let mut string = String::new();
+                for item in l.iter() {
+                    string.push_str(item.to_string() + ", ");
+                }
+                assert_eq!(string, "1, 2, 3, 4, 5, 6, ")
             }
 
         }
