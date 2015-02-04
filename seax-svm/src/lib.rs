@@ -175,8 +175,16 @@ pub mod svm {
 
         /// Convenience macro for making lists.
         ///
-        /// Usage: `list!(1i32, 2i32, 3i32);` expands to
-        /// `Cons(1i32, Box::new(Cons(2i32, Box::new(Cons(3i32, Box::new(Nil))))));`.
+        /// # Example:
+        ///
+        /// ```
+        /// use svm::slist;
+        ///
+        /// assert_eq!(
+        ///     list!(1i32, 2i32, 3i32),
+        ///     Cons(1i32, Box::new(Cons(2i32, Box::new(Cons(3i32, Box::new(Nil))))))
+        ///     );
+        /// ```
         macro_rules! list(
             ( $e:expr, $($rest:expr),+ ) => ( Cons($e, Box::new(list!( $( $rest ),+ )) ));
             ( $e:expr ) => ( Cons($e, Box::new(Nil)) );
@@ -204,23 +212,23 @@ pub mod svm {
 
             #[test]
             fn test_stack_length() {
-                let full_stack: Stack<i32> = Stack::new(list!(1i32, 2i32, 3i32));
-                let empty_stack: Stack<i32> = Stack::empty();
+                let full_stack: List<i32> = list!(1i32, 2i32, 3i32);
+                let empty_stack: List<i32> = Stack::empty();
                 assert_eq!(full_stack.length(), 3);
                 assert_eq!(empty_stack.length(), 0);
             }
 
             #[test]
             fn test_stack_peek() {
-                let full_stack: Stack<i32> = Stack::new(list!(1i32, 2i32, 3i32));
-                let empty_stack: Stack<i32> = Stack::empty();
+                let full_stack: List<i32> = list!(1i32, 2i32, 3i32);
+                let empty_stack: List<i32> = Stack::empty();
                 assert_eq!(full_stack.peek(), Some(&1));
                 assert_eq!(empty_stack.peek(), None);
             }
 
             #[test]
             fn test_stack_push() {
-                let mut s: Stack<i32> = Stack::empty();
+                let mut s: List<i32> = Stack::empty();
                 assert_eq!(s.peek(), None);
                 s = s.push(1);
                 assert_eq!(s.peek(), Some(&1));
@@ -230,7 +238,7 @@ pub mod svm {
 
             #[test]
             fn test_stack_pop() {
-                let mut s: Stack<i32> = Stack::empty();
+                let mut s: List<i32> = Stack::empty();
                 assert_eq!(s.peek(), None); // TODO: implement
                 s = s.push(1);
                 assert_eq!(s.peek(), Some(&1));
@@ -249,9 +257,9 @@ pub mod svm {
                 let l: List<isize> = list!(1,2,3,4,5,6);
                 let mut string = String::new();
                 for item in l.iter() {
-                    string.push_str(item.to_string() + ", ");
+                    string.push_str((item.to_string() + ", ").as_slice());
                 }
-                assert_eq!(string, "1, 2, 3, 4, 5, 6, ")
+                assert_eq!(string.as_slice(), "1, 2, 3, 4, 5, 6, ")
             }
 
         }
@@ -478,6 +486,7 @@ pub mod svm {
 
     #[cfg(test)]
     mod tests {
+        use super::slist::{List,Stack};
         use super::State;
         use super::{SVMInstruction, SVMCell, Atom};
         use super::slist::List::{Cons,Nil};
