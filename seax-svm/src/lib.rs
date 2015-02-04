@@ -10,6 +10,7 @@ pub mod svm {
     use std::iter::IteratorExt;
     use std::fmt;
 
+
     /// Singly-linked list and stack implementations. `List<T>` is a
     /// singly-linked cons list with boxed items. `Stack<T>` is basically
     /// just a struct containing a boxed pointer to the head of a list,
@@ -17,50 +18,51 @@ pub mod svm {
     pub mod slist {
 
         use svm::slist::List::{Cons,Nil};
+        use std::mem;
         use std::fmt;
 
-        /// A stack implementation wrapping a `List<T>`
-        ///
-        /// This is essentially just a struct containing a boxed pointer
-        /// to the head of a `List<T>`, so that when items are pushed to or
-        /// popped from the stack, the pointer is changed to point to the
-        /// new head item. There may be saner ways of doing this.
-        pub struct Stack<T> {
-            /// The head item of the list.
-            head: Box<List<T>>
-        }
+        /// Common functions for an immutable Stack abstract data type.
+        pub trait Stack<T> {
 
-        impl<T> Stack<T> {
             /// Push an item to the top of the stack, returning a new stack
-            pub fn push(self, it: T) -> Stack<T> {
-                Stack { head: Box::new(self.head.prepend(it)) }
-            }
+            fn push(self, item : T) -> Self;
 
-            /// Peak at the top item of the stack.
+            /// Pop the top element of the stack. Returns an Option on a T and
+            /// a new Stack<T> to replace this.
+            fn pop(self)            -> Option<(T, Self)>;
+
+            /// Peek at the top item of the stack.
             ///
             /// Returns Some<T> if there is an item on top of the stack,
             /// and None if the stack is empty.
-            pub fn peek(&self) -> Option<&T> {
-                match *self.head {
-                    Nil => None,
-                    Cons(ref it,_) => Some(it)
+            fn peek(&self)          -> Option<&T>;
+
+            /// Returns an empty stack.
+            fn empty()              -> Self;
+        }
+
+        /// Stack implementation using a cons list
+        impl<'a, T> Stack<T> for List<'a, T> {
+            fn push(self, item: T) -> List<'a, T> {
+                Cons(item, box self)
+            }
+
+            fn pop(self) -> Option<(T,List<'a, T>)> {
+                match self {
+                    Cons(item, new_self)    => Some((item, *new_self)),
+                    Nil                     => None
                 }
             }
 
-            /// Returns an empty stack.
-            pub fn empty() -> Stack<T> {
-                Stack { head: box Nil }
+            fn empty() -> List<'a, T> {
+                Nil
             }
 
-            /// Wraps a list into a stack.
-            pub fn new(l: List<T>) -> Stack<T> {
-                Stack { head: box l }
-            }
-
-            /// Returns the length of the stack. This just calls
-            /// `List::length()` on the wrapped list.
-            pub fn length(&self) -> isize {
-                self.head.length()
+            fn peek(&self) -> Option<&T> {
+                match self {
+                    &Nil => None,
+                    &Cons(ref it,_) => Some(it)
+                }
             }
         }
 
@@ -68,24 +70,34 @@ pub mod svm {
         ///
         /// This is used internally to represent list primitives in the
         /// machine.
-        #[derive(PartialEq)]
-        pub enum List<T> {
-            Cons(T, Box<List<T>>),
+        #[derive(PartialEq,Clone)]
+        pub enum List<'a, T> {
+            Cons(T, Box<List<'a, T>>),
             Nil,
         }
 
         /// Public implementation for List.
-        impl<T> List<T> {
+        impl<'a, T> List<'a, T> {
 
 
             /// Creates a new empty list
-            pub fn new() -> List<T> {
+            pub fn new() -> List<'a T> {
                 Nil
             }
 
-            /// Prepends the given item to the list, returning the new head item.
-            pub fn prepend(self, it: T) -> List<T> {
+            /// Prepends the given item to the list.
+            ///
+            /// Returns the list containing the new  head item.
+            /// This is an O(1) operation.
+            pub fn prepend(self, it: T) -> List<'a, T> {
                 Cons(it, box self)
+            }
+
+            /// Appends an item to the end of the list.
+            ///
+            /// This is an O(n) operation.
+            pub fn append(self, it: T) {
+
             }
 
             /// Returns the length of the list.
@@ -97,7 +109,7 @@ pub mod svm {
             }
         }
 
-        impl<T> List<T> where T: fmt::Show {
+        impl<'a, T> List<'a, T> where T: fmt::Show {
             /// Return a string representation of the list
             fn to_string(&self) -> String {
                 match *self {
@@ -107,19 +119,27 @@ pub mod svm {
             }
         }
 
-        impl<T> fmt::Show for List<T> where T: fmt::Show {
+        impl<'a, T> fmt::Show for List<'a, T> where T: fmt::Show {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 write!(f, "{}", self.to_string())
             }
         }
+        /*
 
-        impl<T> Iterator for List<T> {
-            type Item = T;
-
-            fn next(&mut self) -> Option<T> {
-                unimplemented!()
-            }
+        struct ListIterator<'a, T:'a> {
+            current: &'a List<T>
         }
+
+        impl<'a, T> Iterator for ListIterator<'a, T> {
+            type Item = &T;
+
+            fn next(&mut self) -> Option<&T> {
+                match self.current {
+                    &Cons(ref head, box ref tail) => { self.current = tail; Some(head) },
+                    &Nil => None
+                }
+            }
+        }*/
 
 
         /// Convenience macro for making lists.
@@ -192,6 +212,7 @@ pub mod svm {
                 let l: List<i32> = list!(1i32, 2i32, 3i32);
                 assert_eq!(l.to_string(), "(1i32, (2i32, (3i32, nil)))")
             }
+
         }
     }
 
@@ -200,13 +221,13 @@ pub mod svm {
     /// A cell in the VM can be either an atom (single item, either unsigned
     /// int, signed int, float, or string) or a pointer to a list cell.
 
-    #[derive(PartialEq)]
-    pub enum SVMCell {
+    #[derive(PartialEq,Clone)]
+    pub enum SVMCell<'a> {
         AtomCell(Atom),
-        ListCell(Box<List<SVMCell>>)
+        ListCell(Box<List<'a, SVMCell<'a>>>)
     }
 
-    impl fmt::Show for SVMCell {
+    impl<'a> fmt::Show for SVMCell<'a> {
         fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
             write!(f, "[{:?}]", self)
         }
@@ -219,7 +240,7 @@ pub mod svm {
     ///
     /// TODO: Strings could be implemented as char lists rather than
     /// Rust strings.
-    #[derive(PartialEq)]
+    #[derive(PartialEq,Clone)]
     pub enum Atom {
         UInt(usize),
         SInt(isize),
@@ -359,17 +380,17 @@ pub mod svm {
     }
 
     /// Represents a SVM machine state
-    pub struct State {
-        stack: Stack<SVMCell>,
-        env: Stack<SVMCell>,
-        control: Stack<SVMCell>,
-        dump: Stack<SVMCell>
+    pub struct State<'a> {
+        stack:  List<'a, SVMCell<'a>>,
+        env:  List<'a, SVMCell<'a>>,
+        control:  List<'a, SVMCell<'a>>,
+        dump:  List<'a, SVMCell<'a>>
     }
 
-    impl State {
+    impl<'a> State<'a> {
 
         /// Creates a new empty state
-        fn new() -> State {
+        fn new() -> State<'a> {
             State {
                 stack: Stack::empty(),
                 env: Stack::empty(),
@@ -381,19 +402,23 @@ pub mod svm {
         /// Evaluates an instruction.
         ///
         /// Evaluates an instruction against a state, returning a new state.
-        pub fn eval(self, inst: SVMInstruction) -> State {
+        pub fn eval(self, inst: SVMInstruction) -> State<'a> {
             match inst {
-                SVMInstruction::InstNIL => State {
-                    stack: self.stack.push(SVMCell::ListCell(box List::new())),
-                    env: self.env,
-                    control: self.control,
-                    dump: self.dump
-                },
-                SVMInstruction::InstLDC(atom) => State {
-                    stack: self.stack.push(SVMCell::AtomCell(atom)),
-                    env: self.env,
-                    control: self.control,
-                    dump: self.dump
+                SVMInstruction::InstNIL => {
+                    State {
+                        stack: self.stack.push(SVMCell::ListCell(box List::new())),
+                        env: self.env,
+                        control: self.control,
+                        dump: self.dump
+                    }
+                }
+                SVMInstruction::InstLDC(atom) => {
+                    State {
+                        stack: self.stack.push(SVMCell::AtomCell(atom)),
+                        env: self.env,
+                        control: self.control,
+                        dump: self.dump
+                    }
                 },
                 _ => { unimplemented!() }
             }
