@@ -20,6 +20,7 @@ pub mod svm {
         use svm::slist::List::{Cons,Nil};
         use std::mem;
         use std::fmt;
+        use std::ops::Index;
 
         /// Common functions for an immutable Stack abstract data type.
         pub trait Stack<T> {
@@ -64,6 +65,7 @@ pub mod svm {
                     &Cons(ref it,_) => Some(it)
                 }
             }
+
         }
 
         /// Singly-linked cons list.
@@ -101,11 +103,17 @@ pub mod svm {
             }
 
             /// Returns the length of the list.
-            pub fn length (&self) -> isize {
+            pub fn length (&self) -> usize {
                 match *self {
                     Cons(_, ref tail) => 1 + tail.length(),
                     Nil => 0
                 }
+            }
+
+            /// Provide a forward iterator
+            #[inline]
+            pub fn iter<'a>(&'a self) -> ListIterator<'a, T> {
+                ListIterator{current: self}
             }
         }
 
@@ -127,7 +135,7 @@ pub mod svm {
         }
 
         /// Wraps a List<T> to allow it to be used as an Iterator<T>
-        struct ListIterator<'a, T:'a> {
+        pub struct ListIterator<'a, T:'a> {
             current: &'a List<T>
         }
 
@@ -143,6 +151,24 @@ pub mod svm {
                     &Cons(ref head, box ref tail) => { self.current = tail; Some(head) },
                     &Nil => None
                 }
+            }
+        }
+
+        impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
+            fn len(&self) -> usize {
+                self.current.length()
+            }
+        }
+
+        impl<T> Index<usize> for List<T> {
+            type Output = T;
+
+            fn index<'a>(&'a self, _index: &usize) -> &'a T {
+                let mut it = self.iter();
+                for n in range(0,*_index-1) {
+                    it.next();
+                }
+                it.next().unwrap()
             }
         }
 
