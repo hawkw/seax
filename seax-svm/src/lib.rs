@@ -116,20 +116,14 @@ pub mod svm {
             }
         }
 
-        impl<'a, T> List<T> where T: fmt::Show {
-            /// Return a string representation of the list
-            fn to_string(&self) -> String {
-                match *self {
-                    Cons(ref head, ref tail) => format!("({:?}, {})", head, tail.to_string()),
-                    Nil => format!("nil")
-                }
-            }
-        }
-
         impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
+
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 // TODO: replace toString with this
-                write!(f, "{}", self.to_string())
+                match *self {
+                    Cons(ref head, ref tail) => write!(f, "({}, {})", head, tail),
+                    Nil => write!(f,"nil")
+                }
             }
         }
 
@@ -206,7 +200,7 @@ pub mod svm {
             #[test]
             fn test_list_to_string() {
                 let l: List<i32> = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
-                assert_eq!(l.to_string(), "(1i32, (2i32, (3i32, nil)))");
+                assert_eq!(l.to_string(), "(1, (2, (3, nil)))");
             }
 
             #[test]
@@ -252,7 +246,7 @@ pub mod svm {
             #[test]
             fn test_list_macro() {
                 let l: List<i32> = list!(1i32, 2i32, 3i32);
-                assert_eq!(l.to_string(), "(1i32, (2i32, (3i32, nil)))")
+                assert_eq!(l.to_string(), "(1, (2, (3, nil)))")
             }
 
             #[test]
@@ -531,19 +525,19 @@ pub mod svm {
             let mut a: Atom;
 
             a = Atom::Char('a');
-            assert_eq!(format!("{:?}", a), "'a'");
+            assert_eq!(format!("{}", a), "'a'");
 
             a = Atom::UInt(1us);
-            assert_eq!(format!("{:?}", a), "1us");
+            assert_eq!(format!("{}", a), "1us");
 
             a = Atom::SInt(42is);
-            assert_eq!(format!("{:?}", a), "42is");
+            assert_eq!(format!("{}", a), "42is");
 
             a = Atom::Float(5.55f64);
-            assert_eq!(format!("{:?}", a), "5.55f64");
+            assert_eq!(format!("{}", a), "5.55f64");
 
             a = Atom::Str(String::from_str("help I'm trapped in a SECD virtual machine!"));
-            assert_eq!(format!("{:?}", a), "\"help I'm trapped in a SECD virtual machine!\"");
+            assert_eq!(format!("{}", a), "\"help I'm trapped in a SECD virtual machine!\"");
         }
     }
 
