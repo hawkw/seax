@@ -18,7 +18,6 @@ pub mod svm {
     pub mod slist {
 
         use svm::slist::List::{Cons,Nil};
-        use std::mem;
         use std::fmt;
         use std::ops::Index;
 
@@ -490,10 +489,10 @@ pub mod svm {
 
     #[cfg(test)]
     mod tests {
-        use super::slist::{List,Stack};
+        use super::slist::Stack;
         use super::State;
         use super::{SVMInstruction, SVMCell, Atom};
-        use super::slist::List::{Cons,Nil};
+        use super::slist::List::Nil;
 
         #[test]
         fn test_empty_state() {
