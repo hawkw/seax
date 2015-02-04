@@ -669,11 +669,14 @@ pub mod svm {
                 state.stack.peek(),
                 Some(&ListCell(
                     box list!(
+                        ListCell( box list!(
                         AtomCell(
                             Str(
                                 String::from_str("i'm in the function")
                                 )
-                            ),
+                            )
+                        )
+                        ),
                         ListCell(
                             box list!(
                                 AtomCell(Str(String::from_str("load me!"))),
