@@ -581,6 +581,16 @@ pub mod svm {
                         dump: self.dump
                     }
                 },
+
+                SVMInstruction::InstJOIN => {
+                    let (top, new_dump) = self.dump.pop().unwrap();
+                    State {
+                        stack: self.stack,
+                        env: self.env,
+                        control: self.control.push(top),
+                        dump: new_dump
+                    }
+                }
                 _ => { unimplemented!() }
             }
         }
