@@ -437,7 +437,7 @@ pub mod svm {
     }
 
     /// SVM instruction types
-    #[derive(Show,Clone,PartialEq)]
+    #[derive(Debug,Clone,PartialEq)]
     pub enum SVMInstruction {
         /// `nil`
         ///
@@ -580,7 +580,7 @@ pub mod svm {
         /// Evaluates an instruction against a state, returning a new state.
         /// TODO: rewrite me to use the next instruction on the control stack,
         /// rather than a parameter.
-        pub fn eval(self, inst: SVMInstruction) -> State {
+        fn eval(self, inst: SVMInstruction) -> State {
             match inst {
                 // NIL: pop an empty list onto the stack
                 SVMInstruction::InstNIL => {
@@ -650,11 +650,31 @@ pub mod svm {
                         control: self.control.push(top),
                         dump: new_dump
                     }
-                }
+                },
                 _ => { unimplemented!() }
             }
         }
+
+    pub fn next(self) -> State {
+        let (exp, new_control) = self.control.pop().unwrap();
+        match exp {
+            SVMCell::AtomCell(_) => {
+                State {
+                    stack: self.stack.push(exp),
+                    env: self.env,
+                    control: new_control,
+                    dump: self.dump
+                }
+            },
+            SVMCell::InstCell(inst) => {
+                State {stack: self.stack, env: self.env, control: new_control, dump: self.dump }.eval(inst)
+            },
+            SVMCell::ListCell(insts) => {
+                unimplemented!()
+            }
+        }
     }
+}
 
     /*
     /// Evaluates a program.
