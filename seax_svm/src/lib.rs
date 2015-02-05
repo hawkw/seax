@@ -593,7 +593,7 @@ pub mod svm {
                 }
                 // LDC: load constant
                 SVMInstruction::InstLDC => {
-                    let (atom,new_control) = self.control.pop();
+                    let (atom,new_control) = self.control.pop().unwrap();
                     State {
                         stack: self.stack.push(atom),
                         env: self.env,
@@ -720,14 +720,31 @@ pub mod svm {
         fn test_eval_ldc () {
             let mut state = State::new();
             assert_eq!(state.stack.peek(), None);
-
-            state = state.eval(SVMInstruction::InstLDC(SInt(1)));
+            state = State {
+                stack: state.stack,
+                env: state.env,
+                control: state.control.push(AtomCell(SInt(1))),
+                dump: state.dump
+            };
+            state = state.eval(SVMInstruction::InstLDC);
             assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(1))));
 
+            state = State {
+                stack: state.stack,
+                env: state.env,
+                control: state.control.push(AtomCell(Char('a'))),
+                dump: state.dump
+            };
             state = state.eval(SVMInstruction::InstLDC);
             assert_eq!(state.stack.peek(), Some(&AtomCell(Char('a'))));
 
-            state = state.eval(SVMInstruction::InstLDC(Float(1.0f64)));
+            state = State {
+                stack: state.stack,
+                env: state.env,
+                control: state.control.push(AtomCell(Float(1.0f64))),
+                dump: state.dump
+            };
+            state = state.eval(SVMInstruction::InstLDC);
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.0f64))));
         }
 
