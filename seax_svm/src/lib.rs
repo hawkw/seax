@@ -444,7 +444,7 @@ pub mod svm {
         /// Pushes an empty list (nil) onto the stack
         InstNIL,
         /// `ldc`: `L`oa`d` `C`onstant. Loads a constant (atom)
-        InstLDC(Atom),
+        InstLDC,
         /// `ld`: `L`oa`d`. Pushes a variable onto the stack.
         ///
         /// The variable is indicated by the argument, a pair.
@@ -592,11 +592,12 @@ pub mod svm {
                     }
                 }
                 // LDC: load constant
-                SVMInstruction::InstLDC(atom) => {
+                SVMInstruction::InstLDC => {
+                    let (atom,new_control) = self.control.pop();
                     State {
-                        stack: self.stack.push(SVMCell::AtomCell(atom)),
+                        stack: self.stack.push(atom),
                         env: self.env,
-                        control: self.control,
+                        control: new_control,
                         dump: self.dump
                     }
                 },
@@ -656,6 +657,8 @@ pub mod svm {
         }
 
     pub fn next(self) -> State {
+        // TODO: make it an iterator over possible states?
+        //
         let (exp, new_control) = self.control.pop().unwrap();
         match exp {
             SVMCell::AtomCell(_) => {
@@ -721,7 +724,7 @@ pub mod svm {
             state = state.eval(SVMInstruction::InstLDC(SInt(1)));
             assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(1))));
 
-            state = state.eval(SVMInstruction::InstLDC(Char('a')));
+            state = state.eval(SVMInstruction::InstLDC);
             assert_eq!(state.stack.peek(), Some(&AtomCell(Char('a'))));
 
             state = state.eval(SVMInstruction::InstLDC(Float(1.0f64)));
