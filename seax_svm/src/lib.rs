@@ -522,6 +522,7 @@ pub mod svm {
         /// Evaluates an instruction against a state, returning a new state.
         pub fn eval(self, inst: SVMInstruction) -> State {
             match inst {
+                // NIL: pop an empty list onto the stack
                 SVMInstruction::InstNIL => {
                     State {
                         stack: self.stack.push(SVMCell::ListCell(box List::new())),
@@ -530,6 +531,7 @@ pub mod svm {
                         dump: self.dump
                     }
                 }
+                // LDC: load constant
                 SVMInstruction::InstLDC(atom) => {
                     State {
                         stack: self.stack.push(SVMCell::AtomCell(atom)),
@@ -538,6 +540,7 @@ pub mod svm {
                         dump: self.dump
                     }
                 },
+                // LD: load variable
                 SVMInstruction::InstLD => {
                     let (top, new_stack) = self.stack.pop().unwrap();
                     match top {
@@ -567,6 +570,8 @@ pub mod svm {
                         _ => panic!() //TODO: put error on stack instead
                     }
                 },
+
+                // LDF: load function
                 SVMInstruction::InstLDF => {
                     let (top, new_stack) = self.stack.pop().unwrap();
                     State {
@@ -575,7 +580,7 @@ pub mod svm {
                         control: self.control,
                         dump: self.dump
                     }
-                }
+                },
                 _ => { unimplemented!() }
             }
         }
@@ -687,6 +692,25 @@ pub mod svm {
                 )
             )
         );
+        }
+
+        #[test]
+        fn test_eval_join() {
+            let mut state = State {
+                stack: Stack::empty(),
+                env: Stack::empty(),
+                control: Stack::empty(),
+                dump: list!(ListCell(box list!(
+                    AtomCell(Str(String::from_str("load me!"))),
+                    AtomCell(Str(String::from_str("load me too!")))
+                    )))
+            };
+            state = state.eval(SVMInstruction::InstJOIN);
+            assert_eq!(state.dump.peek(), None);
+            assert_eq!(state.control.peek(), Some(&ListCell(box list!(
+                    AtomCell(Str(String::from_str("load me!"))),
+                    AtomCell(Str(String::from_str("load me too!")))
+                    ))))
         }
 
         #[test]
