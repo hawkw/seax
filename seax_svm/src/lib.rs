@@ -393,12 +393,13 @@ pub mod svm {
     /// SVM cell types.
     ///
     /// A cell in the VM can be either an atom (single item, either unsigned
-    /// int, signed int, float, or string) or a pointer to a list cell.
-
+    /// int, signed int, float, or string), a pointer to a list cell, or an
+    /// instruction.
     #[derive(PartialEq,Clone,Debug)]
     pub enum SVMCell {
         AtomCell(Atom),
-        ListCell(Box<List<SVMCell>>)
+        ListCell(Box<List<SVMCell>>),
+        InstCell(SVMInstruction)
     }
 
     impl fmt::Display for SVMCell {
@@ -436,6 +437,7 @@ pub mod svm {
     }
 
     /// SVM instruction types
+    #[derive(Show,Clone,PartialEq)]
     pub enum SVMInstruction {
         /// `nil`
         ///
