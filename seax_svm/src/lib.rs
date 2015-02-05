@@ -194,8 +194,39 @@ pub mod svm {
         impl<'a, T> Iterator for ListIterator<'a, T> {
             type Item = &'a T;
 
-            /// Get the next element from the list. Returns a Some<T>, or Nil
+            /// Get the next element from the list.
+            ///
+            /// Get the next element from the list. Returns a `Some<T>`, or `Nil`
             /// if at the end of the list.
+            ///
+            /// # Examples:
+            /// ```
+            /// # #[macro_use] extern crate seax_svm;
+            /// # use seax_svm::svm::slist;
+            /// # use seax_svm::svm::slist::List;
+            /// # use seax_svm::svm::slist::List::{Cons, Nil};
+            /// # fn main () {
+            /// let list = list!(1,2,3);
+            /// let mut iter = list.iter();
+            /// assert_eq!(iter.next().unwrap(), &1);
+            /// assert_eq!(iter.next().unwrap(), &2);
+            /// assert_eq!(iter.next().unwrap(), &3);
+            /// # }
+            /// ```
+            /// ```
+            /// # #[macro_use] extern crate seax_svm;
+            /// # use seax_svm::svm::slist;
+            /// # use seax_svm::svm::slist::List;
+            /// # use seax_svm::svm::slist::List::{Cons, Nil};
+            /// # fn main () {
+            /// let l: List<isize> = list!(1,2,3,4,5,6);
+            /// let mut string = String::new();
+            /// for item in l.iter() {
+            ///     string.push_str((item.to_string() + ", ").as_slice());
+            /// }
+            /// assert_eq!(string.as_slice(), "1, 2, 3, 4, 5, 6, ")
+            /// # }
+            /// ```
             fn next(&mut self) -> Option<&'a T> {
                 match self.current {
                     &Cons(ref head, box ref tail) => { self.current = tail; Some(head) },
@@ -209,7 +240,19 @@ pub mod svm {
                 self.current.length()
             }
         }
-
+        /// Implementation of indexing for `List<T>`.
+        ///
+        /// # Examples:
+        /// ```
+        /// # #[macro_use] extern crate seax_svm;
+        /// # use seax_svm::svm::slist;
+        /// # use seax_svm::svm::slist::List;
+        /// # use seax_svm::svm::slist::List::{Cons, Nil};
+        /// # fn main () {
+        /// let list = list!(1,2,3,4,5,6);
+        /// assert_eq!(list[1us], 1);
+        /// # }
+        /// ```
         impl<T> Index<usize> for List<T> {
             type Output = T;
 
@@ -221,6 +264,19 @@ pub mod svm {
                 it.next().unwrap()
             }
         }
+        /// Implementation of indexing for `List<T>`.
+        ///
+        /// # Examples:
+        /// ```
+        /// # #[macro_use] extern crate seax_svm;
+        /// # use seax_svm::svm::slist;
+        /// # use seax_svm::svm::slist::List;
+        /// # use seax_svm::svm::slist::List::{Cons, Nil};
+        /// # fn main () {
+        /// let list = list!(1,2,3,4,5,6);
+        /// assert_eq!(list[1is], 1);
+        /// # }
+        /// ```
         impl<T> Index<isize> for List<T> {
             type Output = T;
 
@@ -520,6 +576,8 @@ pub mod svm {
         /// Evaluates an instruction.
         ///
         /// Evaluates an instruction against a state, returning a new state.
+        /// TODO: rewrite me to use the next instruction on the control stack,
+        /// rather than a parameter.
         pub fn eval(self, inst: SVMInstruction) -> State {
             match inst {
                 // NIL: pop an empty list onto the stack
