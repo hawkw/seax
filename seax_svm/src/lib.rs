@@ -619,7 +619,7 @@ pub mod svm {
                         ) => {
                             let environment = match self.env[level-1] {
                                 SVMCell::ListCell(ref l) => l.clone(),
-                                _ => panic!()
+                                _ => panic!("[LD]: Fatal: expected list in $e, found {:?}",self.env[level-1])
                             };
                             State {
                                 stack: new_stack.push(environment[pos-1].clone()),
@@ -628,7 +628,7 @@ pub mod svm {
                                 dump: self.dump
                             }
                         },
-                        _ => panic!() //TODO: put error on stack instead
+                        _ => panic!("[LD] Fatal: expected pair, found {:?}", top)
                     }
                 },
 
