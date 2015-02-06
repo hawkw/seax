@@ -550,6 +550,16 @@ pub mod svm {
         /// TODO: figure out what happens when you try to modulo things that
         /// aren't numbers (maybe the compiler won't let this happen?).
         InstMOD,
+        /// `eq`: `Eq`uality of atoms
+        InstEQ,
+        /// `gt`: `G`reater `t`han
+        InstGT,
+        /// `gte`: `G`reater `t`han or `e`qual
+        InstGTE,
+        /// `lt`: `L`ess `t`han
+        InstLT,
+        /// `lte`: `L`ess `t`han or `e`qual
+        InstLTE,
         /// `car`: `C`ontents of `A`ddress `R`egister
         ///
         /// Pops a list from the stack and returns the list's `car` (head)
