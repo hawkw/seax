@@ -488,13 +488,13 @@ pub mod svm {
         /// dummy environment with the current one, thus making recursive
         ///  functions possible.
         InstRAP,
-        /// `sel`: `Sel`ect
+        /// `sel`: `Sel`ect branch
         ///
-        /// Expects two list arguments, and pops a value from the stack.
-        /// The first list is executed if the popped value was non-nil,
-        /// the second list otherwise. Before one of these list pointers
-        ///  is made the new `C`, a pointer to the instruction following
-        ///  `sel` is saved on the dump.
+        /// Expects two list arguments on the control stack, and pops a value
+        /// from the stack. The first list is executed if the popped value
+        /// was non-nil, the second list otherwise. Before one of these list
+        /// pointers is made the new `C`, a pointer to the instruction
+        /// following `sel` is saved on the dump.
         InstSEL,
         /// `add`
         ///
@@ -560,6 +560,11 @@ pub mod svm {
         InstLT,
         /// `lte`: `L`ess `t`han or `e`qual
         InstLTE,
+        /// `atom`: test if `atom`
+        ///
+        /// Pops an item from the stack and returns true if it's an atom, false
+        /// otherwise
+        InstATOM,
         /// `car`: `C`ontents of `A`ddress `R`egister
         ///
         /// Pops a list from the stack and returns the list's `car` (head)
