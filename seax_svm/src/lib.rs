@@ -549,10 +549,22 @@ pub mod svm {
         ///
         /// TODO: figure out what happens when you try to modulo things that
         /// aren't numbers (maybe the compiler won't let this happen?).
-        InstMOD
+        InstMOD,
+        /// `car`: `C`ontents of `A`ddress `R`egister
+        ///
+        /// Pops a list from the stack and returns the list's `car` (head)
+        InstCAR,
+        /// `cdr`: `C`ontents of `D`ecrement `R`egister
+        ///
+        /// Pops a list from the stack and returns the list's `cdr` (tail)
+        InstCDR,
+        /// `cons`: `Cons`truct
+        ///
+        /// Pops an item and a list from the stack and returns the list, with
+        /// the item prepended.
+        InstCONS,
         // TODO: add some hardcoded I/O instructions here so that you can
         //  do I/O without farming everything out to `stdio`
-        // TODO: add `cons` and `cdr` words
     }
 
     /// Represents a SVM machine state
@@ -605,17 +617,10 @@ pub mod svm {
                 SVMInstruction::InstLD => {
                     let (top, new_stack) = self.stack.pop().unwrap();
                     match top {
-                        SVMCell::ListCell(box Cons(
-                            SVMCell::AtomCell(
-                                Atom::SInt(level)
-                                ),
-                            box Cons(
-                                SVMCell::AtomCell(
-                                    Atom::SInt(pos)
-                                    ),
-                                box Nil
-                                )
-                            )
+                        SVMCell::ListCell(
+                            box Cons(SVMCell::AtomCell(Atom::SInt(level)),
+                            box Cons(SVMCell::AtomCell(Atom::SInt(pos)),
+                            box Nil))
                         ) => {
                             let environment = match self.env[level-1] {
                                 SVMCell::ListCell(ref l) => l.clone(),
