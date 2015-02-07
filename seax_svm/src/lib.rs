@@ -607,30 +607,31 @@ pub mod svm {
         /// Evaluates an instruction against a state, returning a new state.
         /// TODO: rewrite me to use the next instruction on the control stack,
         /// rather than a parameter.
-        fn eval(self, inst: SVMInstruction) -> State {
-            match inst {
+        fn eval(self) -> State {
+            let (next, new_control) = self.control.pop().unwrap();
+            match next {
                 // NIL: pop an empty list onto the stack
-                SVMInstruction::InstNIL => {
+                SVMCell::InstCell(SVMInstruction::InstNIL) => {
                     State {
                         stack: self.stack.push(SVMCell::ListCell(box List::new())),
-                        env: self.env,
-                        control: self.control,
-                        dump: self.dump
-                    }
-                }
-                // LDC: load constant
-                SVMInstruction::InstLDC => {
-                    let (atom,new_control) = self.control.pop().unwrap();
-                    State {
-                        stack: self.stack.push(atom),
                         env: self.env,
                         control: new_control,
                         dump: self.dump
                     }
+                }
+                // LDC: load constant
+                SVMCell::InstCell(SVMInstruction::InstLDC) => {
+                    let (atom,newer_control) = new_control.pop().unwrap();
+                    State {
+                        stack: self.stack.push(atom),
+                        env: self.env,
+                        control: newer_control,
+                        dump: self.dump
+                    }
                 },
                 // LD: load variable
-                SVMInstruction::InstLD => {
-                    let (top, new_stack) = self.stack.pop().unwrap();
+                SVMCell::InstCell(SVMInstruction::InstLD) => {
+                    let (top, newer_control) = new_control.pop().unwrap();
                     match top {
                         SVMCell::ListCell(
                             box Cons(SVMCell::AtomCell(Atom::SInt(level)),
@@ -642,9 +643,9 @@ pub mod svm {
                                 _ => panic!("[LD]: Fatal: expected list in $e, found {:?}",self.env[level-1])
                             };
                             State {
-                                stack: new_stack.push(environment[pos-1].clone()),
+                                stack: self.stack.push(environment[pos-1].clone()),
                                 env: self.env,
-                                control: self.control,
+                                control: newer_control,
                                 dump: self.dump
                             }
                         },
@@ -653,50 +654,28 @@ pub mod svm {
                 },
 
                 // LDF: load function
-                SVMInstruction::InstLDF => {
-                    let (top, new_stack) = self.stack.pop().unwrap();
+                SVMCell::InstCell(SVMInstruction::InstLDF) => {
+                    let (func, newer_control) = new_control.pop().unwrap();
                     State {
-                        stack: new_stack.push(SVMCell::ListCell(box list!(top,self.env[1is].clone()))),
+                        stack: self.stack.push(SVMCell::ListCell(box list!(func,self.env[1is].clone()))),
                         env: self.env,
-                        control: self.control,
+                        control: newer_control,
                         dump: self.dump
                     }
                 },
 
-                SVMInstruction::InstJOIN => {
+                SVMCell::InstCell(SVMInstruction::InstJOIN) => {
                     let (top, new_dump) = self.dump.pop().unwrap();
                     State {
                         stack: self.stack,
                         env: self.env,
-                        control: self.control.push(top),
+                        control: new_control.push(top),
                         dump: new_dump
                     }
                 },
                 _ => { unimplemented!() }
             }
         }
-
-    pub fn next(self) -> State {
-        // TODO: make it an iterator over possible states?
-        //
-        let (exp, new_control) = self.control.pop().unwrap();
-        match exp {
-            SVMCell::AtomCell(_) => {
-                State {
-                    stack: self.stack.push(exp),
-                    env: self.env,
-                    control: new_control,
-                    dump: self.dump
-                }
-            },
-            SVMCell::InstCell(inst) => {
-                State {stack: self.stack, env: self.env, control: new_control, dump: self.dump }.eval(inst)
-            },
-            SVMCell::ListCell(insts) => {
-                unimplemented!()
-            }
-        }
-    }
 }
 
     /*
@@ -716,7 +695,7 @@ pub mod svm {
         use super::slist::List::{Cons,Nil};
         use super::State;
         use super::{SVMInstruction, SVMCell, Atom};
-        use super::SVMCell::{AtomCell, ListCell};
+        use super::SVMCell::{AtomCell, ListCell, InstCell};
         use super::Atom::{SInt, Char, Float, Str};
 
         #[test]
@@ -731,13 +710,13 @@ pub mod svm {
         #[test]
         fn test_eval_nil () {
             let mut state =  State {
-                stack: state.stack,
-                env: state.env,
-                control: list!(InstCell(SVMInstruction::InstLDC),AtomCell(SInt(1))),
-                dump: state.dump
+                stack: Stack::empty(),
+                env: Stack::empty(),
+                control: list!(InstCell(SVMInstruction::InstNIL),AtomCell(SInt(1))),
+                dump: Stack::empty()
             };
             assert_eq!(state.stack.peek(), None);
-            state = state
+            state = state.eval();
             assert_eq!(state.stack.peek(), Some(&SVMCell::ListCell(box Nil)));
         }
 
@@ -788,7 +767,7 @@ pub mod svm {
         #[test]
         fn test_eval_ldf () {
                 let mut state = State {
-                stack: list!(ListCell(box list!(AtomCell(Str(String::from_str("i'm in the function")))))),
+                stack: Stack::empty(),
                 env: list!(
                     ListCell(
                         box list!(
@@ -801,7 +780,7 @@ pub mod svm {
                         )
                     ),
                     ListCell(box list!(AtomCell(Str(String::from_str("don't load me!"))),AtomCell(Str(String::from_str("don't load me either!")))))),
-                control: list!(InstCell(SVMInstruction::InstLDF))),
+                control: list!(InstCell(SVMInstruction::InstLDF), ListCell(box list!(AtomCell(Str(String::from_str("i'm in the function")))))),
                 dump: Stack::empty()
             };
             state = state.eval();
@@ -834,9 +813,8 @@ pub mod svm {
             let mut state = State {
                 stack: Stack::empty(),
                 env: Stack::empty(),
-                control: Stack::empty(),
-                dump: list!(InstCell(SVMInstruction::InstJOIN),
-                    ListCell(box list!(
+                control: list!(InstCell(SVMInstruction::InstJOIN)),
+                dump: list!(ListCell(box list!(
                         AtomCell(Str(String::from_str("load me!"))),
                         AtomCell(Str(String::from_str("load me too!")))
                     )))
