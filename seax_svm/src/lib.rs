@@ -730,9 +730,14 @@ pub mod svm {
 
         #[test]
         fn test_eval_nil () {
-            let mut state = State::new();
+            let mut state =  State {
+                stack: state.stack,
+                env: state.env,
+                control: list!(InstCell(SVMInstruction::InstLDC),AtomCell(SInt(1))),
+                dump: state.dump
+            };
             assert_eq!(state.stack.peek(), None);
-            state = state.eval(SVMInstruction::InstNIL);
+            state = state
             assert_eq!(state.stack.peek(), Some(&SVMCell::ListCell(box Nil)));
         }
 
@@ -743,40 +748,40 @@ pub mod svm {
             state = State {
                 stack: state.stack,
                 env: state.env,
-                control: state.control.push(AtomCell(SInt(1))),
+                control: list!(InstCell(SVMInstruction::InstLDC),AtomCell(SInt(1))),
                 dump: state.dump
             };
-            state = state.eval(SVMInstruction::InstLDC);
+            state = state.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(1))));
 
             state = State {
                 stack: state.stack,
                 env: state.env,
-                control: state.control.push(AtomCell(Char('a'))),
+                control: list!(InstCell(SVMInstruction::InstLDC),AtomCell(Char('a'))),
                 dump: state.dump
             };
-            state = state.eval(SVMInstruction::InstLDC);
+            state = state.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Char('a'))));
 
             state = State {
                 stack: state.stack,
                 env: state.env,
-                control: state.control.push(AtomCell(Float(1.0f64))),
+                control: list!(InstCell(SVMInstruction::InstLDC),AtomCell(Float(1.0f64))),
                 dump: state.dump
             };
-            state = state.eval(SVMInstruction::InstLDC);
+            state = state.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.0f64))));
         }
 
         #[test]
         fn test_eval_ld () {
             let mut state = State {
-                stack: list!(ListCell(box list!(AtomCell(SInt(1)),AtomCell(SInt(2))))),
+                stack: Stack::empty(),
                 env: list!(ListCell(box list!(AtomCell(Str(String::from_str("load me!"))),AtomCell(Str(String::from_str("don't load me!")))))),
-                control: Stack::empty(),
+                control: list!(InstCell(SVMInstruction::InstLD),ListCell(box list!(AtomCell(SInt(1)),AtomCell(SInt(2))))),
                 dump: Stack::empty()
             };
-            state = state.eval(SVMInstruction::InstLD);
+            state = state.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Str(String::from_str("load me!")))));
         }
 
@@ -796,10 +801,10 @@ pub mod svm {
                         )
                     ),
                     ListCell(box list!(AtomCell(Str(String::from_str("don't load me!"))),AtomCell(Str(String::from_str("don't load me either!")))))),
-                control: Stack::empty(),
+                control: list!(InstCell(SVMInstruction::InstLDF))),
                 dump: Stack::empty()
             };
-            state = state.eval(SVMInstruction::InstLDF);
+            state = state.eval();
             assert_eq!(
                 state.stack.peek(),
                 Some(&ListCell(
@@ -830,12 +835,13 @@ pub mod svm {
                 stack: Stack::empty(),
                 env: Stack::empty(),
                 control: Stack::empty(),
-                dump: list!(ListCell(box list!(
-                    AtomCell(Str(String::from_str("load me!"))),
-                    AtomCell(Str(String::from_str("load me too!")))
+                dump: list!(InstCell(SVMInstruction::InstJOIN),
+                    ListCell(box list!(
+                        AtomCell(Str(String::from_str("load me!"))),
+                        AtomCell(Str(String::from_str("load me too!")))
                     )))
             };
-            state = state.eval(SVMInstruction::InstJOIN);
+            state = state.eval();
             assert_eq!(state.dump.peek(), None);
             assert_eq!(state.control.peek(), Some(&ListCell(box list!(
                     AtomCell(Str(String::from_str("load me!"))),
