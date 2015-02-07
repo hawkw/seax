@@ -400,7 +400,7 @@ pub mod svm {
     pub enum SVMCell {
         AtomCell(Atom),
         ListCell(Box<List<SVMCell>>),
-        InstCell(SVMInstruction)
+        InstCell(Inst)
     }
 
     impl fmt::Display for SVMCell {
@@ -439,32 +439,32 @@ pub mod svm {
 
     /// SVM instruction types
     #[derive(Debug,Copy,Clone,PartialEq)]
-    pub enum SVMInstruction {
+    pub enum Inst {
         /// `nil`
         ///
         /// Pushes an empty list (nil) onto the stack
-        InstNIL,
+        NIL,
         /// `ldc`: `L`oa`d` `C`onstant. Loads a constant (atom)
-        InstLDC,
+        LDC,
         /// `ld`: `L`oa`d`. Pushes a variable onto the stack.
         ///
         /// The variable is indicated by the argument, a pair.
         /// The pair's `car` specifies the level, the `cdr` the position.
         /// So `(1 . 3)` gives the current function's (level 1) third
         /// parameter.
-        InstLD,
+        LD,
         /// `ldf`: `L`oa`d` `F`unction.
         ///
         ///  Takes one list argument representing a function and constructs
         ///  a closure (a pair containing the function and the current
         ///  environment) and pushes that onto the stack.
-        InstLDF,
+        LDF,
         /// `join`
         ///
         /// Pops a list reference from the dump and makes this the new value
         /// of `C`. This instruction occurs at the end of both alternatives of
         ///  a `sel`.
-        InstJOIN,
+        JOIN,
         /// `ap`: `Ap`ply.
         ///
         /// Pops a closure and a list of parameter values from the stack.
@@ -473,22 +473,22 @@ pub mod svm {
         /// in front of that, clearing the stack, and setting `C` to the
         /// closure's function pointer. The previous values of `S`, `E`,
         ///  and the next value of `C` are saved on the dump.
-        InstAP,
+        AP,
         /// `ret`: `Ret`urn.
         ///
         /// Pops one return value from the stack, restores
         /// `S`, `E`, and `C` from the dump, and pushes
         /// the return value onto the now-current stack.
-        InstRET,
+        RET,
         /// `dum`: `Dum`my.
         ///
         /// Pops a dummy environment (an empty list) onto the `E` stack.
-        InstDUM,
+        DUM,
         /// `rap`: `R`ecursive `Ap`ply.
         /// Works like `ap`, only that it replaces an occurrence of a
         /// dummy environment with the current one, thus making recursive
         ///  functions possible.
-        InstRAP,
+        RAP,
         /// `sel`: `Sel`ect branch
         ///
         /// Expects two list arguments on the control stack, and pops a value
@@ -496,7 +496,7 @@ pub mod svm {
         /// was non-nil, the second list otherwise. Before one of these list
         /// pointers is made the new `C`, a pointer to the instruction
         /// following `sel` is saved on the dump.
-        InstSEL,
+        SEL,
         /// `add`
         ///
         /// Pops two numbers off of the stack and adds them, pushing the
@@ -505,7 +505,7 @@ pub mod svm {
         ///
         /// TODO: figure out what happens when you try to add things that aren't
         /// numbers (maybe the compiler won't let this happen?).
-        InstADD,
+        ADD,
         /// `sub`: `Sub`tract
         ///
         /// Pops two numbers off of the stack and subtracts the first from the
@@ -514,7 +514,7 @@ pub mod svm {
         ///
         /// TODO: figure out what happens when you try to subtract things that
         /// aren't numbers (maybe the compiler won't let this happen?).
-        InstSUB,
+        SUM,
         /// `mul`: `Mul`tiply
         ///
         /// Pops two numbers off of the stack and multiplies them, pushing the
@@ -523,7 +523,7 @@ pub mod svm {
         ///
         /// TODO: figure out what happens when you try to multiply things that
         /// aren't numbers (maybe the compiler won't let this happen?).
-        InstMUL,
+        MUL,
         /// `div`: `Div`ide
         ///
         /// Pops two numbers off of the stack and divides the first by the second,
@@ -531,7 +531,7 @@ pub mod svm {
         ///
         /// TODO: figure out what happens when you try to divide things that
         /// aren't numbers (maybe the compiler won't let this happen?).
-        InstDIV,
+        DIV,
         /// `fdiv`: `F`loating-point `div`ide
         ///
         /// Pops two numbers off of the stack and divides the first by the second,
@@ -542,7 +542,7 @@ pub mod svm {
         ///
         /// TODO: Not sure if there should be separate float and int divide words
         /// I guess the compiler can figure this out
-        InstFDIV,
+        FDIV,
         /// `mod`: `Mod`ulo
         ///
         /// Pops two numbers off of the stack and divides the first by the second,
@@ -550,35 +550,35 @@ pub mod svm {
         ///
         /// TODO: figure out what happens when you try to modulo things that
         /// aren't numbers (maybe the compiler won't let this happen?).
-        InstMOD,
+        MOD,
         /// `eq`: `Eq`uality of atoms
-        InstEQ,
+        EQ,
         /// `gt`: `G`reater `t`han
-        InstGT,
+        GT,
         /// `gte`: `G`reater `t`han or `e`qual
-        InstGTE,
+        GTE,
         /// `lt`: `L`ess `t`han
-        InstLT,
+        LT,
         /// `lte`: `L`ess `t`han or `e`qual
-        InstLTE,
+        LTE,
         /// `atom`: test if `atom`
         ///
         /// Pops an item from the stack and returns true if it's an atom, false
         /// otherwise
-        InstATOM,
+        ATOM,
         /// `car`: `C`ontents of `A`ddress `R`egister
         ///
         /// Pops a list from the stack and returns the list's `car` (head)
-        InstCAR,
+        CAR,
         /// `cdr`: `C`ontents of `D`ecrement `R`egister
         ///
         /// Pops a list from the stack and returns the list's `cdr` (tail)
-        InstCDR,
+        CDR,
         /// `cons`: `Cons`truct
         ///
         /// Pops an item and a list from the stack and returns the list, with
         /// the item prepended.
-        InstCONS,
+        CONS,
         // TODO: add some hardcoded I/O instructions here so that you can
         //  do I/O without farming everything out to `stdio`
     }
@@ -612,7 +612,7 @@ pub mod svm {
             let (next, new_control) = self.control.pop().unwrap();
             match next {
                 // NIL: pop an empty list onto the stack
-                SVMCell::InstCell(SVMInstruction::InstNIL) => {
+                SVMCell::InstCell(Inst::NIL) => {
                     State {
                         stack: self.stack.push(SVMCell::ListCell(box List::new())),
                         env: self.env,
@@ -621,7 +621,7 @@ pub mod svm {
                     }
                 }
                 // LDC: load constant
-                SVMCell::InstCell(SVMInstruction::InstLDC) => {
+                SVMCell::InstCell(Inst::LDC) => {
                     let (atom,newer_control) = new_control.pop().unwrap();
                     State {
                         stack: self.stack.push(atom),
@@ -631,7 +631,7 @@ pub mod svm {
                     }
                 },
                 // LD: load variable
-                SVMCell::InstCell(SVMInstruction::InstLD) => {
+                SVMCell::InstCell(Inst::LD) => {
                     let (top, newer_control) = new_control.pop().unwrap();
                     match top {
                         SVMCell::ListCell(
@@ -655,7 +655,7 @@ pub mod svm {
                 },
 
                 // LDF: load function
-                SVMCell::InstCell(SVMInstruction::InstLDF) => {
+                SVMCell::InstCell(Inst::LDF) => {
                     let (func, newer_control) = new_control.pop().unwrap();
                     State {
                         stack: self.stack.push(SVMCell::ListCell(box list!(func,self.env[1is].clone()))),
@@ -665,7 +665,7 @@ pub mod svm {
                     }
                 },
 
-                SVMCell::InstCell(SVMInstruction::InstJOIN) => {
+                SVMCell::InstCell(Inst::JOIN) => {
                     let (top, new_dump) = self.dump.pop().unwrap();
                     State {
                         stack: self.stack,
@@ -682,11 +682,11 @@ pub mod svm {
     /*
     /// Evaluates a program.
     ///
-    /// Evaluates a program represented as an `Iterator` of `SVMInstruction`s.
+    /// Evaluates a program represented as an `Iterator` of `Inst`s.
     /// Returns the final machine state at the end of execution
 
-    pub fn evalProgram(insts: Iterator<Item=SVMInstruction>) -> State {
-        insts.fold(State::new(), |last_state: State, inst: SVMInstruction| last_state.eval(inst));
+    pub fn evalProgram(insts: Iterator<Item=Inst>) -> State {
+        insts.fold(State::new(), |last_state: State, inst: Inst| last_state.eval(inst));
     }*/
 
     #[cfg(test)]
@@ -695,7 +695,7 @@ pub mod svm {
         use super::slist::Stack;
         use super::slist::List::{Cons,Nil};
         use super::State;
-        use super::{SVMInstruction, SVMCell, Atom};
+        use super::{Inst, SVMCell, Atom};
         use super::SVMCell::{AtomCell, ListCell, InstCell};
         use super::Atom::{SInt, Char, Float, Str};
 
@@ -713,7 +713,7 @@ pub mod svm {
             let mut state =  State {
                 stack: Stack::empty(),
                 env: Stack::empty(),
-                control: list!(InstCell(SVMInstruction::InstNIL),AtomCell(SInt(1))),
+                control: list!(InstCell(Inst::NIL),AtomCell(SInt(1))),
                 dump: Stack::empty()
             };
             assert_eq!(state.stack.peek(), None);
@@ -728,7 +728,7 @@ pub mod svm {
             state = State {
                 stack: state.stack,
                 env: state.env,
-                control: list!(InstCell(SVMInstruction::InstLDC),AtomCell(SInt(1))),
+                control: list!(InstCell(Inst::LDC),AtomCell(SInt(1))),
                 dump: state.dump
             };
             state = state.eval();
@@ -737,7 +737,7 @@ pub mod svm {
             state = State {
                 stack: state.stack,
                 env: state.env,
-                control: list!(InstCell(SVMInstruction::InstLDC),AtomCell(Char('a'))),
+                control: list!(InstCell(Inst::LDC),AtomCell(Char('a'))),
                 dump: state.dump
             };
             state = state.eval();
@@ -746,7 +746,7 @@ pub mod svm {
             state = State {
                 stack: state.stack,
                 env: state.env,
-                control: list!(InstCell(SVMInstruction::InstLDC),AtomCell(Float(1.0f64))),
+                control: list!(InstCell(Inst::LDC),AtomCell(Float(1.0f64))),
                 dump: state.dump
             };
             state = state.eval();
@@ -758,7 +758,7 @@ pub mod svm {
             let mut state = State {
                 stack: Stack::empty(),
                 env: list!(ListCell(box list!(AtomCell(Str(String::from_str("load me!"))),AtomCell(Str(String::from_str("don't load me!")))))),
-                control: list!(InstCell(SVMInstruction::InstLD),ListCell(box list!(AtomCell(SInt(1)),AtomCell(SInt(2))))),
+                control: list!(InstCell(Inst::LD),ListCell(box list!(AtomCell(SInt(1)),AtomCell(SInt(2))))),
                 dump: Stack::empty()
             };
             state = state.eval();
@@ -781,7 +781,7 @@ pub mod svm {
                         )
                     ),
                     ListCell(box list!(AtomCell(Str(String::from_str("don't load me!"))),AtomCell(Str(String::from_str("don't load me either!")))))),
-                control: list!(InstCell(SVMInstruction::InstLDF), ListCell(box list!(AtomCell(Str(String::from_str("i'm in the function")))))),
+                control: list!(InstCell(Inst::LDF), ListCell(box list!(AtomCell(Str(String::from_str("i'm in the function")))))),
                 dump: Stack::empty()
             };
             state = state.eval();
@@ -814,7 +814,7 @@ pub mod svm {
             let mut state = State {
                 stack: Stack::empty(),
                 env: Stack::empty(),
-                control: list!(InstCell(SVMInstruction::InstJOIN)),
+                control: list!(InstCell(Inst::JOIN)),
                 dump: list!(ListCell(box list!(
                         AtomCell(Str(String::from_str("load me!"))),
                         AtomCell(Str(String::from_str("load me too!")))
