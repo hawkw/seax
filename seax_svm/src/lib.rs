@@ -1,6 +1,7 @@
 #![crate_name = "seax_svm"]
 #![crate_type = "lib"]
 #![feature(box_syntax)]
+#![feature(core)]
 
 /// Contains the Seax Virtual Machine (SVM) and miscellaneous
 /// support code.
@@ -8,7 +9,7 @@ pub mod svm {
     use svm::slist::List;
     use svm::slist::List::{Cons,Nil};
     use svm::slist::Stack;
-    use std::iter::IteratorExt;
+    //use std::iter::IteratorExt;
     use std::fmt;
 
 
@@ -437,7 +438,7 @@ pub mod svm {
     }
 
     /// SVM instruction types
-    #[derive(Debug,Clone,PartialEq)]
+    #[derive(Debug,Copy,Clone,PartialEq)]
     pub enum SVMInstruction {
         /// `nil`
         ///
