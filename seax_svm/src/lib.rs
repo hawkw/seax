@@ -414,17 +414,29 @@ pub mod svm {
     /// SVM atom types.
     ///
     /// A VM atom can be either an unsigned int, signed int, float,
-    /// char, or string.
+    /// char, bool, or string.
     ///
     /// TODO: Strings could be implemented as char lists rather than
     /// Rust strings.
     #[derive(PartialEq,Clone,Debug)]
     pub enum Atom {
+        /// Unsigned integer atom (machine size)
         UInt(usize),
+        /// Signed integer atom (machine size)
         SInt(isize),
+        /// Floating point number atom (64-bits)
         Float(f64),
+        /// UTF-8 character atom
         Char(char),
+        /// String atom
+        ///
+        /// TODO: this should be implemented as a list of char atoms
         Str(String), // todo: string is uncopyable
+        /// Boolean atom
+        ///
+        /// The original SECD machine used 0 as false and 1 as true.
+        /// This is just to make my life slightly easier.
+        Bool(bool)
     }
 
     impl fmt::Display for Atom {
