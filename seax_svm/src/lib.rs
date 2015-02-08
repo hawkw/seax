@@ -1430,6 +1430,77 @@ pub mod svm {
         }
 
         #[test]
+        fn test_eval_eq () {
+            // ---- Unsigned int equality ----
+            let mut state = State {
+                stack: list!(AtomCell(UInt(3)), AtomCell(UInt(3))),
+                env: Stack::empty(),
+                control: list!(InstCell(EQ)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(UInt(1)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(EQ)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+            // ---- Signed int equality ----
+            state = State {
+                stack: list!(AtomCell(SInt(3)), AtomCell(SInt(3))),
+                env: Stack::empty(),
+                control: list!(InstCell(EQ)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(SInt(-2)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(EQ)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+
+            // ---- Float equality ----
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(Float(3.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(EQ)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(Float(-2.0)), AtomCell(Float(2.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(EQ)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+            state = State {
+                stack: list!(AtomCell(Float(2.11)), AtomCell(Float(2.1))),
+                env: Stack::empty(),
+                control: list!(InstCell(EQ)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+        }
+
+        #[test]
         fn test_atom_show () {
             let mut a: Atom;
 
