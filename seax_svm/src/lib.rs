@@ -11,7 +11,9 @@ pub mod svm {
     use svm::slist::Stack;
     //use std::iter::IteratorExt;
     use std::fmt;
-
+    use svm::Inst::*;
+    use svm::SVMCell::*;
+    use svm::Atom::*;
 
     /// Singly-linked list and stack implementations.
     ///
@@ -612,16 +614,16 @@ pub mod svm {
             let (next, new_control) = self.control.pop().unwrap();
             match next {
                 // NIL: pop an empty list onto the stack
-                SVMCell::InstCell(Inst::NIL) => {
+                InstCell(NIL) => {
                     State {
-                        stack: self.stack.push(SVMCell::ListCell(box List::new())),
+                        stack: self.stack.push(ListCell(box List::new())),
                         env: self.env,
                         control: new_control,
                         dump: self.dump
                     }
                 }
                 // LDC: load constant
-                SVMCell::InstCell(Inst::LDC) => {
+                InstCell(LDC) => {
                     let (atom,newer_control) = new_control.pop().unwrap();
                     State {
                         stack: self.stack.push(atom),
@@ -631,12 +633,12 @@ pub mod svm {
                     }
                 },
                 // LD: load variable
-                SVMCell::InstCell(Inst::LD) => {
+               InstCell(LD) => {
                     let (top, newer_control) = new_control.pop().unwrap();
                     match top {
-                        SVMCell::ListCell(
-                            box Cons(SVMCell::AtomCell(Atom::SInt(level)),
-                            box Cons(SVMCell::AtomCell(Atom::SInt(pos)),
+                       ListCell(
+                            box Cons(AtomCell(SInt(level)),
+                            box Cons(AtomCell(SInt(pos)),
                             box Nil))
                         ) => {
                             let environment = match self.env[level-1] {
@@ -655,17 +657,17 @@ pub mod svm {
                 },
 
                 // LDF: load function
-                SVMCell::InstCell(Inst::LDF) => {
+                InstCell(LDF) => {
                     let (func, newer_control) = new_control.pop().unwrap();
                     State {
-                        stack: self.stack.push(SVMCell::ListCell(box list!(func,self.env[1is].clone()))),
+                        stack: self.stack.push(ListCell(box list!(func,self.env[1is].clone()))),
                         env: self.env,
                         control: newer_control,
                         dump: self.dump
                     }
                 },
 
-                SVMCell::InstCell(Inst::JOIN) => {
+                InstCell(JOIN) => {
                     let (top, new_dump) = self.dump.pop().unwrap();
                     State {
                         stack: self.stack,
@@ -674,6 +676,7 @@ pub mod svm {
                         dump: new_dump
                     }
                 },
+                InstCell(ADD) => {unimplemented!() },
                 _ => { unimplemented!() }
             }
         }
