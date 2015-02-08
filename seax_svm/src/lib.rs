@@ -794,12 +794,12 @@ pub mod svm {
         fn test_eval_ld () {
             let mut state = State {
                 stack: Stack::empty(),
-                env: list!(ListCell(box list!(AtomCell(Str(String::from_str("load me!"))),AtomCell(Str(String::from_str("don't load me!")))))),
+                env: list!(ListCell(box list!(AtomCell(SInt(155)),AtomCell(UInt(388))))),
                 control: list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(1)),AtomCell(SInt(2))))),
                 dump: Stack::empty()
             };
             state = state.eval();
-            assert_eq!(state.stack.peek(), Some(&AtomCell(Str(String::from_str("load me!")))));
+            assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(155))));
         }
 
         #[test]
@@ -809,16 +809,18 @@ pub mod svm {
                 env: list!(
                     ListCell(
                         box list!(
-                            AtomCell(
-                                Str(
-                                    String::from_str("load me!")
-                                    )
-                                ),
-                            AtomCell(Str(String::from_str("load me too!")))
+                            AtomCell(SInt(155)),
+                            AtomCell(UInt(388))
                         )
                     ),
-                    ListCell(box list!(AtomCell(Str(String::from_str("don't load me!"))),AtomCell(Str(String::from_str("don't load me either!")))))),
-                control: list!(InstCell(LDF), ListCell(box list!(AtomCell(Str(String::from_str("i'm in the function")))))),
+                    ListCell(
+                        box list!(
+                            AtomCell(Float(6.66)),
+                            AtomCell(SInt(666))
+                            )
+                        )
+                    ),
+                control: list!(InstCell(LDF), ListCell(box list!(AtomCell(SInt(133))))),
                 dump: Stack::empty()
             };
             state = state.eval();
@@ -826,18 +828,14 @@ pub mod svm {
                 state.stack.peek(),
                 Some(&ListCell(
                     box list!(
-                        ListCell( box list!(
-                        AtomCell(
-                            Str(
-                                String::from_str("i'm in the function")
-                                )
-                            )
-                        )
-                        ),
                         ListCell(
                             box list!(
-                                AtomCell(Str(String::from_str("load me!"))),
-                                AtomCell(Str(String::from_str("load me too!")))
+                                AtomCell(SInt(133))
+                            )),
+                        ListCell(
+                            box list!(
+                                AtomCell(SInt(155)),
+                                AtomCell(UInt(388))
                             ),
                         )
                     )
