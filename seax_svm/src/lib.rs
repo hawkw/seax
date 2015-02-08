@@ -984,6 +984,19 @@ pub mod svm {
                         (_,_) =>  panic!("[MOD] TypeError: expected compatible operands, found (MOD {:?} {:?})", op1, op2)
                     }
                 },
+                InstCell(EQ) => {
+                    let (op1, new_stack) = self.stack.pop().unwrap();
+                    let (op2, newer_stack) = new_stack.pop().unwrap();
+                    match (op1.clone(), op2.clone()) {
+                        (AtomCell(a), AtomCell(b)) => State {
+                            stack: newer_stack.push(AtomCell(Bool(a == b))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                    (_,_) => unimplemented!()
+                    }
+                },
                 _ => { unimplemented!() }
             }
         }
