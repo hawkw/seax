@@ -424,7 +424,7 @@ pub mod svm {
         SInt(isize),
         Float(f64),
         Char(char),
-        Str(String),
+        Str(String), // todo: string is uncopyable
     }
 
     impl fmt::Display for Atom {
@@ -676,7 +676,27 @@ pub mod svm {
                         dump: new_dump
                     }
                 },
-                InstCell(ADD) => {unimplemented!() },
+
+                InstCell(ADD) => {
+                    let (op1, new_stack) = self.stack.pop().unwrap();
+                    let (op2, newer_stack) = new_stack.pop().unwrap();
+                    match (op1.clone(),op2.clone()) { // TODO: rather not clone every time I want to add two ints
+                        (AtomCell(SInt(a)), AtomCell(SInt(b))) => State {
+                            stack: newer_stack.push(AtomCell(SInt(a + b))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(UInt(a)), AtomCell(UInt(b))) => State {
+                            stack: newer_stack.push(AtomCell(UInt(a + b))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (_,_) =>  panic!("[ADD] TypeError: expected compatible operands, found (ADD {:?} {:?})", op1, op2)
+                    }
+
+                },
                 _ => { unimplemented!() }
             }
         }
@@ -697,10 +717,10 @@ pub mod svm {
         use super::slist;
         use super::slist::Stack;
         use super::slist::List::{Cons,Nil};
-        use super::State;
-        use super::{Inst, SVMCell, Atom};
-        use super::SVMCell::{AtomCell, ListCell, InstCell};
-        use super::Atom::{SInt, Char, Float, Str};
+        use super::{State, Atom};
+        use super::Inst::*;
+        use super::SVMCell::*;
+        use super::Atom::*;
 
         #[test]
         fn test_empty_state() {
@@ -716,12 +736,12 @@ pub mod svm {
             let mut state =  State {
                 stack: Stack::empty(),
                 env: Stack::empty(),
-                control: list!(InstCell(Inst::NIL),AtomCell(SInt(1))),
+                control: list!(InstCell(NIL),AtomCell(SInt(1))),
                 dump: Stack::empty()
             };
             assert_eq!(state.stack.peek(), None);
             state = state.eval();
-            assert_eq!(state.stack.peek(), Some(&SVMCell::ListCell(box Nil)));
+            assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
         }
 
         #[test]
@@ -731,7 +751,7 @@ pub mod svm {
             state = State {
                 stack: state.stack,
                 env: state.env,
-                control: list!(InstCell(Inst::LDC),AtomCell(SInt(1))),
+                control: list!(InstCell(LDC),AtomCell(SInt(1))),
                 dump: state.dump
             };
             state = state.eval();
@@ -740,7 +760,7 @@ pub mod svm {
             state = State {
                 stack: state.stack,
                 env: state.env,
-                control: list!(InstCell(Inst::LDC),AtomCell(Char('a'))),
+                control: list!(InstCell(LDC),AtomCell(Char('a'))),
                 dump: state.dump
             };
             state = state.eval();
@@ -749,7 +769,7 @@ pub mod svm {
             state = State {
                 stack: state.stack,
                 env: state.env,
-                control: list!(InstCell(Inst::LDC),AtomCell(Float(1.0f64))),
+                control: list!(InstCell(LDC),AtomCell(Float(1.0f64))),
                 dump: state.dump
             };
             state = state.eval();
@@ -761,7 +781,7 @@ pub mod svm {
             let mut state = State {
                 stack: Stack::empty(),
                 env: list!(ListCell(box list!(AtomCell(Str(String::from_str("load me!"))),AtomCell(Str(String::from_str("don't load me!")))))),
-                control: list!(InstCell(Inst::LD),ListCell(box list!(AtomCell(SInt(1)),AtomCell(SInt(2))))),
+                control: list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(1)),AtomCell(SInt(2))))),
                 dump: Stack::empty()
             };
             state = state.eval();
@@ -784,7 +804,7 @@ pub mod svm {
                         )
                     ),
                     ListCell(box list!(AtomCell(Str(String::from_str("don't load me!"))),AtomCell(Str(String::from_str("don't load me either!")))))),
-                control: list!(InstCell(Inst::LDF), ListCell(box list!(AtomCell(Str(String::from_str("i'm in the function")))))),
+                control: list!(InstCell(LDF), ListCell(box list!(AtomCell(Str(String::from_str("i'm in the function")))))),
                 dump: Stack::empty()
             };
             state = state.eval();
@@ -817,7 +837,7 @@ pub mod svm {
             let mut state = State {
                 stack: Stack::empty(),
                 env: Stack::empty(),
-                control: list!(InstCell(Inst::JOIN)),
+                control: list!(InstCell(JOIN)),
                 dump: list!(ListCell(box list!(
                         AtomCell(Str(String::from_str("load me!"))),
                         AtomCell(Str(String::from_str("load me too!")))
@@ -832,22 +852,177 @@ pub mod svm {
         }
 
         #[test]
+        fn test_eval_add () {
+            // ---- Unsigned int addition ----
+            let mut state = State {
+                stack: list!(AtomCell(UInt(1)), AtomCell(UInt(1))),
+                env: Stack::empty(),
+                control: list!(InstCell(ADD)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(2))));
+
+            // ---- Signed int addition ----
+            state = State {
+                stack: list!(AtomCell(SInt(-1)), AtomCell(SInt(-1))),
+                env: Stack::empty(),
+                control: list!(InstCell(ADD)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-2))));
+
+            // ---- Float-float addition ----
+            state = State {
+                stack: list!(AtomCell(Float(1.5)), AtomCell(Float(1.5))),
+                env: Stack::empty(),
+                control: list!(InstCell(ADD)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0))));
+
+            // ---- Float-int type lifting addition ----
+            state = State {
+                stack: list!(AtomCell(Float(1.5)), AtomCell(SInt(1))),
+                env: Stack::empty(),
+                control: list!(InstCell(ADD)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(2.5))));
+            state = State {
+                stack: list!(AtomCell(Float(3.5)), AtomCell(UInt(1))),
+                env: Stack::empty(),
+                control: list!(InstCell(ADD)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(4.5))));
+        }
+
+        #[test]
+        fn test_eval_sub () {
+            // ---- Unsigned int subtraction ----
+            let mut state = State {
+                stack: list!(AtomCell(UInt(3)), AtomCell(UInt(3))),
+                env: Stack::empty(),
+                control: list!(InstCell(SUB)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(0))));
+
+            // ---- Signed int subtraction----
+            state = State {
+                stack: list!(AtomCell(SInt(-3)), AtomCell(SInt(3))),
+                env: Stack::empty(),
+                control: list!(InstCell(SUB)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-6))));
+
+            // ---- Float-float subtraction ----
+            state = State {
+                stack: list!(AtomCell(Float(1.5)), AtomCell(Float(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(SUB)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(-0.5))));
+
+            // ---- Float-int type lifting subtraction ----
+            state = State {
+                stack: list!(AtomCell(Float(2.5)), AtomCell(SInt(-2))),
+                env: Stack::empty(),
+                control: list!(InstCell(SUB)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(4.5))));
+
+            state = State {
+                stack: list!(AtomCell(Float(3.5)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(SUB)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
+        }
+
+        #[test]
+        fn test_eval_mul () {
+            // ---- Unsigned int multiplication ----
+            let mut state = State {
+                stack: list!(AtomCell(UInt(2)), AtomCell(UInt(3))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(6))));
+
+            // ---- Signed int multiplication----
+            state = State {
+                stack: list!(AtomCell(SInt(-2)), AtomCell(SInt(-3))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-6))));
+
+            // ---- Float-float multiplication ----
+            state = State {
+                stack: list!(AtomCell(Float(1.5)), AtomCell(Float(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0))));
+
+            // ---- Float-int type lifting multiplication ----
+            state = State {
+                stack: list!(AtomCell(Float(1.5)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0))));
+
+            state = State {
+                stack: list!(AtomCell(Float(3.5)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(7.0))));
+        }
+
+        #[test]
         fn test_atom_show () {
             let mut a: Atom;
 
-            a = Atom::Char('a');
+            a = Char('a');
             assert_eq!(format!("{}", a), "'a'");
 
-            a = Atom::UInt(1us);
+            a = UInt(1us);
             assert_eq!(format!("{}", a), "1us");
 
-            a = Atom::SInt(42is);
+            a = SInt(42is);
             assert_eq!(format!("{}", a), "42is");
 
-            a = Atom::Float(5.55f64);
+            a = Float(5.55f64);
             assert_eq!(format!("{}", a), "5.55f64");
 
-            a = Atom::Str(String::from_str("help I'm trapped in a SECD virtual machine!"));
+            a = Str(String::from_str("help I'm trapped in a SECD virtual machine!"));
             assert_eq!(format!("{}", a), "\"help I'm trapped in a SECD virtual machine!\"");
         }
     }
