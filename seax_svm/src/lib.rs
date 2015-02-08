@@ -446,7 +446,8 @@ pub mod svm {
                 &Atom::SInt(value) => write!(f, "{}is", value),
                 &Atom::Float(value) => write!(f, "{}f64", value),
                 &Atom::Char(value) => write!(f, "'{}'", value),
-                &Atom::Str(ref value) => write!(f, "\"{}\"", value)
+                &Atom::Str(ref value) => write!(f, "\"{}\"", value),
+                &Atom::Bool(value) => write!(f, "{}", value)
             }
         }
     }
@@ -608,7 +609,7 @@ pub mod svm {
     impl State {
 
         /// Creates a new empty state
-        fn new() -> State {
+        pub fn new() -> State {
             State {
                 stack: Stack::empty(),
                 env: Stack::empty(),
@@ -622,7 +623,7 @@ pub mod svm {
         /// Evaluates an instruction against a state, returning a new state.
         /// TODO: rewrite me to use the next instruction on the control stack,
         /// rather than a parameter.
-        fn eval(self) -> State {
+        pub fn eval(self) -> State {
             let (next, new_control) = self.control.pop().unwrap();
             match next {
                 // NIL: pop an empty list onto the stack
