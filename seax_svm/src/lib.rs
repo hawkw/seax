@@ -1134,6 +1134,58 @@ pub mod svm {
         }
 
         #[test]
+        fn test_eval_div () {
+            // ---- Unsigned int divison ----
+            let mut state = State {
+                stack: list!(AtomCell(UInt(6)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(DIV)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(3))));
+
+            // ---- Signed int divison ----
+            state = State {
+                stack: list!(AtomCell(SInt(-6)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-3))));
+
+            // ---- Float-float divison ----
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(Float(2.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
+
+            // ---- Float-int type lifting divison ----
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
+
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
+        }
+
+        #[test]
         fn test_atom_show () {
             let mut a: Atom;
 
