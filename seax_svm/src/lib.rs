@@ -870,7 +870,56 @@ pub mod svm {
                             control: new_control,
                             dump: self.dump
                         },
-                        (_,_) =>  panic!("[DIV] TypeError: expected compatible operands, found (DIV{:?} {:?})", op1, op2)
+                        (_,_) =>  panic!("[DIV] TypeError: expected compatible operands, found (DIV {:?} {:?})", op1, op2)
+                    }
+                },
+                InstCell(FDIV) => {
+                    let (op1, new_stack) = self.stack.pop().unwrap();
+                    let (op2, newer_stack) = new_stack.pop().unwrap();
+                    match (op1.clone(),op2.clone()) { // TODO: rather not clone every time I want to divide two ints
+                        (AtomCell(SInt(a)), AtomCell(SInt(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a as f64 / b as f64))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(UInt(a)), AtomCell(UInt(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a as f64 / b as f64))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(Float(a)), AtomCell(Float(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a as f64 / b as f64))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a / b as f64))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(Float(a)), AtomCell(UInt(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a / b as f64))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(SInt(a)), AtomCell(Float(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a as f64 / b))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(UInt(a)), AtomCell(Float(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a as f64 / b))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (_,_) =>  panic!("[FDIV] TypeError: expected compatible operands, found (FDIV {:?} {:?})", op1, op2)
                     }
                 },
                 _ => { unimplemented!() }
