@@ -1001,7 +1001,6 @@ pub mod svm {
 
     #[cfg(test)]
     mod tests {
-        use super::slist;
         use super::slist::Stack;
         use super::slist::List::{Cons,Nil};
         use super::{State, Atom};
