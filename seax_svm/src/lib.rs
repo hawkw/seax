@@ -821,7 +821,7 @@ pub mod svm {
                             control: new_control,
                             dump: self.dump
                         },
-                        (_,_) =>  panic!("[MUL] TypeError: expected compatible operands, found (SUB {:?} {:?})", op1, op2)
+                        (_,_) =>  panic!("[MUL] TypeError: expected compatible operands, found (MUL {:?} {:?})", op1, op2)
                     }
                 },
                 _ => { unimplemented!() }
@@ -1149,7 +1149,7 @@ pub mod svm {
             state = State {
                 stack: list!(AtomCell(SInt(-6)), AtomCell(SInt(2))),
                 env: Stack::empty(),
-                control: list!(InstCell(MUL)),
+                control: list!(InstCell(DIV)),
                 dump: Stack::empty(),
             };
             state = state.eval();
@@ -1159,7 +1159,7 @@ pub mod svm {
             state = State {
                 stack: list!(AtomCell(Float(3.0)), AtomCell(Float(2.0))),
                 env: Stack::empty(),
-                control: list!(InstCell(MUL)),
+                control: list!(InstCell(DIV)),
                 dump: Stack::empty(),
             };
             state = state.eval();
@@ -1169,7 +1169,7 @@ pub mod svm {
             state = State {
                 stack: list!(AtomCell(Float(3.0)), AtomCell(SInt(2))),
                 env: Stack::empty(),
-                control: list!(InstCell(MUL)),
+                control: list!(InstCell(DIV)),
                 dump: Stack::empty(),
             };
             state = state.eval();
@@ -1178,7 +1178,7 @@ pub mod svm {
             state = State {
                 stack: list!(AtomCell(Float(3.0)), AtomCell(UInt(2))),
                 env: Stack::empty(),
-                control: list!(InstCell(MUL)),
+                control: list!(InstCell(DIV)),
                 dump: Stack::empty(),
             };
             state = state.eval();
