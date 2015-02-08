@@ -44,10 +44,7 @@ pub mod svm {
     /// SVM atom types.
     ///
     /// A VM atom can be either an unsigned int, signed int, float,
-    /// char, bool, or string.
-    ///
-    /// TODO: Strings could be implemented as char lists rather than
-    /// Rust strings.
+    /// char, or bool.
     #[derive(PartialEq,PartialOrd,Clone,Debug)]
     pub enum Atom {
         /// Unsigned integer atom (machine size)
@@ -58,12 +55,6 @@ pub mod svm {
         Float(f64),
         /// UTF-8 character atom
         Char(char),
-        /// String atom
-        ///
-        /// TODO: this should be implemented as a list of char atoms,
-        /// I'm just too lazy to remove this since it would break a bunch
-        /// of tests which I don't really want to rewrite.
-        Str(String), // todo: string is uncopyable
         /// Boolean atom
         ///
         /// The original SECD machine used 0 as false and 1 as true.
@@ -78,7 +69,6 @@ pub mod svm {
                 &Atom::SInt(value) => write!(f, "{}is", value),
                 &Atom::Float(value) => write!(f, "{}f64", value),
                 &Atom::Char(value) => write!(f, "'{}'", value),
-                &Atom::Str(ref value) => write!(f, "\"{}\"", value),
                 &Atom::Bool(value) => write!(f, "{}", value)
             }
         }
@@ -851,15 +841,15 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(JOIN)),
                 dump: list!(ListCell(box list!(
-                        AtomCell(Str(String::from_str("load me!"))),
-                        AtomCell(Str(String::from_str("load me too!")))
+                        AtomCell(SInt(1)),
+                        AtomCell(SInt(2))
                     )))
             };
             state = state.eval();
             assert_eq!(state.dump.peek(), None);
             assert_eq!(state.control.peek(), Some(&ListCell(box list!(
-                    AtomCell(Str(String::from_str("load me!"))),
-                    AtomCell(Str(String::from_str("load me too!")))
+                        AtomCell(SInt(1)),
+                        AtomCell(SInt(2))
                     ))))
         }
 
@@ -1458,9 +1448,6 @@ pub mod svm {
 
             a = Float(5.55f64);
             assert_eq!(format!("{}", a), "5.55f64");
-
-            a = Str(String::from_str("help I'm trapped in a SECD virtual machine!"));
-            assert_eq!(format!("{}", a), "\"help I'm trapped in a SECD virtual machine!\"");
         }
     }
 
