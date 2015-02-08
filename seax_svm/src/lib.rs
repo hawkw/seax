@@ -516,7 +516,7 @@ pub mod svm {
         ///
         /// TODO: figure out what happens when you try to subtract things that
         /// aren't numbers (maybe the compiler won't let this happen?).
-        SUM,
+        SUB,
         /// `mul`: `Mul`tiply
         ///
         /// Pops two numbers off of the stack and multiplies them, pushing the
@@ -926,7 +926,7 @@ pub mod svm {
 
             // ---- Float-float subtraction ----
             state = State {
-                stack: list!(AtomCell(Float(1.5)), AtomCell(Float(2))),
+                stack: list!(AtomCell(Float(1.5)), AtomCell(Float(2.0))),
                 env: Stack::empty(),
                 control: list!(InstCell(SUB)),
                 dump: Stack::empty(),
@@ -978,7 +978,7 @@ pub mod svm {
 
             // ---- Float-float multiplication ----
             state = State {
-                stack: list!(AtomCell(Float(1.5)), AtomCell(Float(2))),
+                stack: list!(AtomCell(Float(1.5)), AtomCell(Float(2.0))),
                 env: Stack::empty(),
                 control: list!(InstCell(MUL)),
                 dump: Stack::empty(),
