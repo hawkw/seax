@@ -1144,6 +1144,223 @@ pub mod svm {
         }
 
         #[test]
+        fn test_eval_gt () {
+            // ---- Unsigned int greater-than ----
+            let mut state = State {
+                stack: list!(AtomCell(UInt(3)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(GT)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(UInt(1)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(GT)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+            // ---- Signed int greater-than ----
+            state = State {
+                stack: list!(AtomCell(SInt(3)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(GT)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(SInt(-2)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(GT)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+
+            // ---- Float greater-than----
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(Float(1.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(GT)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(Float(-2.0)), AtomCell(Float(2.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(GT)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+            state = State {
+                stack: list!(AtomCell(Float(2.11)), AtomCell(Float(2.1))),
+                env: Stack::empty(),
+                control: list!(InstCell(GT)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            // ---- Mixed type greater-than ---
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(GT)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(Float(1.0)), AtomCell(SInt(1))),
+                env: Stack::empty(),
+                control: list!(InstCell(GT)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+            state = State {
+                stack: list!(AtomCell(UInt(1)), AtomCell(Float(2.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(GT)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+        }
+
+        #[test]
+        fn test_eval_gte () {
+            // ---- Unsigned int greater-than ----
+            let mut state = State {
+                stack: list!(AtomCell(UInt(3)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(UInt(1)), AtomCell(UInt(1))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(UInt(1)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+
+            // ---- Signed int greater-than ----
+            state = State {
+                stack: list!(AtomCell(SInt(3)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(SInt(1)), AtomCell(SInt(1))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(SInt(1)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+
+            // ---- Float greater-than----
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(Float(2.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(Float(1.0)), AtomCell(Float(1.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(Float(1.0)), AtomCell(Float(2.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+            // ---- Mixed type greater-than-equal ---
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(Float(1.0)), AtomCell(SInt(1))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(UInt(1)), AtomCell(Float(2.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(GTE)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+        }
+
+        #[test]
         fn test_atom_show () {
             let mut a: Atom;
 
