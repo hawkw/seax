@@ -890,7 +890,7 @@ pub mod svm {
                             dump: self.dump
                         },
                         (AtomCell(Float(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 / b as f64))),
+                            stack: newer_stack.push(AtomCell(Float(a / b))),
                             env: self.env,
                             control: new_control,
                             dump: self.dump
