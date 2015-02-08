@@ -60,7 +60,9 @@ pub mod svm {
         Char(char),
         /// String atom
         ///
-        /// TODO: this should be implemented as a list of char atoms
+        /// TODO: this should be implemented as a list of char atoms,
+        /// I'm just too lazy to remove this since it would break a bunch
+        /// of tests which I don't really want to rewrite.
         Str(String), // todo: string is uncopyable
         /// Boolean atom
         ///
@@ -663,6 +665,46 @@ pub mod svm {
                         },
                         (AtomCell(a), AtomCell(b)) => State {
                             stack: newer_stack.push(AtomCell(Bool(a > b))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                    (_,_) => unimplemented!()
+                    }
+                },
+                InstCell(GTE) => {
+                    // TODO: currently floats are special cased, this should be
+                    // fixed with a custom implementation of `PartialOrd` for
+                    // Atom.
+                    let (op1, new_stack) = self.stack.pop().unwrap();
+                    let (op2, newer_stack) = new_stack.pop().unwrap();
+                    match (op1.clone(), op2.clone()) {
+                        (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
+                            stack: newer_stack.push(AtomCell(Bool(a >= b as f64))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(Float(a)), AtomCell(UInt(b))) => State {
+                            stack: newer_stack.push(AtomCell(Bool(a >= b as f64))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(SInt(a)), AtomCell(Float(b))) => State {
+                            stack: newer_stack.push(AtomCell(Bool(a as f64 >= b ))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(UInt(a)), AtomCell(Float(b))) => State {
+                            stack: newer_stack.push(AtomCell(Bool(a as f64 >= b ))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(a), AtomCell(b)) => State {
+                            stack: newer_stack.push(AtomCell(Bool(a >= b))),
                             env: self.env,
                             control: new_control,
                             dump: self.dump
