@@ -1201,7 +1201,7 @@ pub mod svm {
             state = State {
                 stack: list!(AtomCell(SInt(-3)), AtomCell(SInt(2))),
                 env: Stack::empty(),
-                control: list!(InstCell(MUL)),
+                control: list!(InstCell(FDIV)),
                 dump: Stack::empty(),
             };
             state = state.eval();
@@ -1211,11 +1211,63 @@ pub mod svm {
             state = State {
                 stack: list!(AtomCell(Float(3.0)), AtomCell(Float(2.0))),
                 env: Stack::empty(),
-                control: list!(InstCell(MUL)),
+                control: list!(InstCell(FDIV)),
                 dump: Stack::empty(),
             };
             state = state.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
+        }
+
+        #[test]
+        fn test_eval_mod () {
+            // ---- Unsigned int modulus ----
+            let mut state = State {
+                stack: list!(AtomCell(UInt(3)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MOD)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(3%2))));
+
+            // ---- Signed int modulus ----
+            state = State {
+                stack: list!(AtomCell(SInt(-3)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MOD)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-3%2))));
+
+            // ---- Float-float modulus---
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(Float(2.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(MOD)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0%2.0))));
+
+            // ---- Float-int type lifting modulus----
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MOD)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0%2.0))));
+
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MOD)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0%2.0))));
         }
 
         #[test]
