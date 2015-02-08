@@ -1186,6 +1186,39 @@ pub mod svm {
         }
 
         #[test]
+        fn test_eval_fdiv () {
+            // ---- Unsigned int divison ----
+            let mut state = State {
+                stack: list!(AtomCell(UInt(3)), AtomCell(UInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(FDIV)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
+
+            // ---- Signed int divison ----
+            state = State {
+                stack: list!(AtomCell(SInt(-3)), AtomCell(SInt(2))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(-1.5))));
+
+            // ---- Float-float divison ---
+            state = State {
+                stack: list!(AtomCell(Float(3.0)), AtomCell(Float(2.0))),
+                env: Stack::empty(),
+                control: list!(InstCell(MUL)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
+        }
+
+        #[test]
         fn test_atom_show () {
             let mut a: Atom;
 
