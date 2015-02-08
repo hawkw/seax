@@ -693,6 +693,36 @@ pub mod svm {
                             control: new_control,
                             dump: self.dump
                         },
+                        (AtomCell(Float(a)), AtomCell(Float(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a + b))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a + b as f64))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(Float(a)), AtomCell(UInt(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a + b as f64))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(SInt(a)), AtomCell(Float(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a as f64 + b))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        (AtomCell(UInt(a)), AtomCell(Float(b))) => State {
+                            stack: newer_stack.push(AtomCell(Float(a as f64 + b))),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
                         (_,_) =>  panic!("[ADD] TypeError: expected compatible operands, found (ADD {:?} {:?})", op1, op2)
                     }
 
