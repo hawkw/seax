@@ -1,1 +1,6 @@
 language: rust
+script:
+  - cargo build
+  - cargo test
+  - cargo test -p seax_svm
+  - cargo test -p seax_scheme
