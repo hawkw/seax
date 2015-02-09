@@ -156,6 +156,49 @@ pub mod svm {
                         _ => panic!("[SUB]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
+                InstCell(FDIV) => {
+                    let (op1, new_stack) = self.stack.pop().unwrap();
+                    match op1 {
+                        AtomCell(a) => {
+                            let (op2, newer_stack) = new_stack.pop().unwrap();
+                            match op2 {
+                                AtomCell(b) => State {
+                                    stack: newer_stack.push(AtomCell(
+                                        match (a, b) {
+                                            // same type: coerce to float
+                                            (SInt(a), SInt(b))      => Float(a as f64 / b as f64),
+                                            (UInt(a), UInt(b))      => Float(a as f64 / b as f64),
+                                            (Float(a), Float(b))    => Float(a / b),
+                                            // float + int: coerce to float
+                                            (Float(a), SInt(b))     => Float(a / b as f64),
+                                            (Float(a), UInt(b))     => Float(a / b as f64),
+                                            (SInt(a), Float(b))     => Float(a as f64 / b),
+                                            (UInt(a), Float(b))     => Float(a as f64 / b),
+                                            // uint + sint: coerce to float
+                                            (UInt(a), SInt(b))      => Float(a as f64 / b as f64),
+                                            (SInt(a), UInt(b))      => Float(a as f64 / b as f64),
+                                            // char + any: coerce to int -> float
+                                            // but if you ever actually do this, then ...wat?
+                                            (Char(a), Char(b))      => Float(a as u8 as f64 / b as u8 as f64),
+                                            (Char(a), UInt(b))      => Float(a as u8 as f64 / b as f64),
+                                            (Char(a), SInt(b))      => Float(a as u8 as f64 / b as f64),
+                                            (Char(a), Float(b))     => Float(a as u8 as f64 / b as f64),
+                                            (UInt(a), Char(b))      => Float(a as f64 / b as u8 as f64),
+                                            (SInt(a), Char(b))      => Float(a as f64 / b as u8 as f64),
+                                            (Float(a), Char(b))     => Float(a as f64 / b as u8 as f64),
+                                            (_, _)                  => panic!("TypeError: Unsupported operands {:?} * {:?}", a,b)
+                                        }
+                                        )),
+                                    env: self.env,
+                                    control: new_control,
+                                    dump: self.dump
+                                },
+                                b => panic!("[FDIV] TypeError: expected compatible operands, found (DIV {:?} {:?})", a, b)
+                            }
+                        },
+                        _ => panic!("[FDIV]: Expected first operand to be atom, found list or instruction"),
+                    }
+                },
                 InstCell(DIV) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     match op1 {
