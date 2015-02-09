@@ -43,9 +43,9 @@ pub enum Atom {
 impl fmt::Display for Atom {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            &Atom::UInt(value) => write!(f, "{}us", value),
-            &Atom::SInt(value) => write!(f, "{}is", value),
-            &Atom::Float(value) => write!(f, "{}f64", value),
+            &Atom::UInt(value) => write!(f, "{}", value),
+            &Atom::SInt(value) => write!(f, "{}", value),
+            &Atom::Float(value) => write!(f, "{}", value),
             &Atom::Char(value) => write!(f, "'{}'", value),
             &Atom::Bool(value) => write!(f, "{}", value)
         }
@@ -371,12 +371,19 @@ mod tests {
         assert_eq!(format!("{}", a), "'a'");
 
         a = UInt(1us);
-        assert_eq!(format!("{}", a), "1us");
+        assert_eq!(format!("{}", a), "1");
 
         a = SInt(42is);
-        assert_eq!(format!("{}", a), "42is");
+        assert_eq!(format!("{}", a), "42");
+
+        a = SInt(-1is);
+        assert_eq!(format!("{}", a), "-1");
 
         a = Float(5.55f64);
-        assert_eq!(format!("{}", a), "5.55f64");
+        assert_eq!(format!("{}", a), "5.55");
+
+        a = Float(1f64);
+        assert_eq!(format!("{}", a), "1");
+
     }
 }
