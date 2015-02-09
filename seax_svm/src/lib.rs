@@ -138,6 +138,78 @@ pub mod svm {
                         _ => panic!("[ADD]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
+                InstCell(SUB) => {
+                    let (op1, new_stack) = self.stack.pop().unwrap();
+                    match op1 {
+                        AtomCell(a) => {
+                            let (op2, newer_stack) = new_stack.pop().unwrap();
+                            match op2 {
+                                AtomCell(b) => State {
+                                    stack: newer_stack.push(AtomCell(a - b)),
+                                    env: self.env,
+                                    control: new_control,
+                                    dump: self.dump
+                                },
+                                b => panic!("[SUB] TypeError: expected compatible operands, found (SUB {:?} {:?})", a, b)
+                            }
+                        },
+                        _ => panic!("[SUB]: Expected first operand to be atom, found list or instruction"),
+                    }
+                },
+                InstCell(DIV) => {
+                    let (op1, new_stack) = self.stack.pop().unwrap();
+                    match op1 {
+                        AtomCell(a) => {
+                            let (op2, newer_stack) = new_stack.pop().unwrap();
+                            match op2 {
+                                AtomCell(b) => State {
+                                    stack: newer_stack.push(AtomCell(a / b)),
+                                    env: self.env,
+                                    control: new_control,
+                                    dump: self.dump
+                                },
+                                b => panic!("[DIV] TypeError: expected compatible operands, found (DIV {:?} {:?})", a, b)
+                            }
+                        },
+                        _ => panic!("[DIV]: Expected first operand to be atom, found list or instruction"),
+                    }
+                },
+                InstCell(MUL) => {
+                    let (op1, new_stack) = self.stack.pop().unwrap();
+                    match op1 {
+                        AtomCell(a) => {
+                            let (op2, newer_stack) = new_stack.pop().unwrap();
+                            match op2 {
+                                AtomCell(b) => State {
+                                    stack: newer_stack.push(AtomCell(a * b)),
+                                    env: self.env,
+                                    control: new_control,
+                                    dump: self.dump
+                                },
+                                b => panic!("[MUL] TypeError: expected compatible operands, found (MUL {:?} {:?})", a, b)
+                            }
+                        },
+                        _ => panic!("[MUL]: Expected first operand to be atom, found list or instruction"),
+                    }
+                },
+                InstCell(MOD) => {
+                    let (op1, new_stack) = self.stack.pop().unwrap();
+                    match op1 {
+                        AtomCell(a) => {
+                            let (op2, newer_stack) = new_stack.pop().unwrap();
+                            match op2 {
+                                AtomCell(b) => State {
+                                    stack: newer_stack.push(AtomCell(a % b)),
+                                    env: self.env,
+                                    control: new_control,
+                                    dump: self.dump
+                                },
+                                b => panic!("[MOD] TypeError: expected compatible operands, found (MOD {:?} {:?})", a, b)
+                            }
+                        },
+                        _ => panic!("[MOD]: Expected first operand to be atom, found list or instruction"),
+                    }
+                },
                 InstCell(EQ) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     let (op2, newer_stack) = new_stack.pop().unwrap();
