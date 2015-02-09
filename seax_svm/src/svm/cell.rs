@@ -117,6 +117,99 @@ impl ops::Sub for Atom {
 
 }
 
+impl ops::Div for Atom {
+    type Output = Atom;
+
+    fn div(self, other: Atom) -> Atom {
+        match (self, other) {
+            // same type:  no coercion
+            (SInt(a), SInt(b))      => SInt(a / b),
+            (UInt(a), UInt(b))      => UInt(a / b),
+            (Float(a), Float(b))    => Float(a / b),
+            (Char(a), Char(b))      => Char((a as u8 / b as u8) as char),
+            // float + int: coerce to float
+            (Float(a), SInt(b))     => Float(a / b as f64),
+            (Float(a), UInt(b))     => Float(a / b as f64),
+            (SInt(a), Float(b))     => Float(a as f64 / b),
+            (UInt(a), Float(b))     => Float(a as f64 / b),
+            // uint + sint: coerce to sint
+            (UInt(a), SInt(b))      => SInt(a as isize / b),
+            (SInt(a), UInt(b))      => SInt(a / b as isize),
+            // char + any: coerce to char
+            (Char(a), UInt(b))      => Char((a as u8 / b as u8) as char),
+            (Char(a), SInt(b))      => Char((a as u8 / b as u8) as char),
+            (Char(a), Float(b))     => Char((a as u8 / b as u8) as char),
+            (UInt(a), Char(b))      => Char((a as u8 / b as u8) as char),
+            (SInt(a), Char(b))      => Char((a as u8 / b as u8) as char),
+            (Float(a), Char(b))     => Char((a as u8 / b as u8) as char),
+            (_, _)                  => panic!("TypeError: Unsupported operands {:?} / {:?}", self,other)
+        }
+    }
+
+}
+
+impl ops::Mul for Atom {
+    type Output = Atom;
+
+    fn mul(self, other: Atom) -> Atom {
+        match (self, other) {
+            // same type:  no coercion
+            (SInt(a), SInt(b))      => SInt(a * b),
+            (UInt(a), UInt(b))      => UInt(a * b),
+            (Float(a), Float(b))    => Float(a * b),
+            (Char(a), Char(b))      => Char((a as u8 * b as u8) as char),
+            // float + int: coerce to float
+            (Float(a), SInt(b))     => Float(a * b as f64),
+            (Float(a), UInt(b))     => Float(a * b as f64),
+            (SInt(a), Float(b))     => Float(a as f64* b),
+            (UInt(a), Float(b))     => Float(a as f64* b),
+            // uint + sint: coerce to sint
+            (UInt(a), SInt(b))      => SInt(a as isize * b),
+            (SInt(a), UInt(b))      => SInt(a * b as isize),
+            // char + any: coerce to char
+            (Char(a), UInt(b))      => Char((a as u8 * b as u8) as char),
+            (Char(a), SInt(b))      => Char((a as u8 * b as u8) as char),
+            (Char(a), Float(b))     => Char((a as u8 * b as u8) as char),
+            (UInt(a), Char(b))      => Char((a as u8 * b as u8) as char),
+            (SInt(a), Char(b))      => Char((a as u8 * b as u8) as char),
+            (Float(a), Char(b))     => Char((a as u8 * b as u8) as char),
+            (_, _)                  => panic!("TypeError: Unsupported operands {:?} * {:?}", self,other)
+        }
+    }
+
+}
+
+impl ops::Rem for Atom {
+    type Output = Atom;
+
+    fn rem(self, other: Atom) -> Atom {
+        match (self, other) {
+            // same type:  no coercion
+            (SInt(a), SInt(b))      => SInt(a % b),
+            (UInt(a), UInt(b))      => UInt(a % b),
+            (Float(a), Float(b))    => Float(a % b),
+            (Char(a), Char(b))      => Char((a as u8 % b as u8) as char),
+            // float + int: coerce to float
+            (Float(a), SInt(b))     => Float(a % b as f64),
+            (Float(a), UInt(b))     => Float(a % b as f64),
+            (SInt(a), Float(b))     => Float(a as f64 % b),
+            (UInt(a), Float(b))     => Float(a as f64 % b),
+            // uint + sint: coerce to sint
+            (UInt(a), SInt(b))      => SInt(a as isize % b),
+            (SInt(a), UInt(b))      => SInt(a % b as isize),
+            // char + any: coerce to char
+            (Char(a), UInt(b))      => Char((a as u8 % b as u8) as char),
+            (Char(a), SInt(b))      => Char((a as u8 % b as u8) as char),
+            (Char(a), Float(b))     => Char((a as u8 % b as u8) as char),
+            (UInt(a), Char(b))      => Char((a as u8 % b as u8) as char),
+            (SInt(a), Char(b))      => Char((a as u8 % b as u8) as char),
+            (Float(a), Char(b))     => Char((a as u8 % b as u8) as char),
+            (_, _)                  => panic!("TypeError: Unsupported operands {:?} % {:?}", self,other)
+        }
+    }
+
+}
+
 /// SVM instruction types
 #[derive(Debug,Copy,Clone,PartialEq)]
 pub enum Inst {
