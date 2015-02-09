@@ -1280,7 +1280,9 @@ pub mod svm {
                 dump: Stack::empty(),
             };
             state = state.eval();
-            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+            assert_eq!(state.stack.peek(), Some(&AtomCell(
+                Bool(1.0 <= 1)) // TODO: this expects wrong float behaviour, fix
+            ));
 
             state = State {
                 stack: list!(AtomCell(UInt(1)), AtomCell(Float(2.0))),
