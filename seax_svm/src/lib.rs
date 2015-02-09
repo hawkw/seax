@@ -11,6 +11,7 @@ pub mod svm {
     pub use self::slist::Stack;
     //use std::iter::IteratorExt;
     use std::fmt;
+    use std::ops;
     use svm::Inst::*;
     use svm::SVMCell::*;
     use svm::Atom::*;
@@ -45,7 +46,7 @@ pub mod svm {
     ///
     /// A VM atom can be either an unsigned int, signed int, float,
     /// char, or bool.
-    #[derive(PartialEq,PartialOrd,Clone,Debug)]
+    #[derive(PartialEq,PartialOrd,Copy,Clone,Debug)]
     pub enum Atom {
         /// Unsigned integer atom (machine size)
         UInt(usize),
@@ -72,6 +73,71 @@ pub mod svm {
                 &Atom::Bool(value) => write!(f, "{}", value)
             }
         }
+    }
+
+    impl ops::Add for Atom {
+        type Output = Atom;
+
+        fn add(self, other: Atom) -> Atom {
+            match (self, other) {
+                // same type:  no coercion
+                (SInt(a), SInt(b))      => SInt(a + b),
+                (UInt(a), UInt(b))      => UInt(a + b),
+                (Float(a), Float(b))    => Float(a + b),
+                (Char(a), Char(b))      => Char((a as u8 + b as u8) as char),
+                // float + int: coerce to float
+                (Float(a), SInt(b))     => Float(a + b as f64),
+                (Float(a), UInt(b))     => Float(a + b as f64),
+                (SInt(a), Float(b))     => Float(a as f64 + b),
+                (UInt(a), Float(b))     => Float(a as f64 + b),
+                // uint + sint: coerce to sint
+                (UInt(a), SInt(b))      => SInt(a as isize + b),
+                (SInt(a), UInt(b))      => SInt(a + b as isize),
+                // char + any: coerce to char
+                // because of the supported operations on Rust chars,
+                // everything has to be cast to u8 (byte) to allow
+                // arithmetic ops and then cast back to char.
+                (Char(a), UInt(b))      => Char((a as u8 + b as u8) as char),
+                (Char(a), SInt(b))      => Char((a as u8 + b as u8) as char),
+                (Char(a), Float(b))     => Char((a as u8 + b as u8) as char),
+                (UInt(a), Char(b))      => Char((a as u8 + b as u8) as char),
+                (SInt(a), Char(b))      => Char((a as u8 + b as u8) as char),
+                (Float(a), Char(b))     => Char((a as u8 + b as u8) as char),
+                (_, _)                  => panic!("TypeError: Unsupported operands {:?} + {:?}", self,other)
+            }
+        }
+
+    }
+
+    impl ops::Sub for Atom {
+        type Output = Atom;
+
+        fn sub(self, other: Atom) -> Atom {
+            match (self, other) {
+                // same type:  no coercion
+                (SInt(a), SInt(b))      => SInt(a - b),
+                (UInt(a), UInt(b))      => UInt(a - b),
+                (Float(a), Float(b))    => Float(a - b),
+                (Char(a), Char(b))      => Char((a as u8 - b as u8) as char),
+                // float + int: coerce to float
+                (Float(a), SInt(b))     => Float(a - b as f64),
+                (Float(a), UInt(b))     => Float(a - b as f64),
+                (SInt(a), Float(b))     => Float(a as f64 - b),
+                (UInt(a), Float(b))     => Float(a as f64 - b),
+                // uint + sint: coerce to sint
+                (UInt(a), SInt(b))      => SInt(a as isize - b),
+                (SInt(a), UInt(b))      => SInt(a - b as isize),
+                // char + any: coerce to char
+                (Char(a), UInt(b))      => Char((a as u8 - b as u8) as char),
+                (Char(a), SInt(b))      => Char((a as u8 - b as u8) as char),
+                (Char(a), Float(b))     => Char((a as u8 - b as u8) as char),
+                (UInt(a), Char(b))      => Char((a as u8 - b as u8) as char),
+                (SInt(a), Char(b))      => Char((a as u8 - b as u8) as char),
+                (Float(a), Char(b))     => Char((a as u8 - b as u8) as char),
+                (_, _)                  => panic!("TypeError: Unsupported operands {:?} - {:?}", self,other)
+            }
+        }
+
     }
 
     /// SVM instruction types
@@ -314,305 +380,28 @@ pub mod svm {
                         dump: new_dump
                     }
                 },
-
                 InstCell(ADD) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
-                    let (op2, newer_stack) = new_stack.pop().unwrap();
-                    match (op1.clone(),op2.clone()) { // TODO: rather not clone every time I want to add two ints
-                        (AtomCell(SInt(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(SInt(a + b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
+                    match op1 {
+                        AtomCell(a) => {
+                            let (op2, newer_stack) = new_stack.pop().unwrap();
+                            match op2 {
+                                AtomCell(b) => State {
+                                    stack: newer_stack.push(AtomCell(a + b)),
+                                    env: self.env,
+                                    control: new_control,
+                                    dump: self.dump
+                                },
+                                b => panic!("[ADD] TypeError: expected compatible operands, found (ADD {:?} {:?})", a, b)
+                            }
                         },
-                        (AtomCell(UInt(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(UInt(a + b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a + b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a + b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a + b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(SInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 + b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 + b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (_,_) =>  panic!("[ADD] TypeError: expected compatible operands, found (ADD {:?} {:?})", op1, op2)
-                    }
-                },
-                InstCell(SUB) => {
-                    let (op1, new_stack) = self.stack.pop().unwrap();
-                    let (op2, newer_stack) = new_stack.pop().unwrap();
-                    match (op1.clone(),op2.clone()) { // TODO: rather not clone every time I want to subtract two ints
-                        (AtomCell(SInt(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(SInt(a - b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(UInt(a - b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a - b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a - b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a - b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(SInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 - b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 - b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (_,_) =>  panic!("[SUB] TypeError: expected compatible operands, found (SUB {:?} {:?})", op1, op2)
-                    }
-                },
-                InstCell(MUL) => {
-                    let (op1, new_stack) = self.stack.pop().unwrap();
-                    let (op2, newer_stack) = new_stack.pop().unwrap();
-                    match (op1.clone(),op2.clone()) { // TODO: rather not clone every time I want to multiply two ints
-                        (AtomCell(SInt(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(SInt(a * b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(UInt(a * b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a * b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a * b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a * b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(SInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 * b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 * b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (_,_) =>  panic!("[MUL] TypeError: expected compatible operands, found (MUL {:?} {:?})", op1, op2)
-                    }
-                },
-                InstCell(DIV) => {
-                    let (op1, new_stack) = self.stack.pop().unwrap();
-                    let (op2, newer_stack) = new_stack.pop().unwrap();
-                    match (op1.clone(),op2.clone()) { // TODO: rather not clone every time I want to divide two ints
-                        (AtomCell(SInt(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(SInt(a / b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(UInt(a / b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a / b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a / b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a / b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(SInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 / b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 / b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (_,_) =>  panic!("[DIV] TypeError: expected compatible operands, found (DIV {:?} {:?})", op1, op2)
-                    }
-                },
-                InstCell(FDIV) => {
-                    let (op1, new_stack) = self.stack.pop().unwrap();
-                    let (op2, newer_stack) = new_stack.pop().unwrap();
-                    match (op1.clone(),op2.clone()) { // TODO: rather not clone every time I want to divide two ints
-                        (AtomCell(SInt(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 / b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 / b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a / b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a / b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a / b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(SInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 / b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 / b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (_,_) =>  panic!("[FDIV] TypeError: expected compatible operands, found (FDIV {:?} {:?})", op1, op2)
-                    }
-                },
-                InstCell(MOD) => {
-                    let (op1, new_stack) = self.stack.pop().unwrap();
-                    let (op2, newer_stack) = new_stack.pop().unwrap();
-                    match (op1.clone(),op2.clone()) { // TODO: rather not clone every time I want to divide two ints
-                        (AtomCell(SInt(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(SInt(a % b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(UInt(a % b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a % b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a % b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(Float(a)), AtomCell(UInt(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a % b as f64))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(SInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 % b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (AtomCell(UInt(a)), AtomCell(Float(b))) => State {
-                            stack: newer_stack.push(AtomCell(Float(a as f64 % b))),
-                            env: self.env,
-                            control: new_control,
-                            dump: self.dump
-                        },
-                        (_,_) =>  panic!("[MOD] TypeError: expected compatible operands, found (MOD {:?} {:?})", op1, op2)
+                        _ => panic!("[ADD]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
                 InstCell(EQ) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     let (op2, newer_stack) = new_stack.pop().unwrap();
-                    match (op1.clone(), op2.clone()) {
+                    match (op1,op2) {
                         (AtomCell(a), AtomCell(b)) => State {
                             stack: newer_stack.push(AtomCell(Bool(a == b))),
                             env: self.env,
@@ -628,7 +417,7 @@ pub mod svm {
                     // Atom.
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     let (op2, newer_stack) = new_stack.pop().unwrap();
-                    match (op1.clone(), op2.clone()) {
+                    match (op1,op2){
                         (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
                             stack: newer_stack.push(AtomCell(Bool(a > b as f64))),
                             env: self.env,
@@ -668,7 +457,7 @@ pub mod svm {
                     // Atom.
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     let (op2, newer_stack) = new_stack.pop().unwrap();
-                    match (op1.clone(), op2.clone()) {
+                    match (op1,op2) {
                         (AtomCell(Float(a)), AtomCell(SInt(b))) => State {
                             stack: newer_stack.push(AtomCell(Bool(a >= b as f64))),
                             env: self.env,
