@@ -318,6 +318,20 @@ pub mod svm {
                     (_,_) => unimplemented!()
                     }
                 },
+                InstCell(ATOM) => {
+                    let (target, new_stack) = self.stack.pop().unwrap();
+                    State {
+                        stack: new_stack.push(
+                            match target {
+                                AtomCell(_) => AtomCell(Bool(true)),
+                                _           => AtomCell(Bool(false))
+                            }
+                            ),
+                        env: self.env,
+                        control: new_control,
+                        dump: self.dump
+                    }
+                },
                 _ => { unimplemented!() }
             }
         }
