@@ -1294,6 +1294,35 @@ pub mod svm {
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
         }
 
+        #[test]
+        fn test_eval_atom() {
+            let mut state = State {
+                stack: list!(
+                    AtomCell(UInt(1)),
+                    ListCell(box list!(
+                        AtomCell(UInt(1)),AtomCell(UInt(2))
+                        ))
+                    ),
+                env: Stack::empty(),
+                control: list!(InstCell(ATOM)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(
+                    ListCell(box list!(AtomCell(UInt(1)),AtomCell(UInt(2)))),
+                    AtomCell(UInt(1))
+                    ),
+                env: Stack::empty(),
+                control: list!(InstCell(ATOM)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+        }
+
     }
 
 }
