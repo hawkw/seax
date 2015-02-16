@@ -332,6 +332,9 @@ pub mod svm {
                         dump: self.dump
                     }
                 },
+                InstCell(AP) => {
+                    unimplemented!()
+                },
                 InstCell(RAP) => {
                     unimplemented!()
                 },
