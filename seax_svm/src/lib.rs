@@ -332,7 +332,28 @@ pub mod svm {
                         dump: self.dump
                     }
                 },
-                _ => { unimplemented!() }
+                InstCell(RAP) => {
+                    unimplemented!()
+                },
+                InstCell(RET) => {
+                    unimplemented!()
+                },
+                InstCell(DUM) => {
+                    unimplemented!()
+                },
+                InstCell(SEL) => {
+                    unimplemented!()
+                },
+                InstCell(CAR) => {
+                    unimplemented!()
+                },
+                InstCell(CDR) => {
+                    unimplemented!()
+                },
+                InstCell(CONS) => {
+                    unimplemented!()
+                },
+                _ => { panic!("Tried to evaluate an unsupported cell type.") }
             }
         }
     }
