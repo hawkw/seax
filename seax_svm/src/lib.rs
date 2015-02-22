@@ -1333,6 +1333,27 @@ pub mod svm {
         }
 
         #[test]
+        fn test_eval_ret() {
+            let mut state = State {
+                stack: list!(AtomCell(SInt(100)), AtomCell(SInt(320))),
+                env: Stack::empty(),
+                control: list!(InstCell(RET))
+                dump: list!(
+                    list!(AtomCell(Char('S')), AtomCell(Char('L'))),
+                    list!(
+                        list!(AtomCell(Char('E')), AtomCell(Char('L'))),
+                        list!(AtomCell(Char('E')), AtomCell(Char('D')))
+                        ),
+                    list!(AtomCell(Char('C')), AtomCell(Char('L')))
+                    )
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(100))));
+            // TODO: specify rest of behaviour
+            assert_eq!(state.control.peek(), Some(&AtomCell(Char('C'))));
+        }
+
+        #[test]
         fn test_eval_atom() {
             let mut state = State {
                 stack: list!(
