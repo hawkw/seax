@@ -1337,20 +1337,28 @@ pub mod svm {
             let mut state = State {
                 stack: list!(AtomCell(SInt(100)), AtomCell(SInt(320))),
                 env: Stack::empty(),
-                control: list!(InstCell(RET))
+                control: list!(InstCell(RET)),
                 dump: list!(
-                    list!(AtomCell(Char('S')), AtomCell(Char('L'))),
-                    list!(
-                        list!(AtomCell(Char('E')), AtomCell(Char('L'))),
-                        list!(AtomCell(Char('E')), AtomCell(Char('D')))
-                        ),
-                    list!(AtomCell(Char('C')), AtomCell(Char('L')))
+                    ListCell(box list!(AtomCell(Char('S')), AtomCell(Char('L')))),
+                    ListCell(box list!(
+                        ListCell(box list!(AtomCell(Char('E')), AtomCell(Char('L')))),
+                        ListCell(box list!(AtomCell(Char('E')), AtomCell(Char('D'))))
+                        )),
+                    ListCell(box list!(AtomCell(Char('C')), AtomCell(Char('L'))))
                     )
             };
             state = state.eval();
-            assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(100))));
-            // TODO: specify rest of behaviour
-            assert_eq!(state.control.peek(), Some(&AtomCell(Char('C'))));
+            // stack should have return arg + first elem on dump
+            assert_eq!(state.stack[0us], AtomCell(SInt(100)));
+            assert_eq!(state.stack[1us], AtomCell(Char('S')));
+            assert_eq!(state.stack[2us], AtomCell(Char('L')));
+            // env should have second element from dump
+            assert_eq!(state.env[0us], ListCell(box list!(AtomCell(Char('E')), AtomCell(Char('L')))));
+            assert_eq!(state.env[1us], ListCell(box list!(AtomCell(Char('E')), AtomCell(Char('D')))));
+            // control should have third element from dump
+            assert_eq!(state.control[0us], AtomCell(Char('C')));
+            assert_eq!(state.control[1us], AtomCell(Char('L')));
+            assert_eq!(state.dump.peek(), None);
         }
 
         #[test]
