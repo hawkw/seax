@@ -30,6 +30,7 @@ pub mod svm {
     pub mod cell;
 
     /// Represents a SVM machine state
+    #[derive(PartialEq,Clone,Debug)]
     pub struct State {
         stack:  List<SVMCell>,
         env:  List<SVMCell>,
