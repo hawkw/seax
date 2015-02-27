@@ -56,10 +56,9 @@ pub mod svm {
         /// TODO: rewrite me to use the next instruction on the control stack,
         /// rather than a parameter.
         pub fn eval(self) -> State {
-            let (next, new_control) = self.control.pop().unwrap();
-            match next {
+            match self.control.pop() {
                 // NIL: pop an empty list onto the stack
-                InstCell(NIL) => {
+                Some((InstCell(NIL), new_control @ _)) => {
                     State {
                         stack: self.stack.push(ListCell(box List::new())),
                         env: self.env,
@@ -68,7 +67,7 @@ pub mod svm {
                     }
                 }
                 // LDC: load constant
-                InstCell(LDC) => {
+                Some((InstCell(LDC), new_control @ _)) => {
                     let (atom,newer_control) = new_control.pop().unwrap();
                     State {
                         stack: self.stack.push(atom),
@@ -78,41 +77,40 @@ pub mod svm {
                     }
                 },
                 // LD: load variable
-               InstCell(LD) => {
-                    let (top, newer_control) = new_control.pop().unwrap();
-                    match top {
-                       ListCell(
+                Some((InstCell(LD), new_control @ _)) => {
+                    match new_control.pop() {
+                       Some((ListCell(
                             box Cons(AtomCell(SInt(level)),
                             box Cons(AtomCell(SInt(pos)),
                             box Nil))
-                        ) => {
-                            let environment = match self.env[level-1] {
+                        ), newer_control @ _)) => {
+                            let environment = match self.env[level] {
                                 SVMCell::ListCell(ref l) => l.clone(),
-                                _ => panic!("[LD]: Fatal: expected list in $e, found {:?}",self.env[level-1])
+                                _ => panic!("[LD]: Fatal: expected list in $e, found {:?}",self.env[level])
                             };
                             State {
-                                stack: self.stack.push(environment[pos-1].clone()),
+                                stack: self.stack.push(environment[pos].clone()),
                                 env: self.env,
                                 control: newer_control,
                                 dump: self.dump
                             }
                         },
-                        _ => panic!("[LD] Fatal: expected pair, found {:?}", top)
+                       it @ _ => panic!("[LD] Fatal: expected pair, found {:?}", it)
                     }
                 },
 
                 // LDF: load function
-                InstCell(LDF) => {
+                Some((InstCell(LDF), new_control @ _)) => {
                     let (func, newer_control) = new_control.pop().unwrap();
                     State {
-                        stack: self.stack.push(ListCell(box list!(func,self.env[1is].clone()))),
+                        stack: self.stack.push(ListCell(box list!(func,self.env[0is].clone()))),
                         env: self.env,
                         control: newer_control,
                         dump: self.dump
                     }
                 },
 
-                InstCell(JOIN) => {
+                Some((InstCell(JOIN), new_control @ _)) => {
                     let (top, new_dump) = self.dump.pop().unwrap();
                     State {
                         stack: self.stack,
@@ -121,7 +119,7 @@ pub mod svm {
                         dump: new_dump
                     }
                 },
-                InstCell(ADD) => {
+                Some((InstCell(ADD), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     match op1 {
                         AtomCell(a) => {
@@ -139,7 +137,7 @@ pub mod svm {
                         _ => panic!("[ADD]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
-                InstCell(SUB) => {
+                Some((InstCell(SUB), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     match op1 {
                         AtomCell(a) => {
@@ -157,7 +155,7 @@ pub mod svm {
                         _ => panic!("[SUB]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
-                InstCell(FDIV) => {
+                Some((InstCell(FDIV), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     match op1 {
                         AtomCell(a) => {
@@ -200,7 +198,7 @@ pub mod svm {
                         _ => panic!("[FDIV]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
-                InstCell(DIV) => {
+                Some((InstCell(DIV), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     match op1 {
                         AtomCell(a) => {
@@ -218,7 +216,7 @@ pub mod svm {
                         _ => panic!("[DIV]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
-                InstCell(MUL) => {
+                Some((InstCell(MUL), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     match op1 {
                         AtomCell(a) => {
@@ -236,7 +234,7 @@ pub mod svm {
                         _ => panic!("[MUL]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
-                InstCell(MOD) => {
+                Some((InstCell(MOD), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     match op1 {
                         AtomCell(a) => {
@@ -254,7 +252,7 @@ pub mod svm {
                         _ => panic!("[MOD]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
-                InstCell(EQ) => {
+                Some((InstCell(EQ), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     let (op2, newer_stack) = new_stack.pop().unwrap();
                     match (op1,op2) {
@@ -267,7 +265,7 @@ pub mod svm {
                     (_,_) => unimplemented!()
                     }
                 },
-                InstCell(GT) => {
+                Some((InstCell(GT), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     let (op2, newer_stack) = new_stack.pop().unwrap();
                     match (op1,op2) {
@@ -280,7 +278,7 @@ pub mod svm {
                     (_,_) => unimplemented!()
                     }
                 },
-                InstCell(GTE) => {
+                Some((InstCell(GTE), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     let (op2, newer_stack) = new_stack.pop().unwrap();
                     match (op1,op2) {
@@ -293,7 +291,7 @@ pub mod svm {
                     (_,_) => unimplemented!()
                     }
                 },
-                InstCell(LT) => {
+                Some((InstCell(LT), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     let (op2, newer_stack) = new_stack.pop().unwrap();
                     match (op1,op2) {
@@ -306,7 +304,7 @@ pub mod svm {
                     (_,_) => unimplemented!()
                     }
                 },
-                InstCell(LTE) => {
+                Some((InstCell(LTE), new_control @ _)) => {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     let (op2, newer_stack) = new_stack.pop().unwrap();
                     match (op1,op2) {
@@ -319,7 +317,7 @@ pub mod svm {
                     (_,_) => unimplemented!()
                     }
                 },
-                InstCell(ATOM) => {
+                Some((InstCell(ATOM), new_control @ _)) => {
                     let (target, new_stack) = self.stack.pop().unwrap();
                     State {
                         stack: new_stack.push(
@@ -333,13 +331,13 @@ pub mod svm {
                         dump: self.dump
                     }
                 },
-                InstCell(AP) => {
+                Some((InstCell(AP), new_control @ _)) => {
                     unimplemented!()
                 },
-                InstCell(RAP) => {
+                Some((InstCell(RAP), new_control @ _)) => {
                     unimplemented!()
                 },
-                InstCell(RET) => {
+                Some((InstCell(RET), new_control @ _)) => {
                     let (head, _) = self.stack.pop().unwrap();
                     let (new_stack, new_dump) = {
                         match self.dump.pop().unwrap()  {
@@ -368,22 +366,23 @@ pub mod svm {
                         dump: newest_dump
                     }
                 },
-                InstCell(DUM) => {
+                Some((InstCell(DUM), new_control @ _)) => {
                     unimplemented!()
                 },
-                InstCell(SEL) => {
+                Some((InstCell(SEL), new_control @ _)) => {
                     unimplemented!()
                 },
-                InstCell(CAR) => {
+                Some((InstCell(CAR), new_control @ _)) => {
                     unimplemented!()
                 },
-                InstCell(CDR) => {
+                Some((InstCell(CDR), new_control @ _)) => {
                     unimplemented!()
                 },
-                InstCell(CONS) => {
+                Some((InstCell(CONS), new_control @ _)) => {
                     unimplemented!()
                 },
-                _ => { panic!("Tried to evaluate an unsupported cell type.") }
+                None => {panic!("[eval]: expected an instruction on control stack")}
+                it @ _ => { panic!("[eval]: Tried to evaluate an unsupported cell type {:?}.", it) }
             }
         }
     }
@@ -466,11 +465,18 @@ pub mod svm {
             let mut state = State {
                 stack: Stack::empty(),
                 env: list!(ListCell(box list!(AtomCell(SInt(155)),AtomCell(UInt(388))))),
-                control: list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(1)),AtomCell(SInt(2))))),
+                control: list!(
+                    InstCell(LD),
+                    ListCell(
+                        box list!(
+                            AtomCell(SInt(0)),AtomCell(SInt(2))
+                            )
+                        )
+                    ),
                 dump: Stack::empty()
             };
             state = state.eval();
-            assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(155))));
+            assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(388))));
         }
 
         #[test]
