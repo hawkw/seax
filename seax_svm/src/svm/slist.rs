@@ -171,6 +171,14 @@ impl<T> List<T> {
     pub fn iter<'a>(&'a self) -> ListIterator<'a, T> {
         ListIterator{current: self}
     }
+
+    pub fn last(&self) -> &T {
+        match *self {
+            Cons(ref car, box Nil) => &car,
+            Cons(_, ref cdr @ box Cons(_,_)) => cdr.last(),
+            Nil => panic!("Last called on empty list")
+        }
+    }
 }
 
 impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
@@ -250,18 +258,34 @@ impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
 /// # use seax_svm::svm::slist::List::{Cons, Nil};
 /// # fn main () {
 /// let list = list!(1,2,3,4,5,6);
-/// assert_eq!(list[1us], 1);
+/// assert_eq!(list[0us], 1);
 /// # }
 /// ```
 impl<T> Index<usize> for List<T> {
     type Output = T;
 
     fn index<'a>(&'a self, _index: &usize) -> &'a T {
-        let mut it = self.iter();
-        for _ in range(0,*_index-1) {
-            it.next();
+        match *_index {
+            0us => match *self {
+                Cons(ref car, _) => car,
+                Nil => panic!("List index {} out of range", _index)
+            },
+            1us => match *self {
+                Cons(_, box Cons(ref cdr, _)) => cdr,
+                Cons(_, box Nil) => panic!("List index {} out of range", _index),
+                Nil => panic!("List index {} out of range", _index)
+            },
+            i if i == self.length() => self.last(),
+            i if i > self.length()  => panic!("List index {:?} out of range.", _index),
+            i if i > 1us => {
+                let mut it = self.iter();
+                for _ in 0 .. i{
+                    it.next();
+                }
+                it.next().unwrap()
+            },
+            _ => panic!("Expected an index i such that i >= 0, got {:?}.", _index)
         }
-        it.next().unwrap()
     }
 }
 /// Implementation of indexing for `List<T>`.
@@ -274,18 +298,34 @@ impl<T> Index<usize> for List<T> {
 /// # use seax_svm::svm::slist::List::{Cons, Nil};
 /// # fn main () {
 /// let list = list!(1,2,3,4,5,6);
-/// assert_eq!(list[1is], 1);
+/// assert_eq!(list[0is], 1);
 /// # }
 /// ```
 impl<T> Index<isize> for List<T> {
     type Output = T;
 
     fn index<'a>(&'a self, _index: &isize) -> &'a T {
-        let mut it = self.iter();
-        for _ in 0..*_index-1 {
-            it.next();
+        match *_index {
+            0is => match *self {
+                Cons(ref car, _) => car,
+                Nil => panic!("List index {} out of range", _index)
+            },
+            1is => match *self {
+                Cons(_, box Cons(ref cdr, _)) => cdr,
+                Cons(_, box Nil) => panic!("List index {} out of range", _index),
+                Nil => panic!("List index {} out of range", _index)
+            },
+            i if i == self.length() as isize => self.last(),
+            i if i > self.length() as isize => panic!("List index {:?} out of range.", _index),
+            i if i > 1is => {
+                let mut it = self.iter();
+                for _ in 0 .. i{
+                    it.next();
+                }
+                it.next().unwrap()
+            },
+            _ => panic!("Expected an index i such that i >= 0, got {:?}.", _index)
         }
-        it.next().unwrap()
     }
 }
 
@@ -347,7 +387,7 @@ mod tests {
         assert_eq!(s.peek(), Some(&1));
         assert_eq!(pop_result.0, 6);
     }
-
+/*
     #[test]
     fn test_list_usize_indexing() {
         let l: List<isize> = list!(1,2,3,4,5,6);
@@ -357,7 +397,7 @@ mod tests {
         assert_eq!(l[3us],4);
         assert_eq!(l[4us],5);
         assert_eq!(l[5us],6);
-    }
+    }*/
 
     #[test]
     fn test_list_isize_indexing() {
