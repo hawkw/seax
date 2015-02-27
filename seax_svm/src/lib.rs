@@ -340,7 +340,33 @@ pub mod svm {
                     unimplemented!()
                 },
                 InstCell(RET) => {
-                    unimplemented!()
+                    let (head, _) = self.stack.pop().unwrap();
+                    let (new_stack, new_dump) = {
+                        match self.dump.pop().unwrap()  {
+                            (ListCell(s), d @ _)    => (*s, d),
+                            it @ (AtomCell(_),_)    => (list!(it.0), it.1),
+                            _                       => panic!("[RET]: Expected non-empty stack")
+                        }
+                    };
+                    let (new_env, newer_dump) = {
+                        match new_dump.pop().unwrap() {
+                            (ListCell(e), d @ _)    => (*e, d),
+                            _                       => panic!("[RET]: Expected new environment on dump stack")
+                        }
+                    };
+                    let (newer_control, newest_dump) = {
+                        match newer_dump.pop().unwrap()  {
+                            (ListCell(c), d @ _)    => (*c, d),
+                            it @ (InstCell(_),_)    => (list!(it.0), it.1),
+                            _                       => panic!("[RET]: Expected new control stack on dump stack")
+                        }
+                    };
+                    State {
+                        stack: new_stack.push(head),
+                        env: new_env,
+                        control: newer_control,
+                        dump: newest_dump
+                    }
                 },
                 InstCell(DUM) => {
                     unimplemented!()
