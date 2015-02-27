@@ -258,8 +258,7 @@ impl<T> Index<usize> for List<T> {
 
     fn index<'a>(&'a self, _index: &usize) -> &'a T {
         let mut it = self.iter();
-        println!("debug, in index, length {}", _index);
-        for _ in 0..*_index-1 {
+        for _ in range(0,*_index-1) {
             it.next();
         }
         it.next().unwrap()
@@ -350,14 +349,25 @@ mod tests {
     }
 
     #[test]
-    fn test_list_indexing() {
-        let l: List<int> = list!(1,2,3,4,5,6);
+    fn test_list_usize_indexing() {
+        let l: List<isize> = list!(1,2,3,4,5,6);
         assert_eq!(l[0us],1);
         assert_eq!(l[1us],2);
         assert_eq!(l[2us],3);
         assert_eq!(l[3us],4);
         assert_eq!(l[4us],5);
         assert_eq!(l[5us],6);
+    }
+
+    #[test]
+    fn test_list_isize_indexing() {
+        let l: List<isize> = list!(1,2,3,4,5,6);
+        assert_eq!(l[0is],1);
+        assert_eq!(l[1is],2);
+        assert_eq!(l[2is],3);
+        assert_eq!(l[3is],4);
+        assert_eq!(l[4is],5);
+        assert_eq!(l[5is],6);
     }
 
     #[test]
