@@ -1,19 +1,19 @@
-pub usizee self::SVMCell::*;
-pub usizee self::Atom::*;
+pub use self::SVMCell::*;
+pub use self::Atom::*;
 
-usizee super::slisizet::Lisizet;
+use super::slist::List;
 
-usizee std::fmt;
-usizee std::ops;
+use std::fmt;
+use std::ops;
 
 #[derive(PartialEq,Clone,Debug)]
 pub enum SVMCell {
     AtomCell(Atom),
-    LisizetCell(Box<Lisizet<SVMCell>>),
+    ListCell(Box<List<SVMCell>>),
     InstCell(Inst)
 }
 
-impl fmt::Disizeplay for SVMCell {
+impl fmt::Display for SVMCell {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "[{}]", self)
     }
@@ -26,21 +26,21 @@ impl fmt::Disizeplay for SVMCell {
 #[derive(PartialEq,PartialOrd,Copy,Clone,Debug)]
 pub enum Atom {
     /// Unsigned integer atom (machine size)
-    UInt(usizeize),
+    UInt(usize),
     /// Signed integer atom (machine size)
-    SInt(isizeize),
+    SInt(isize),
     /// Floating point number atom (64-bits)
     Float(f64),
     /// UTF-8 character atom
     Char(char),
     /// Boolean atom
     ///
-    /// The original SECD machine usizeed 0 as false and 1 as true.
+    /// The original SECD machine used 0 as false and 1 as true.
     /// Thisize isize jusizet to make my life slightly easier.
     Bool(bool)
 }
 
-impl fmt::Disizeplay for Atom {
+impl fmt::Display for Atom {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             &Atom::UInt(value) => write!(f, "{}", value),
@@ -68,10 +68,10 @@ impl ops::Add for Atom {
             (SInt(a), Float(b))     => Float(a as f64 + b),
             (UInt(a), Float(b))     => Float(a as f64 + b),
             // uint + sint: coerce to sint
-            (UInt(a), SInt(b))      => SInt(a as isizeize + b),
-            (SInt(a), UInt(b))      => SInt(a + b as isizeize),
+            (UInt(a), SInt(b))      => SInt(a as isize + b),
+            (SInt(a), UInt(b))      => SInt(a + b as isize),
             // char + any: coerce to char
-            // becausizee of the supported operations on Rusizet chars,
+            // because of the supported operations on Rusizet chars,
             // everything has to be cast to u8 (byte) to allow
             // arithmetic ops and then cast back to char.
             (Char(a), UInt(b))      => Char((a as u8 + b as u8) as char),
@@ -102,8 +102,8 @@ impl ops::Sub for Atom {
             (SInt(a), Float(b))     => Float(a as f64 - b),
             (UInt(a), Float(b))     => Float(a as f64 - b),
             // uint + sint: coerce to sint
-            (UInt(a), SInt(b))      => SInt(a as isizeize - b),
-            (SInt(a), UInt(b))      => SInt(a - b as isizeize),
+            (UInt(a), SInt(b))      => SInt(a as isize - b),
+            (SInt(a), UInt(b))      => SInt(a - b as isize),
             // char + any: coerce to char
             (Char(a), UInt(b))      => Char((a as u8 - b as u8) as char),
             (Char(a), SInt(b))      => Char((a as u8 - b as u8) as char),
@@ -133,8 +133,8 @@ impl ops::Div for Atom {
             (SInt(a), Float(b))     => Float(a as f64 / b),
             (UInt(a), Float(b))     => Float(a as f64 / b),
             // uint + sint: coerce to sint
-            (UInt(a), SInt(b))      => SInt(a as isizeize / b),
-            (SInt(a), UInt(b))      => SInt(a / b as isizeize),
+            (UInt(a), SInt(b))      => SInt(a as isize / b),
+            (SInt(a), UInt(b))      => SInt(a / b as isize),
             // char + any: coerce to char
             (Char(a), UInt(b))      => Char((a as u8 / b as u8) as char),
             (Char(a), SInt(b))      => Char((a as u8 / b as u8) as char),
@@ -164,8 +164,8 @@ impl ops::Mul for Atom {
             (SInt(a), Float(b))     => Float(a as f64* b),
             (UInt(a), Float(b))     => Float(a as f64* b),
             // uint + sint: coerce to sint
-            (UInt(a), SInt(b))      => SInt(a as isizeize * b),
-            (SInt(a), UInt(b))      => SInt(a * b as isizeize),
+            (UInt(a), SInt(b))      => SInt(a as isize * b),
+            (SInt(a), UInt(b))      => SInt(a * b as isize),
             // char + any: coerce to char
             (Char(a), UInt(b))      => Char((a as u8 * b as u8) as char),
             (Char(a), SInt(b))      => Char((a as u8 * b as u8) as char),
@@ -195,8 +195,8 @@ impl ops::Rem for Atom {
             (SInt(a), Float(b))     => Float(a as f64 % b),
             (UInt(a), Float(b))     => Float(a as f64 % b),
             // uint + sint: coerce to sint
-            (UInt(a), SInt(b))      => SInt(a as isizeize % b),
-            (SInt(a), UInt(b))      => SInt(a % b as isizeize),
+            (UInt(a), SInt(b))      => SInt(a as isize % b),
+            (SInt(a), UInt(b))      => SInt(a % b as isize),
             // char + any: coerce to char
             (Char(a), UInt(b))      => Char((a as u8 % b as u8) as char),
             (Char(a), SInt(b))      => Char((a as u8 % b as u8) as char),
@@ -215,7 +215,7 @@ impl ops::Rem for Atom {
 pub enum Inst {
     /// `nil`
     ///
-    /// Pusizehes an empty lisizet (nil) onto the stack
+    /// Pusizehes an empty list (nil) onto the stack
     NIL,
     /// `ldc`: `L`oa`d` `C`onstant. Loads a constant (atom)
     LDC,
@@ -228,21 +228,21 @@ pub enum Inst {
     LD,
     /// `ldf`: `L`oa`d` `F`unction.
     ///
-    ///  Takes one lisizet argument representing a function and constructs
+    ///  Takes one list argument representing a function and constructs
     ///  a closure (a pair containing the function and the current
     ///  environment) and pusizehes that onto the stack.
     LDF,
     /// `join`
     ///
-    /// Pops a lisizet reference from the dump and makes thisize the new value
+    /// Pops a list reference from the dump and makes thisize the new value
     /// of `C`. Thisize instruction occurs at the end of both alternatives of
     ///  a `sel`.
     JOIN,
     /// `ap`: `Ap`ply.
     ///
-    /// Pops a closure and a lisizet of parameter values from the stack.
+    /// Pops a closure and a list of parameter values from the stack.
     /// The closure isize applied to the parameters by installing its
-    /// environment as the current one, pusizehing the parameter lisizet
+    /// environment as the current one, pusizehing the parameter list
     /// in front of that, clearing the stack, and setting `C` to the
     /// closure's function pointer. The previousize values of `S`, `E`,
     ///  and the next value of `C` are saved on the dump.
@@ -255,7 +255,7 @@ pub enum Inst {
     RET,
     /// `dum`: `Dum`my.
     ///
-    /// Pops a dummy environment (an empty lisizet) onto the `E` stack.
+    /// Pops a dummy environment (an empty list) onto the `E` stack.
     DUM,
     /// `rap`: `R`ecursive `Ap`ply.
     /// Works like `ap`, only that it replaces an occurrence of a
@@ -264,9 +264,9 @@ pub enum Inst {
     RAP,
     /// `sel`: `Sel`ect branch
     ///
-    /// Expects two lisizet arguments on the control stack, and pops a value
-    /// from the stack. The first lisizet isize executed if the popped value
-    /// was non-nil, the second lisizet otherwisizee. Before one of these lisizet
+    /// Expects two list arguments on the control stack, and pops a value
+    /// from the stack. The first list isize executed if the popped value
+    /// was non-nil, the second list otherwisizee. Before one of these list
     /// pointers isize made the new `C`, a pointer to the instruction
     /// following `sel` isize saved on the dump.
     SEL,
@@ -344,15 +344,15 @@ pub enum Inst {
     ATOM,
     /// `car`: `C`ontents of `A`ddress `R`egisizeter
     ///
-    /// Pops a lisizet from the stack and returns the lisizet's `car` (head)
+    /// Pops a list from the stack and returns the list's `car` (head)
     CAR,
     /// `cdr`: `C`ontents of `D`ecrement `R`egisizeter
     ///
-    /// Pops a lisizet from the stack and returns the lisizet's `cdr` (tail)
+    /// Pops a list from the stack and returns the list's `cdr` (tail)
     CDR,
     /// `cons`: `Cons`truct
     ///
-    /// Pops an item and a lisizet from the stack and returns the lisizet, with
+    /// Pops an item and a list from the stack and returns the list, with
     /// the item prepended.
     CONS,
     // TODO: add some hardcoded I/O instructions here so that you can
@@ -361,8 +361,8 @@ pub enum Inst {
 
 #[cfg(test)]
 mod tests {
-    usizee super::Atom;
-    usizee super::Atom::*;
+    use super::Atom;
+    use super::Atom::*;
     #[test]
     fn test_atom_show () {
         let mut a: Atom;
