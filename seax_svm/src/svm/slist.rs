@@ -1,5 +1,6 @@
 #![feature(box_syntax)]
 #![feature(core)]
+#![feature(int_uint)]
 
 pub use svm::slist::List::{Cons,Nil};
 use std::fmt;
@@ -269,20 +270,20 @@ impl<T> Index<usize> for List<T> {
 
     fn index<'a>(&'a self, _index: &usize) -> &'a T {
         match *_index {
-            0us => match *self {
+            0usize => match *self {
                 Cons(ref car, _) => car,
                 Nil => panic!("List index {} out of range", _index)
             },
-            1us => match *self {
+            1usize => match *self {
                 Cons(_, box Cons(ref cdr, _)) => cdr,
                 Cons(_, box Nil) => panic!("List index {} out of range", _index),
                 Nil => panic!("List index {} out of range", _index)
             },
             i if i == self.length() => self.last(),
             i if i > self.length()  => panic!("List index {:?} out of range.", _index),
-            i if i > 1us => {
+            i if i > 1usize => {
                 let mut it = self.iter();
-                for _ in 0 .. i{
+                for _ in 0usize .. i{
                     it.next();
                 }
                 it.next().unwrap()
@@ -309,20 +310,20 @@ impl<T> Index<isize> for List<T> {
 
     fn index<'a>(&'a self, _index: &isize) -> &'a T {
         match *_index {
-            0is => match *self {
+            0isize => match *self {
                 Cons(ref car, _) => car,
                 Nil => panic!("List index {} out of range", _index)
             },
-            1is => match *self {
+            1isize => match *self {
                 Cons(_, box Cons(ref cdr, _)) => cdr,
                 Cons(_, box Nil) => panic!("List index {} out of range", _index),
                 Nil => panic!("List index {} out of range", _index)
             },
             i if i == self.length() as isize => self.last(),
             i if i > self.length() as isize => panic!("List index {:?} out of range.", _index),
-            i if i > 1is => {
+            i if i > 1isize => {
                 let mut it = self.iter();
-                for _ in 0 .. i{
+                for _ in 0isize .. i{
                     it.next();
                 }
                 it.next().unwrap()
