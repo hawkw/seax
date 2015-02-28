@@ -1,6 +1,6 @@
 #![feature(box_syntax)]
+#![feature(box_patterns)]
 #![feature(core)]
-#![feature(int_uint)]
 
 pub use svm::slist::List::{Cons,Nil};
 use std::fmt;
@@ -391,27 +391,27 @@ mod tests {
         assert_eq!(s.peek(), Some(&1));
         assert_eq!(pop_result.0, 6);
     }
-/*
+
     #[test]
     fn test_list_usize_indexing() {
         let l: List<isize> = list!(1,2,3,4,5,6);
-        assert_eq!(l[0us],1);
-        assert_eq!(l[1us],2);
-        assert_eq!(l[2us],3);
-        assert_eq!(l[3us],4);
-        assert_eq!(l[4us],5);
-        assert_eq!(l[5us],6);
-    }*/
+        assert_eq!(l[0usize],1);
+        assert_eq!(l[1usize],2);
+        assert_eq!(l[2usize],3);
+        assert_eq!(l[3usize],4);
+        assert_eq!(l[4usize],5);
+        assert_eq!(l[5usize],6);
+    }
 
     #[test]
     fn test_list_isize_indexing() {
         let l: List<isize> = list!(1,2,3,4,5,6);
-        assert_eq!(l[0is],1);
-        assert_eq!(l[1is],2);
-        assert_eq!(l[2is],3);
-        assert_eq!(l[3is],4);
-        assert_eq!(l[4is],5);
-        assert_eq!(l[5is],6);
+        assert_eq!(l[0isize],1);
+        assert_eq!(l[1isize],2);
+        assert_eq!(l[2isize],3);
+        assert_eq!(l[3isize],4);
+        assert_eq!(l[4isize],5);
+        assert_eq!(l[5isize],6);
     }
 
     #[test]

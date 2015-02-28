@@ -1,6 +1,7 @@
 #![crate_name = "seax_svm"]
 #![crate_type = "lib"]
 #![feature(box_syntax)]
+#![feature(box_patterns)]
 #![feature(core)]
 
 /// Contains the Seax Virtual Machine (SVM) and miscellaneous
@@ -103,7 +104,7 @@ pub mod svm {
                 Some((InstCell(LDF), new_control @ _)) => {
                     let (func, newer_control) = new_control.pop().unwrap();
                     State {
-                        stack: self.stack.push(ListCell(box list!(func,self.env[0is].clone()))),
+                        stack: self.stack.push(ListCell(box list!(func,self.env[0usize].clone()))),
                         env: self.env,
                         control: newer_control,
                         dump: self.dump
