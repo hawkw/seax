@@ -413,6 +413,60 @@ pub mod svm {
         use super::Inst::*;
 
         #[test]
+        #[should_fail(expected="[eval]: expected an instruction on control stack")]
+        fn test_empty_eval_fail() {
+            let state = State::new();
+            state.eval();
+        }
+
+        #[test]
+        #[should_fail(expected="List index 0 out of range")]
+        fn test_ld_empty_env_fail() {
+            let state = State {
+                stack:      Stack::empty(),
+                env:        Stack::empty(),
+                control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(0))))),
+                dump:       Stack::empty(),
+            };
+            state.eval();
+        }
+
+        #[test]
+        #[should_fail(expected="[LD]: Fatal: expected list in $e, found AtomCell(Char('w'))")]
+        fn test_ld_unexpected_env_fail() {
+            let state = State {
+                stack:      Stack::empty(),
+                env:        list!(AtomCell(Char('w'))),
+                control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(0))))),
+                dump:       Stack::empty(),
+            };
+            state.eval();
+        }
+
+        #[test]
+        #[should_fail(expected="[LD] Fatal: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Nil)), Nil))")]
+        fn test_ld_arg_too_short_fail() {
+            let state = State {
+                stack:      Stack::empty(),
+                env:        Stack::empty(),
+                control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0))))),
+                dump:       Stack::empty(),
+            };
+            state.eval();
+        }
+        #[test]
+        #[should_fail(expected="[LD] Fatal: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Cons(AtomCell(SInt(1)), Cons(AtomCell(SInt(1)), Nil)))), Nil))")]
+        fn test_ld_arg_too_long_fail() {
+            let state = State {
+                stack:      Stack::empty(),
+                env:        Stack::empty(),
+                control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(1)), AtomCell(SInt(1))))),
+                dump:       Stack::empty(),
+            };
+            state.eval();
+        }
+
+        #[test]
         fn test_empty_state() {
             let state = State::new();
             assert_eq!(state.stack.length(), 0);
