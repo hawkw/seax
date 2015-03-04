@@ -25,7 +25,7 @@ use std::ops::Index;
 macro_rules! list(
     ( $e:expr, $($rest:expr),+ ) => ( Cons($e, Box::new(list!( $( $rest ),+ )) ));
     ( $e:expr ) => ( Cons($e, Box::new(Nil)) );
-    () => ( @Empty )
+    () => ( Box::new(Nil) );
 );
 
 /// Common functions for an immutable Stack abstract data type.
