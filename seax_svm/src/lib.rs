@@ -1427,6 +1427,18 @@ pub mod svm {
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
         }
 
+        #[test]
+        fn test_eval_dum() {
+            let mut state = State {
+                stack: Stack::empty(),
+                env: list!(list!(AtomCell(Char('a')))),
+                control: list!(InstCell(DUM)),
+                dump: Stack::empty(),
+            };
+            state = state.eval();
+            assert_eq!(state.env.peek().peek(), Stack::empty());
+        }
+
     }
 
 }
