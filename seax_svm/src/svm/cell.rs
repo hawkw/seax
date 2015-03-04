@@ -221,7 +221,7 @@ pub enum Inst {
     LDC,
     /// `ld`: `L`oa`d`. Pusizehes a variable onto the stack.
     ///
-    /// The variable isize indicated by the argument, a pair.
+    /// The variable is indicated by the argument, a pair.
     /// The pair's `car` specifies the level, the `cdr` the position.
     /// So `(1 . 3)` gives the current function's (level 1) third
     /// parameter.
@@ -235,16 +235,16 @@ pub enum Inst {
     /// `join`
     ///
     /// Pops a list reference from the dump and makes thisize the new value
-    /// of `C`. Thisize instruction occurs at the end of both alternatives of
+    /// of `C`. This instruction occurs at the end of both alternatives of
     ///  a `sel`.
     JOIN,
     /// `ap`: `Ap`ply.
     ///
     /// Pops a closure and a list of parameter values from the stack.
-    /// The closure isize applied to the parameters by installing its
-    /// environment as the current one, pusizehing the parameter list
+    /// The closure is applied to the parameters by installing its
+    /// environment as the current one, pushing the parameter list
     /// in front of that, clearing the stack, and setting `C` to the
-    /// closure's function pointer. The previousize values of `S`, `E`,
+    /// closure's function pointer. The previous values of `S`, `E`,
     ///  and the next value of `C` are saved on the dump.
     AP,
     /// `ret`: `Ret`urn.
@@ -265,10 +265,10 @@ pub enum Inst {
     /// `sel`: `Sel`ect branch
     ///
     /// Expects two list arguments on the control stack, and pops a value
-    /// from the stack. The first list isize executed if the popped value
-    /// was non-nil, the second list otherwisizee. Before one of these list
-    /// pointers isize made the new `C`, a pointer to the instruction
-    /// following `sel` isize saved on the dump.
+    /// from the stack. The first list is executed if the popped value
+    /// was non-nil, the second list otherwise. Before one of these list
+    /// pointers is made the new `C`, a pointer to the instruction
+    /// following `sel` is saved on the dump.
     SEL,
     /// `add`
     ///
@@ -282,7 +282,7 @@ pub enum Inst {
     /// `sub`: `Sub`tract
     ///
     /// Pops two numbers off of the stack and subtracts the first from the
-    /// second, pusizehing the result onto the stack. Thisize will up-convert
+    /// second, pusizehing the result onto the stack. This will up-convert
     /// integers to floating point if necessary.
     ///
     /// TODO: figure out what happens when you try to subtract things that
@@ -291,7 +291,7 @@ pub enum Inst {
     /// `mul`: `Mul`tiply
     ///
     /// Pops two numbers off of the stack and multiplies them, pusizehing the
-    /// result onto the stack. Thisize will up-convert integers to floating
+    /// result onto the stack. This will up-convert integers to floating
     /// point if necessary.
     ///
     /// TODO: figure out what happens when you try to multiply things that
@@ -300,7 +300,7 @@ pub enum Inst {
     /// `div`: `Div`ide
     ///
     /// Pops two numbers off of the stack and divides the first by the second,
-    /// pusizehing the result onto the stack. Thisize performs integer divisizeion.
+    /// pushing the result onto the stack. This performs integer divisizeion.
     ///
     /// TODO: figure out what happens when you try to divide things that
     /// aren't numbers (maybe the compiler won't let thisize happen?).
@@ -308,21 +308,21 @@ pub enum Inst {
     /// `fdiv`: `F`loating-point `div`ide
     ///
     /// Pops two numbers off of the stack and divides the first by the second,
-    /// pusizehing the result onto the stack. Thisize performs float divisizeion.
+    /// pusizehing the result onto the stack. This performs float divisizeion.
     ///
     /// TODO: figure out what happens when you try to divide things that
-    /// aren't numbers (maybe the compiler won't let thisize happen?).
+    /// aren't numbers (maybe the compiler won't let this happen?).
     ///
     /// TODO: Not sure if there should be separate float and int divide words
-    /// I guess the compiler can figure thisize out
+    /// I guess the compiler can figure this out
     FDIV,
     /// `mod`: `Mod`ulo
     ///
     /// Pops two numbers off of the stack and divides the first by the second,
-    /// pusizehing the remainder onto the stack.
+    /// pushing the remainder onto the stack.
     ///
     /// TODO: figure out what happens when you try to modulo things that
-    /// aren't numbers (maybe the compiler won't let thisize happen?).
+    /// aren't numbers (maybe the compiler won't let this happen?).
     MOD,
     /// `eq`: `Eq`uality of atoms
     EQ,
@@ -340,13 +340,13 @@ pub enum Inst {
     /// `atom`: test if `atom`
     ///
     /// Pops an item from the stack and returns true if it's an atom, false
-    /// otherwisizee
+    /// otherwise.
     ATOM,
-    /// `car`: `C`ontents of `A`ddress `R`egisizeter
+    /// `car`: `C`ontents of `A`ddress `R`egister
     ///
     /// Pops a list from the stack and returns the list's `car` (head)
     CAR,
-    /// `cdr`: `C`ontents of `D`ecrement `R`egisizeter
+    /// `cdr`: `C`ontents of `D`ecrement `R`egister
     ///
     /// Pops a list from the stack and returns the list's `cdr` (tail)
     CDR,
