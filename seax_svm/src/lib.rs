@@ -368,7 +368,12 @@ pub mod svm {
                     }
                 },
                 Some((InstCell(DUM), new_control @ _)) => {
-                    unimplemented!()
+                    State {
+                        stack: self.stack,
+                        env: self.env.push(ListCell(list!())),
+                        control: new_control,
+                        dump: self.dump
+                    }
                 },
                 Some((InstCell(SEL), new_control @ _)) => {
                     unimplemented!()
@@ -1431,12 +1436,12 @@ pub mod svm {
         fn test_eval_dum() {
             let mut state = State {
                 stack: Stack::empty(),
-                env: list!(list!(AtomCell(Char('a')))),
+                env: list!(ListCell(box list!(AtomCell(Char('a'))))),
                 control: list!(InstCell(DUM)),
                 dump: Stack::empty(),
             };
             state = state.eval();
-            assert_eq!(state.env.peek().peek(), Stack::empty());
+            assert_eq!(state.env.peek(), Some(&ListCell(box Nil)));
         }
 
     }
