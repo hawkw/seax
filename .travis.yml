@@ -1,10 +1,16 @@
 sudo: false
 language: rust
 os:
-  - linux
-  - osx
+- linux
+- osx
 script:
-  - cargo build
-  - cargo test
-  - cargo test -p seax_svm
-  - cargo test -p seax_scheme
+- cargo build
+- cargo test
+- cargo test -p seax_svm
+- cargo test -p seax_scheme
+after_success:
+- cargo doc
+- .travis/publish.sh
+env:
+  global:
+    secure: iEGoVGb3OeqSqP4UP7nbLtMEmGi9JgI0nxjrpRrSg22pCCa+lMIIiYp9gY2558pwAbcxaJpahmTt3lYqe2wdKfXlGWRB7Tz99FR8lX+vRXpgxDLg1Sz8BAnN7X9bu+AGL/INwYOe6tVncXcQgKn4uSTYa001CqhlwPzMmtGSw/w=
