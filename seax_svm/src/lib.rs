@@ -193,7 +193,7 @@ pub mod svm {
                                     control: new_control,
                                     dump: self.dump
                                 },
-                                b => panic!("[FDIV] TypeError: expected compatible operands, found (DIV {:?} {:?})", a, b)
+                                b => panic!("[FDIV] TypeError: expected compatible operands, found (FDIV {:?} {:?})", a, b)
                             }
                         },
                         _ => panic!("[FDIV]: Expected first operand to be atom, found list or instruction"),
