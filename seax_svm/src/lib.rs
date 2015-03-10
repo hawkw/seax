@@ -1695,6 +1695,28 @@ pub mod svm {
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
         }
 
+        #[test]
+        fn test_eval_car() {
+            let mut state = State {
+                stack: list!(ListCell(box list!(AtomCell(Char('A')),AtomCell(Char('B'))))),
+                env: Stack::empty(),
+                control: list!(InstCell(CAR)),
+                dump: Stack::empty()
+            }.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Char('A'))));
+        }
+
+        #[test]
+        fn test_eval_cdr() {
+            let mut state = State {
+                stack: list!(ListCell(box list!(AtomCell(Char('A')),AtomCell(Char('B'))))),
+                env: Stack::empty(),
+                control: list!(InstCell(CDR)),
+                dump: Stack::empty()
+            }.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Char('B'))));
+        }
+
     }
 
 }
