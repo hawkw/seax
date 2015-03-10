@@ -423,8 +423,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[eval]: expected an instruction on control stack")]
         fn test_empty_eval_fail() {
-            let state = State::new();
-            state.eval();
+            let state = State::new().eval();
         }
 
         #[test]
@@ -435,8 +434,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(0))))),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -447,8 +445,7 @@ pub mod svm {
                 env:        list!(AtomCell(Char('w'))),
                 control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(0))))),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -459,8 +456,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0))))),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
         #[test]
         #[should_fail(expected="[LD] Fatal: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Cons(AtomCell(SInt(1)), Cons(AtomCell(SInt(1)), Nil)))), Nil))")]
@@ -470,8 +466,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(1)), AtomCell(SInt(1))))),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -495,8 +490,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(SUB)),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -507,8 +501,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(DIV)),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -519,8 +512,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(FDIV)),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -531,8 +523,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(MUL)),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -543,8 +534,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(ADD)),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
         #[test]
         #[should_fail(expected="[SUB] TypeError: expected compatible operands, found (SUB SInt(1) ListCell(Nil))")]
@@ -554,8 +544,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(SUB)),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -566,8 +555,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(DIV)),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -578,8 +566,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(FDIV)),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -590,8 +577,7 @@ pub mod svm {
                 env:        Stack::empty(),
                 control:    list!(InstCell(MUL)),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
         #[test]
@@ -605,7 +591,7 @@ pub mod svm {
 
         #[test]
         fn test_eval_nil () {
-            let mut state =  State {
+            let mut state = State {
                 stack: Stack::empty(),
                 env: Stack::empty(),
                 control: list!(InstCell(NIL),AtomCell(SInt(1))),
@@ -625,8 +611,7 @@ pub mod svm {
                 env: state.env,
                 control: list!(InstCell(LDC),AtomCell(SInt(1))),
                 dump: state.dump
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(1))));
 
             state = State {
@@ -634,8 +619,7 @@ pub mod svm {
                 env: state.env,
                 control: list!(InstCell(LDC),AtomCell(Char('a'))),
                 dump: state.dump
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Char('a'))));
 
             state = State {
@@ -643,14 +627,13 @@ pub mod svm {
                 env: state.env,
                 control: list!(InstCell(LDC),AtomCell(Float(1.0f64))),
                 dump: state.dump
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.0f64))));
         }
 
         #[test]
         fn test_eval_ld () {
-            let mut state = State {
+            let state = State {
                 stack: Stack::empty(),
                 env: list!(ListCell(box list!(AtomCell(SInt(155)),AtomCell(UInt(388))))),
                 control: list!(
@@ -662,14 +645,13 @@ pub mod svm {
                         )
                     ),
                 dump: Stack::empty()
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(388))));
         }
 
         #[test]
         fn test_eval_ldf () {
-                let mut state = State {
+                let state = State {
                 stack: Stack::empty(),
                 env: list!(
                     ListCell(
@@ -687,8 +669,7 @@ pub mod svm {
                     ),
                 control: list!(InstCell(LDF), ListCell(box list!(AtomCell(SInt(133))))),
                 dump: Stack::empty()
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(
                 state.stack.peek(),
                 Some(&ListCell(
@@ -711,7 +692,7 @@ pub mod svm {
 
         #[test]
         fn test_eval_join() {
-            let mut state = State {
+            let state = State {
                 stack: Stack::empty(),
                 env: Stack::empty(),
                 control: list!(InstCell(JOIN)),
@@ -719,8 +700,7 @@ pub mod svm {
                         AtomCell(SInt(1)),
                         AtomCell(SInt(2))
                     )))
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.dump.peek(), None);
             assert_eq!(state.control.peek(), Some(&ListCell(box list!(
                         AtomCell(SInt(1)),
@@ -736,8 +716,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ADD)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(2))));
 
             // ---- Signed int addition ----
@@ -746,8 +725,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ADD)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-2))));
 
             // ---- Float-float addition ----
@@ -756,8 +734,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ADD)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0))));
 
             // ---- Float-int type lifting addition ----
@@ -766,16 +743,14 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ADD)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(2.5))));
             state = State {
                 stack: list!(AtomCell(Float(3.5)), AtomCell(UInt(1))),
                 env: Stack::empty(),
                 control: list!(InstCell(ADD)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(4.5))));
         }
 
@@ -787,8 +762,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(SUB)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(0))));
 
             // ---- Signed int subtraction----
@@ -797,8 +771,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(SUB)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-6))));
 
             // ---- Float-float subtraction ----
@@ -807,8 +780,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(SUB)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(-0.5))));
 
             // ---- Float-int type lifting subtraction ----
@@ -817,8 +789,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(SUB)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(4.5))));
 
             state = State {
@@ -826,8 +797,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(SUB)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
         }
 
@@ -839,8 +809,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(MUL)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(6))));
 
             // ---- Signed int multiplication----
@@ -849,8 +818,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(MUL)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(6))));
 
             // ---- Float-float multiplication ----
@@ -859,8 +827,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(MUL)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0))));
 
             // ---- Float-int type lifting multiplication ----
@@ -869,8 +836,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(MUL)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0))));
 
             state = State {
@@ -878,8 +844,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(MUL)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(7.0))));
         }
 
@@ -891,8 +856,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(DIV)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(3))));
 
             // ---- Signed int divison ----
@@ -901,8 +865,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(DIV)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-3))));
 
             // ---- Float-float divison ----
@@ -911,8 +874,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(DIV)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
 
             // ---- Float-int type lifting divison ----
@@ -921,8 +883,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(DIV)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
 
             state = State {
@@ -930,8 +891,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(DIV)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
         }
 
@@ -943,8 +903,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(FDIV)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
 
             // ---- Signed int divison ----
@@ -953,8 +912,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(FDIV)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(-1.5))));
 
             // ---- Float-float divison ---
@@ -963,8 +921,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(FDIV)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
         }
 
@@ -976,8 +933,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(MOD)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(3%2))));
 
             // ---- Signed int modulus ----
@@ -986,8 +942,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(MOD)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-3%2))));
 
             // ---- Float-float modulus---
@@ -996,8 +951,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(MOD)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0%2.0))));
 
             // ---- Float-int type lifting modulus----
@@ -1006,8 +960,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(MOD)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0%2.0))));
 
             state = State {
@@ -1015,8 +968,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(MOD)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0%2.0))));
         }
 
@@ -1028,8 +980,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(EQ)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1037,8 +988,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(EQ)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             // ---- Signed int equality ----
@@ -1047,8 +997,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(EQ)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1056,8 +1005,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(EQ)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
 
@@ -1067,8 +1015,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(EQ)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1076,8 +1023,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(EQ)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1085,8 +1031,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(EQ)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
         }
@@ -1099,8 +1044,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1108,8 +1052,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             // ---- Signed int greater-than ----
@@ -1118,8 +1061,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1127,8 +1069,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
 
@@ -1138,8 +1079,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1147,8 +1087,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1156,8 +1095,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             // ---- Mixed type greater-than ---
@@ -1166,8 +1104,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1175,8 +1112,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1184,8 +1120,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
         }
@@ -1198,8 +1133,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1207,8 +1141,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1216,8 +1149,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
 
@@ -1227,8 +1159,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1236,8 +1167,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1245,8 +1175,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
 
@@ -1256,8 +1185,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1265,8 +1193,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1274,8 +1201,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             // ---- Mixed type greater-than-equal ---
@@ -1284,8 +1210,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1293,8 +1218,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1302,8 +1226,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(GTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
         }
 
@@ -1315,8 +1238,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1324,8 +1246,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1333,8 +1254,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
 
@@ -1344,8 +1264,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1353,8 +1272,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1362,8 +1280,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
 
@@ -1373,8 +1290,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1382,8 +1298,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1391,8 +1306,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
                state = State {
@@ -1400,8 +1314,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             // ---- Mixed type greater-than ---
@@ -1410,8 +1323,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1419,8 +1331,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1428,8 +1339,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LT)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
         }
@@ -1442,8 +1352,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1451,8 +1360,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1460,8 +1368,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
 
@@ -1471,8 +1378,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1480,8 +1386,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1489,8 +1394,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
 
@@ -1500,8 +1404,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1509,8 +1412,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1518,8 +1420,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             // ---- Mixed type greater-than-equal ---
@@ -1528,8 +1429,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1537,8 +1437,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(
                 Bool(false)) // TODO: this expects wrong float behaviour, fix
             ));
@@ -1548,8 +1447,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
         }
 
@@ -1567,8 +1465,7 @@ pub mod svm {
                         )),
                     ListCell(box list!(AtomCell(Char('C')), AtomCell(Char('L'))))
                     )
-            };
-            state = state.eval();
+            }.eval();
             // stack should have return arg + first elem on dump
             assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(100)))); // test these using peek for now since indexing is borked
             assert_eq!(state.stack[0usize], AtomCell(SInt(100)));
@@ -1587,19 +1484,18 @@ pub mod svm {
 
         #[test]
         fn test_eval_dum() {
-            let mut state = State {
+            let state = State {
                 stack: Stack::empty(),
                 env: list!(ListCell(box list!(AtomCell(Char('a'))))),
                 control: list!(InstCell(DUM)),
                 dump: Stack::empty(),
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.env.peek(), Some(&ListCell(box Nil)));
         }
 
         #[test]
         fn test_eval_ap() {
-            let mut state = State {
+            let state = State {
                 stack: list!(
                     ListCell(box list!(
                         ListCell(box list!(
@@ -1619,8 +1515,7 @@ pub mod svm {
                     )),
                 control: list!(InstCell(AP), InstCell(DUM)),
                 dump: Stack::empty()
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Char('Q'))));
             assert_eq!(state.control, list!(InstCell(RET), InstCell(ADD), AtomCell(SInt(1)), InstCell(LDC), ListCell(box list!(AtomCell(UInt(0)), AtomCell(UInt(0)))),InstCell(LD)));
             assert_eq!(state.env, list!(ListCell(box list!(AtomCell(SInt(1))))));
@@ -1635,8 +1530,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ATOM)),
                 dump: Stack::empty()
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1644,8 +1538,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ATOM)),
                 dump: Stack::empty()
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1653,8 +1546,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ATOM)),
                 dump: Stack::empty()
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1662,8 +1554,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ATOM)),
                 dump: Stack::empty()
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             state = State {
@@ -1671,8 +1562,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ATOM)),
                 dump: Stack::empty()
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
 
             // false cases
@@ -1681,8 +1571,7 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ATOM)),
                 dump: Stack::empty()
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
 
             state = State {
@@ -1690,14 +1579,13 @@ pub mod svm {
                 env: Stack::empty(),
                 control: list!(InstCell(ATOM)),
                 dump: Stack::empty()
-            };
-            state = state.eval();
+            }.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
         }
 
         #[test]
         fn test_eval_car() {
-            let mut state = State {
+            let state = State {
                 stack: list!(ListCell(box list!(AtomCell(Char('A')),AtomCell(Char('B'))))),
                 env: Stack::empty(),
                 control: list!(InstCell(CAR)),
@@ -1708,7 +1596,7 @@ pub mod svm {
 
         #[test]
         fn test_eval_cdr() {
-            let mut state = State {
+            let state = State {
                 stack: list!(ListCell(box list!(AtomCell(Char('A')),AtomCell(Char('B'))))),
                 env: Stack::empty(),
                 control: list!(InstCell(CDR)),
