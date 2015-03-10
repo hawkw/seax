@@ -400,7 +400,17 @@ pub mod svm {
                     }
                 },
                 Some((InstCell(CDR), new_control @ _)) => {
-                    unimplemented!()
+                    match self.stack.pop() {
+                        Some((ListCell(box Cons(_, cdr)), new_stack)) => State {
+                            stack: new_stack.push(ListCell(cdr)),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                        Some((ListCell(box Nil), _)) => panic!("[CDR]: expected non-empty list, found Nil"),
+                        Some((thing, _))             => panic!("[CDR]: expected non-empty list, found {:?}", thing),
+                        None                         => panic!("[CDR]: Expected non-empty list, found nothing")
+                    }
                 },
                 Some((InstCell(CONS), new_control @ _)) => {
                     unimplemented!()
