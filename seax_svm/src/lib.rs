@@ -1621,7 +1621,7 @@ pub mod svm {
                 control: list!(InstCell(CDR)),
                 dump: Stack::empty()
             }.eval();
-            assert_eq!(state.stack.peek(), Some(&AtomCell(Char('B'))));
+            assert_eq!(state.stack.peek(), Some(&ListCell(box list!(AtomCell(Char('B'))))));
         }
 
     }
