@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["cell","SVM cell types."],["slist","Singly-linked list and stack implementations."]],"struct":[["State","Represents a SVM machine state"]]});
+initSidebarItems({"struct":[["State","Represents a SVM machine state"]],"mod":[["cell","SVM cell types."],["slist","Singly-linked list and stack implementations."]]});
