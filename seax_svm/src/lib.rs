@@ -258,7 +258,12 @@ pub mod svm {
                     let (op2, newer_stack) = new_stack.pop().unwrap();
                     match (op1,op2) {
                         (AtomCell(a), AtomCell(b)) => State {
-                            stack: newer_stack.push(AtomCell(Bool(a == b))),
+                            stack: newer_stack.push(
+                                match a == b {
+                                    true    => ListCell(box list!(AtomCell(SInt(1)))),
+                                    false   => ListCell(box Nil)
+                                }
+                            ),
                             env: self.env,
                             control: new_control,
                             dump: self.dump
@@ -271,7 +276,12 @@ pub mod svm {
                     let (op2, newer_stack) = new_stack.pop().unwrap();
                     match (op1,op2) {
                         (AtomCell(a), AtomCell(b)) => State {
-                            stack: newer_stack.push(AtomCell(Bool(a > b))),
+                            stack: newer_stack.push(
+                                match a > b {
+                                    true    => ListCell(box list!(AtomCell(SInt(1)))),
+                                    false   => ListCell(box Nil)
+                                }
+                            ),
                             env: self.env,
                             control: new_control,
                             dump: self.dump
@@ -283,8 +293,12 @@ pub mod svm {
                     let (op1, new_stack) = self.stack.pop().unwrap();
                     let (op2, newer_stack) = new_stack.pop().unwrap();
                     match (op1,op2) {
-                        (AtomCell(a), AtomCell(b)) => State {
-                            stack: newer_stack.push(AtomCell(Bool(a >= b))),
+                        (AtomCell(a), AtomCell(b)) => State {                            stack: newer_stack.push(
+                                match a >= b {
+                                    true    => ListCell(box list!(AtomCell(SInt(1)))),
+                                    false   => ListCell(box Nil)
+                                }
+                            ),
                             env: self.env,
                             control: new_control,
                             dump: self.dump
@@ -297,7 +311,12 @@ pub mod svm {
                     let (op2, newer_stack) = new_stack.pop().unwrap();
                     match (op1,op2) {
                         (AtomCell(a), AtomCell(b)) => State {
-                            stack: newer_stack.push(AtomCell(Bool(a < b))),
+                            stack: newer_stack.push(
+                                match a < b {
+                                    true    => ListCell(box list!(AtomCell(SInt(1)))),
+                                    false   => ListCell(box Nil)
+                                }
+                            ),
                             env: self.env,
                             control: new_control,
                             dump: self.dump
@@ -310,7 +329,12 @@ pub mod svm {
                     let (op2, newer_stack) = new_stack.pop().unwrap();
                     match (op1,op2) {
                         (AtomCell(a), AtomCell(b)) => State {
-                            stack: newer_stack.push(AtomCell(Bool(a <= b))),
+                            stack: newer_stack.push(
+                                match a <= b {
+                                    true    => ListCell(box list!(AtomCell(SInt(1)))),
+                                    false   => ListCell(box Nil)
+                                }
+                            ),
                             env: self.env,
                             control: new_control,
                             dump: self.dump
@@ -323,7 +347,7 @@ pub mod svm {
                     State {
                         stack: new_stack.push(
                             match target {
-                                AtomCell(_) => AtomCell(SInt(1)),
+                                AtomCell(_) => ListCell(box list!(AtomCell(SInt(1)))),
                                 _           => ListCell(box Nil)
                             }
                             ),
@@ -1585,9 +1609,10 @@ pub mod svm {
                 control: list!(InstCell(LTE)),
                 dump: Stack::empty(),
             }.eval();
-            assert_eq!(state.stack.peek(), Some(&AtomCell(
-                Bool(false)) // TODO: this expects wrong float behaviour, fix
-            ));
+            assert_eq!(state.stack.peek(), Some(&ListCell(
+                box Nil // TODO: this expects wrong float behaviour, fix
+                ))
+            );
 
             state = State {
                 stack: list!(AtomCell(UInt(1)), AtomCell(Float(2.0))),
