@@ -1618,6 +1618,32 @@ pub mod svm {
             assert_eq!(state.env.peek(), Some(&ListCell(box Nil)));
         }
 
+        #[test]
+        fn test_eval_ap() {
+            let mut state = State {
+                stack: list!(
+                    ListCell(box list!(
+                        ListCell(box list!(
+                            InstCell(RET), InstCell(ADD), AtomCell(SInt(1)), InstCell(LDC), ListCell(box list!(
+                                AtomCell(0), AtomCell(0)
+                                )),
+                            InstCell(LD)
+                            ))
+                        )),
+                    ListCell(box list!(ListCell(box list!(AtomCell(SInt(1))))),
+                    AtomCell(Char('Q'))
+                    ).
+                env: list!(ListCell(box list!(AtomCell(Char('D')))))
+                control: list!(InstCell(AP), InstCell(DUM)),
+                dump: Stack::empty()
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), None);
+            assert_eq!(state.control, list!(InstCell(RET), InstCell(ADD), AtomCell(SInt(1)), InstCell(LDC), ListCell(box list!(AtomCell(0), AtomCell(0))),InstCell(LD)));
+            assert_eq!(state.env, list!(ListCell(box list!(AtomCell(SInt(1))))));
+            assert_eq!(state.dump, list!(ListCell(box list!(AtomCell(Char('D'))))));
+        }
+
     }
 
 }
