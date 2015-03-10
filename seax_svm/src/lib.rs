@@ -1624,6 +1624,19 @@ pub mod svm {
             assert_eq!(state.stack.peek(), Some(&ListCell(box list!(AtomCell(Char('B'))))));
         }
 
+        #[test]
+        fn test_eval_cons() {
+            let state = State {
+                stack: list!(AtomCell(Char('A')), ListCell(box list!(AtomCell(Char('B')),AtomCell(Char('C'))))),
+                env: Stack::empty(),
+                control: list!(InstCell(CONS)),
+                dump: Stack::empty()
+            }.eval();
+            assert_eq!(state.stack.peek(), Some(&ListCell(box list!(
+                AtomCell(Char('A')), AtomCell(Char('B')), AtomCell(Char('C'))
+                ))));
+        }
+
     }
 
 }
