@@ -1691,6 +1691,7 @@ pub mod svm {
                 stack: list!(ListCell(box Nil)),
                 env: Stack::empty(),
                 control: list!(
+                    InstCell(SEL),
                     ListCell(box list!(InstCell(ATOM))), // should be on stack if true
                     ListCell(box list!(InstCell(NIL))), // should be on stack if false
                     InstCell(JOIN) // this is just here so that we can assert that it goes on the dump
@@ -1709,6 +1710,7 @@ pub mod svm {
                 stack: list!(ListCell(box list!(AtomCell(SInt(1))))),
                 env: Stack::empty(),
                 control: list!(
+                    InstCell(SEL),
                     ListCell(box list!(InstCell(ATOM))), // should be on stack if true
                     ListCell(box list!(InstCell(NIL))), // should be on stack if false
                     InstCell(JOIN) // this is just here so that we can assert that it goes on the dump
