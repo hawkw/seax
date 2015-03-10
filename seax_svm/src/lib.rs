@@ -384,7 +384,38 @@ pub mod svm {
                     }
                 },
                 Some((InstCell(SEL), new_control @ _)) => {
-                    unimplemented!()
+                    match new_control.pop() {
+                        Some((ListCell(box true_case), newer_control)) => {
+                            match newer_control.pop() {
+                                Some((ListCell(box false_case), newest_control)) => {
+                                    match self.stack.pop() {
+                                        Some((ListCell(box Nil), new_stack)) => { // false case
+                                            State {
+                                                stack: new_stack,
+                                                env: self.env,
+                                                control: false_case,
+                                                dump: self.dump.push(ListCell(box newest_control))
+                                            }
+                                        },
+                                        Some((_, new_stack)) => { // true case
+                                            State {
+                                                stack: new_stack,
+                                                env: self.env,
+                                                control: true_case,
+                                                dump: self.dump.push(ListCell(box newest_control))
+                                            }
+                                        },
+                                        None => panic!("[SEL]: expected non-empty stack")
+                                    }
+                                },
+                                Some((thing, _)) => panic!("[SEL]: expected list on control, found {:?}", thing),
+                                None             => panic!("[SEL]: expected list on control, found nothing")
+                            }
+                        },
+                        Some((thing, _)) => panic!("[SEL]: expected list on control, found {:?}", thing),
+                        None             => panic!("[SEL]: expected list on control, found nothing")
+
+                    }
                 },
                 Some((InstCell(CAR), new_control @ _)) => {
                     match self.stack.pop() {
