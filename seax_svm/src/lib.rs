@@ -1656,6 +1656,38 @@ pub mod svm {
             assert_eq!(state.dump, list!(ListCell(box list!(InstCell(DUM))),ListCell(box list!(ListCell(box list!(AtomCell(Char('D'))))))));
         }
 
+        #[test]
+        fn test_eval_atom() {
+            // true cases
+            let mut state = State {
+                stack: list!(AtomCell(SInt(1)), AtomCell(UInt(0)), AtomCell(Char('C')), AtomCell(Bool(true)),AtomCell(Float(1.23f))),
+                env: Stack::empty(),
+                control: list!(InstCell(ATOM), ListCell(ATOM), List(Cell(ATOM)), ListCell(ATOM), List(Cell(ATOM))),
+                dump: Stack::empty()
+            };
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+            // false cases
+            state = State {
+                stack: list!(InstCell(DUM), ListCell(box Nil)),
+                env: Stack::empty(),
+                control: list!(InstCell(ATOM), ListCell(ATOM)),
+                dump: Stack::empty()
+            }
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+            state = state.eval();
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+        }
+
     }
 
 }
