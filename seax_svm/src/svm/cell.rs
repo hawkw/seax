@@ -21,8 +21,7 @@ impl fmt::Display for SVMCell {
 
 /// SVM atom types.
 ///
-/// A VM atom can be either an unsigned int, signed int, float,
-/// char, or bool.
+/// A VM atom can be either an unsigned int, signed int, float, or char.
 #[derive(PartialEq,PartialOrd,Copy,Clone,Debug)]
 pub enum Atom {
     /// Unsigned integer atom (machine size)
@@ -32,12 +31,7 @@ pub enum Atom {
     /// Floating point number atom (64-bits)
     Float(f64),
     /// UTF-8 character atom
-    Char(char),
-    /// Boolean atom
-    ///
-    /// The original SECD machine used 0 as false and 1 as true.
-    /// Thisize isize jusizet to make my life slightly easier.
-    Bool(bool)
+    Char(char)
 }
 
 impl fmt::Display for Atom {
@@ -47,7 +41,6 @@ impl fmt::Display for Atom {
             &Atom::SInt(value) => write!(f, "{}", value),
             &Atom::Float(value) => write!(f, "{}", value),
             &Atom::Char(value) => write!(f, "'{}'", value),
-            &Atom::Bool(value) => write!(f, "{}", value)
         }
     }
 }
@@ -79,8 +72,7 @@ impl ops::Add for Atom {
             (Char(a), Float(b))     => Char((a as u8 + b as u8) as char),
             (UInt(a), Char(b))      => Char((a as u8 + b as u8) as char),
             (SInt(a), Char(b))      => Char((a as u8 + b as u8) as char),
-            (Float(a), Char(b))     => Char((a as u8 + b as u8) as char),
-            (_, _)                  => panic!("TypeError: Unsupported operands {:?} + {:?}", self,other)
+            (Float(a), Char(b))     => Char((a as u8 + b as u8) as char)
         }
     }
 
@@ -110,8 +102,7 @@ impl ops::Sub for Atom {
             (Char(a), Float(b))     => Char((a as u8 - b as u8) as char),
             (UInt(a), Char(b))      => Char((a as u8 - b as u8) as char),
             (SInt(a), Char(b))      => Char((a as u8 - b as u8) as char),
-            (Float(a), Char(b))     => Char((a as u8 - b as u8) as char),
-            (_, _)                  => panic!("TypeError: Unsupported operands {:?} - {:?}", self,other)
+            (Float(a), Char(b))     => Char((a as u8 - b as u8) as char)
         }
     }
 
@@ -141,8 +132,7 @@ impl ops::Div for Atom {
             (Char(a), Float(b))     => Char((a as u8 / b as u8) as char),
             (UInt(a), Char(b))      => Char((a as u8 / b as u8) as char),
             (SInt(a), Char(b))      => Char((a as u8 / b as u8) as char),
-            (Float(a), Char(b))     => Char((a as u8 / b as u8) as char),
-            (_, _)                  => panic!("TypeError: Unsupported operands {:?} / {:?}", self,other)
+            (Float(a), Char(b))     => Char((a as u8 / b as u8) as char)
         }
     }
 
@@ -172,8 +162,7 @@ impl ops::Mul for Atom {
             (Char(a), Float(b))     => Char((a as u8 * b as u8) as char),
             (UInt(a), Char(b))      => Char((a as u8 * b as u8) as char),
             (SInt(a), Char(b))      => Char((a as u8 * b as u8) as char),
-            (Float(a), Char(b))     => Char((a as u8 * b as u8) as char),
-            (_, _)                  => panic!("TypeError: Unsupported operands {:?} * {:?}", self,other)
+            (Float(a), Char(b))     => Char((a as u8 * b as u8) as char)
         }
     }
 
@@ -203,8 +192,7 @@ impl ops::Rem for Atom {
             (Char(a), Float(b))     => Char((a as u8 % b as u8) as char),
             (UInt(a), Char(b))      => Char((a as u8 % b as u8) as char),
             (SInt(a), Char(b))      => Char((a as u8 % b as u8) as char),
-            (Float(a), Char(b))     => Char((a as u8 % b as u8) as char),
-            (_, _)                  => panic!("TypeError: Unsupported operands {:?} % {:?}", self,other)
+            (Float(a), Char(b))     => Char((a as u8 % b as u8) as char)
         }
     }
 
