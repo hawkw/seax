@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `List` enum in crate `seax_svm`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, List">
+
+    <title>seax_svm::svm::slist::List - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>seax_svm</a>::<wbr><a href='../index.html'>svm</a>::<wbr><a href='index.html'>slist</a></p><script>window.sidebarCurrent = {name: 'List', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content enum">
+<h1 class='fqn'><span class='in-band'>Enum <a href='../../index.html'>seax_svm</a>::<wbr><a href='../index.html'>svm</a>::<wbr><a href='index.html'>slist</a>::<wbr><a class='enum' href=''>List</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-131' href='../../../src/seax_svm/svm/slist.rs.html#134-139'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum List&lt;T&gt; {
+    Cons(T, <a class='struct' href='http://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;&gt;),
+    Nil,
+}</pre><div class='docblock'><p>Singly-linked cons list.</p>
+
+<p>This is used internally to represent list primitives in the
+machine.</p>
+</div><h2 class='variants'>Variants</h2>
+<table><tr><td id='variant.Cons'><a class='stability Unmarked' title='No stability level'></a><code>Cons</code></td><td><div class='docblock'><p>Cons cell containing a <code>T</code> and a link to the tail</p>
+</div></td></tr><tr><td id='variant.Nil'><a class='stability Unmarked' title='No stability level'></a><code>Nil</code></td><td><div class='docblock'><p>The empty list.</p>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;T&gt; <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h3><div class='docblock'><p>Public implementation for List.</p>
+</div><div class='impl-items'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h4>
+<div class='docblock'><p>Creates a new empty list</p>
+</div><h4 id='method.prepend' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.prepend' class='fnname'>prepend</a>(self, it: T) -&gt; <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h4>
+<div class='docblock'><p>Prepends the given item to the list.</p>
+
+<p>Returns the list containing the new  head item.
+This is an O(1) operation.</p>
+</div><h4 id='method.append' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.append' class='fnname'>append</a>(self, it: T)</code></h4>
+<div class='docblock'><p>Appends an item to the end of the list.</p>
+
+<p>This is an O(n) operation.</p>
+</div><h4 id='method.length' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.length' class='fnname'>length</a>(&amp;self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
+<div class='docblock'><p>Returns the length of the list.</p>
+</div><h4 id='method.iter' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.iter' class='fnname'>iter</a>&lt;'a&gt;(&amp;'a self) -&gt; <a class='struct' href='../../../seax_svm/svm/slist/struct.ListIterator.html' title='seax_svm::svm::slist::ListIterator'>ListIterator</a>&lt;'a, T&gt;</code></h4>
+<div class='docblock'><p>Provide a forward iterator</p>
+</div><h4 id='method.last' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.last' class='fnname'>last</a>(&amp;self) -&gt; &amp;T</code></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;T&gt; <a class='trait' href='../../../seax_svm/svm/slist/trait.Stack.html' title='seax_svm::svm::slist::Stack'>Stack</a>&lt;T&gt; for <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h3><div class='docblock'><p>Stack implementation using a cons list</p>
+</div><div class='impl-items'><h4 id='method.push' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.push' class='fnname'>push</a>(self, item: T) -&gt; <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h4>
+<div class='docblock'><p>Push an item to the top of the stack, returning a new stack.</p>
+
+<h1 id="examples:" class='section-header'><a
+                           href="#examples:">Examples:</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='kw'>use</span> <span class='ident'>seax_svm</span>::<span class='ident'>svm</span>::<span class='ident'>slist</span>::{<span class='ident'>List</span>,<span class='ident'>Stack</span>};
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span>: <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>isize</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Stack</span>::<span class='ident'>empty</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>peek</span>(), <span class='prelude-val'>None</span>);
+<span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>push</span>(<span class='number'>1</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>peek</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='number'>1</span>));
+<span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>push</span>(<span class='number'>6</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>peek</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='number'>6</span>));
+</pre>
+</div><h4 id='method.pop' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.pop' class='fnname'>pop</a>(self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(T, <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;)</a>&gt;</code></h4>
+<div class='docblock'><p>Pop the top element of the stack.</p>
+
+<p>Pop the top element of the stack. Returns an
+<code>Option&lt;(T,List&lt;T&gt;)&gt;</code> containing the top element and a new
+<code>List&lt;T&gt;</code> with that item removed, or <code>None</code> if the stack is
+empty.</p>
+
+<h1 id="examples:" class='section-header'><a
+                           href="#examples:">Examples:</a></h1><pre id='rust-example-rendered' class='rust '>
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span>: <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>isize</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Stack</span>::<span class='ident'>empty</span>();
+<span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>push</span>(<span class='number'>2</span>);
+<span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>push</span>(<span class='number'>1</span>);
+<span class='kw'>let</span> <span class='ident'>pop_result</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+<span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>pop_result</span>.<span class='number'>1</span>;
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>peek</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='number'>2</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>pop_result</span>.<span class='number'>0</span>, <span class='number'>1</span>);
+</pre>
+</div><h4 id='method.empty' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.empty' class='fnname'>empty</a>() -&gt; <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h4>
+<h4 id='method.peek' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.peek' class='fnname'>peek</a>(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;T&gt;</code></h4>
+<div class='docblock'><p>Peek at the top element of the stack.</p>
+
+<p>Peek at the top element of the stack. Returns an <code>Option&lt;&amp;T&gt;</code>
+with a borrowed pointer to the top element, or <code>None</code> if the
+stack is empty.</p>
+
+<h1 id="examples:" class='section-header'><a
+                           href="#examples:">Examples:</a></h1><pre id='rust-example-rendered' class='rust '>
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span>: <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>isize</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Stack</span>::<span class='ident'>empty</span>();
+<span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>push</span>(<span class='number'>2</span>);
+<span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>push</span>(<span class='number'>1</span>);
+<span class='kw'>let</span> <span class='ident'>pop_result</span> <span class='op'>=</span> <span class='ident'>s</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+<span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>pop_result</span>.<span class='number'>1</span>;
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>s</span>.<span class='ident'>peek</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='number'>2</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>pop_result</span>.<span class='number'>0</span>, <span class='number'>1</span>);
+</pre>
+</div></div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl&lt;'a, T&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a> for <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt; <span class='where'>where T: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Display.html' title='core::fmt::Display'>Display</a></span></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, f: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl&lt;T&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Index.html' title='core::ops::Index'>Index</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt; for <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h3><div class='docblock'><p>Implementation of indexing for <code>List&lt;T&gt;</code>.</p>
+
+<h1 id="examples:" class='section-header'><a
+                           href="#examples:">Examples:</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='ident'>list</span> <span class='op'>=</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='number'>1</span>,<span class='number'>2</span>,<span class='number'>3</span>,<span class='number'>4</span>,<span class='number'>5</span>,<span class='number'>6</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>list</span>[<span class='number'>0us</span>], <span class='number'>1</span>);
+</pre>
+</div><div class='impl-items'><h4 id='assoc_type.Output' class='type'><a class='stability Unmarked' title='No stability level'></a><code>type Output = T</code></h4>
+<h4 id='method.index' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.index' class='fnname'>index</a>&lt;'a&gt;(&amp;'a self, _index: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; &amp;'a T</code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl&lt;T&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.Index.html' title='core::ops::Index'>Index</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>&gt; for <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h3><div class='docblock'><p>Implementation of indexing for <code>List&lt;T&gt;</code>.</p>
+
+<h1 id="examples:" class='section-header'><a
+                           href="#examples:">Examples:</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='ident'>list</span> <span class='op'>=</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='number'>1</span>,<span class='number'>2</span>,<span class='number'>3</span>,<span class='number'>4</span>,<span class='number'>5</span>,<span class='number'>6</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>list</span>[<span class='number'>0is</span>], <span class='number'>1</span>);
+</pre>
+</div><div class='impl-items'><h4 id='assoc_type.Output' class='type'><a class='stability Unmarked' title='No stability level'></a><code>type Output = T</code></h4>
+<h4 id='method.index' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.index' class='fnname'>index</a>&lt;'a&gt;(&amp;'a self, _index: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>) -&gt; &amp;'a T</code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl&lt;T: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a>&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl&lt;T: <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h3><div class='impl-items'><h4 id='method.clone' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h4>
+<h4 id='method.clone_from' class='tymethod'><a class='stability Unstable' title='Unstable: this function is rarely used'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl&lt;T: <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a>&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;</code></h3><div class='impl-items'><h4 id='method.eq' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.ne' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.ne' class='fnname'>ne</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../../../seax_svm/svm/slist/enum.List.html' title='seax_svm::svm::slist::List'>List</a>&lt;T&gt;) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "seax_svm";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script async src="../../../search-index.js"></script>
+</body>
+</html>
