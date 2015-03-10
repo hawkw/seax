@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["svm","Contains the Seax Virtual Machine (SVM) and miscellaneous support code."]],"macro":[["list!","Convenience macro for making lists."]]});
+initSidebarItems({"macro":[["list!","Convenience macro for making lists."]],"mod":[["svm","Contains the Seax Virtual Machine (SVM) and miscellaneous support code."]]});
