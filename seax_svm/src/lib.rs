@@ -413,7 +413,23 @@ pub mod svm {
                     }
                 },
                 Some((InstCell(CONS), new_control @ _)) => {
-                    unimplemented!()
+                    match self.stack.pop() {
+                        Some((thing, new_stack)) => {
+                            match new_stack.pop() {
+                                Some((ListCell(list), newer_stack)) => {
+                                    State {
+                                        stack: newer_stack.push(ListCell(box Cons(thing, list))),
+                                        env: self.env,
+                                        control: new_control,
+                                        dump: self.dump
+                                    }
+                                },
+                                Some((thing_else, _)) => panic!("[CONS]: Expected a list on the stack, found {:?}", thing_else),
+                                None               => panic!("[CONS]: Expected a list on the stack, found nothing.")
+                            }
+                        },
+                        None => panic!("[CONS]: Expected an item on the stack, found nothing")
+                    }
                 },
                 None => {panic!("[eval]: expected an instruction on control stack")}
                 it @ _ => { panic!("[eval]: Tried to evaluate an unsupported cell type {:?}.", it) }
