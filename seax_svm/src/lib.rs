@@ -1653,6 +1653,43 @@ pub mod svm {
                 ))));
         }
 
+        #[test]
+        fn test_eval_sel_true() {
+            // true case
+            let state = State {
+                stack: list!(ListCell(box Nil)),
+                env: Stack::empty(),
+                control: list!(
+                    ListCell(box list!(InstCell(ATOM))), // should be on stack if true
+                    ListCell(box list!(InstCell(NIL))), // should be on stack if false
+                    InstCell(JOIN) // this is just here so that we can assert that it goes on the dump
+                    ),
+                dump: Stack::empty()
+            }.eval();
+            assert_eq!(state.stack.peek(), None); // stack should be empty
+            assert_eq!(state.control.peek(), Some(&InstCell(NIL)));
+            assert_eq!(state.dump.peek(), Some(&InstCell(JOIN))); // next instruction on dump
+        }
+
+        #[test]
+        fn test_eval_sel_false() {
+            // false case
+            let state = State {
+                stack: list!(ListCell(box list!(AtomCell(SInt(1))))),
+                env: Stack::empty(),
+                control: list!(
+                    ListCell(box list!(InstCell(ATOM))), // should be on stack if true
+                    ListCell(box list!(InstCell(NIL))), // should be on stack if false
+                    InstCell(JOIN) // this is just here so that we can assert that it goes on the dump
+                    ),
+                dump: Stack::empty()
+            }.eval();
+            assert_eq!(state.stack.peek(), None); // stack should be empty
+            assert_eq!(state.control.peek(), Some(&InstCell(ATOM)));
+            assert_eq!(state.dump.peek(), Some(&InstCell(JOIN))); // next instruction on dump
+
+        }
+
     }
 
 }
