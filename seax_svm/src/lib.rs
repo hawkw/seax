@@ -185,8 +185,7 @@ pub mod svm {
                                             (Char(a), Float(b))     => Float(a as u8 as f64 / b as f64),
                                             (UInt(a), Char(b))      => Float(a as f64 / b as u8 as f64),
                                             (SInt(a), Char(b))      => Float(a as f64 / b as u8 as f64),
-                                            (Float(a), Char(b))     => Float(a as f64 / b as u8 as f64),
-                                            (_, _)                  => panic!("TypeError: Unsupported operands {:?} * {:?}", a,b)
+                                            (Float(a), Char(b))     => Float(a as f64 / b as u8 as f64)
                                         }
                                         )),
                                     env: self.env,
