@@ -394,9 +394,9 @@ pub mod svm {
                             control: new_control,
                             dump: self.dump
                         },
-                        Some((ListCell(box Nil), _)) => panic!("[CDR]: expected non-empty list, found Nil"),
-                        Some((thing, _))             => panic!("[CDR]: expected non-empty list, found {:?}", thing),
-                        None                         => panic!("[CDR]: Expected non-empty list, found nothing")
+                        Some((ListCell(box Nil), _)) => panic!("[CAR]: expected non-empty list, found Nil"),
+                        Some((thing, _))             => panic!("[CAR]: expected non-empty list, found {:?}", thing),
+                        None                         => panic!("[CAR]: Expected non-empty list, found nothing")
                     }
                 },
                 Some((InstCell(CDR), new_control @ _)) => {
