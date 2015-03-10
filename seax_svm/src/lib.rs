@@ -423,13 +423,13 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[eval]: expected an instruction on control stack")]
         fn test_empty_eval_fail() {
-            let state = State::new().eval();
+            State::new().eval();
         }
 
         #[test]
         #[should_fail(expected="List index 0 out of range")]
         fn test_ld_empty_env_fail() {
-            let state = State {
+            State {
                 stack:      Stack::empty(),
                 env:        Stack::empty(),
                 control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(0))))),
@@ -440,7 +440,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[LD]: Fatal: expected list in $e, found AtomCell(Char('w'))")]
         fn test_ld_unexpected_env_fail() {
-            let state = State {
+            State {
                 stack:      Stack::empty(),
                 env:        list!(AtomCell(Char('w'))),
                 control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(0))))),
@@ -451,7 +451,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[LD] Fatal: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Nil)), Nil))")]
         fn test_ld_arg_too_short_fail() {
-            let state = State {
+            State {
                 stack:      Stack::empty(),
                 env:        Stack::empty(),
                 control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0))))),
@@ -461,7 +461,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[LD] Fatal: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Cons(AtomCell(SInt(1)), Cons(AtomCell(SInt(1)), Nil)))), Nil))")]
         fn test_ld_arg_too_long_fail() {
-            let state = State {
+            State {
                 stack:      Stack::empty(),
                 env:        Stack::empty(),
                 control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(1)), AtomCell(SInt(1))))),
@@ -472,20 +472,19 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[ADD]: Expected first operand to be atom, found list or instruction")]
         fn test_add_unexpected_first_arg_fail () {
-            let state = State {
+            State {
                 stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
                 env:        Stack::empty(),
                 control:    list!(InstCell(ADD)),
                 dump:       Stack::empty(),
-            };
-            state.eval();
+            }.eval();
         }
 
 
         #[test]
         #[should_fail(expected="[SUB]: Expected first operand to be atom, found list or instruction")]
         fn test_sub_unexpected_first_arg_fail () {
-            let state = State {
+            State {
                 stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
                 env:        Stack::empty(),
                 control:    list!(InstCell(SUB)),
@@ -496,7 +495,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[DIV]: Expected first operand to be atom, found list or instruction")]
         fn test_div_unexpected_first_arg_fail () {
-            let state = State {
+            State {
                 stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
                 env:        Stack::empty(),
                 control:    list!(InstCell(DIV)),
@@ -507,7 +506,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[FDIV]: Expected first operand to be atom, found list or instruction")]
         fn test_fdiv_unexpected_first_arg_fail () {
-            let state = State {
+            State {
                 stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
                 env:        Stack::empty(),
                 control:    list!(InstCell(FDIV)),
@@ -518,7 +517,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[MUL]: Expected first operand to be atom, found list or instruction")]
         fn test_mul_unexpected_first_arg_fail () {
-            let state = State {
+            State {
                 stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
                 env:        Stack::empty(),
                 control:    list!(InstCell(MUL)),
@@ -529,7 +528,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[ADD] TypeError: expected compatible operands, found (ADD SInt(1) ListCell(Nil))")]
         fn test_add_type_error () {
-            let state = State {
+            State {
                 stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
                 env:        Stack::empty(),
                 control:    list!(InstCell(ADD)),
@@ -539,7 +538,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[SUB] TypeError: expected compatible operands, found (SUB SInt(1) ListCell(Nil))")]
         fn test_sub_type_error () {
-            let state = State {
+            State {
                 stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
                 env:        Stack::empty(),
                 control:    list!(InstCell(SUB)),
@@ -550,7 +549,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[DIV] TypeError: expected compatible operands, found (DIV SInt(1) ListCell(Nil))")]
         fn test_div_type_error () {
-            let state = State {
+            State {
                 stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
                 env:        Stack::empty(),
                 control:    list!(InstCell(DIV)),
@@ -561,7 +560,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[FDIV] TypeError: expected compatible operands, found (FDIV SInt(1) ListCell(Nil))")]
         fn test_fdiv_type_error () {
-            let state = State {
+           State {
                 stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
                 env:        Stack::empty(),
                 control:    list!(InstCell(FDIV)),
@@ -572,7 +571,7 @@ pub mod svm {
         #[test]
         #[should_fail(expected="[MUL] TypeError: expected compatible operands, found (MUL SInt(1) ListCell(Nil))")]
         fn test_mul_type_error () {
-            let state = State {
+            State {
                 stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
                 env:        Stack::empty(),
                 control:    list!(InstCell(MUL)),
