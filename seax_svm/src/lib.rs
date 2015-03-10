@@ -1632,8 +1632,8 @@ pub mod svm {
                         )),
                     ListCell(box list!(ListCell(box list!(AtomCell(SInt(1))))),
                     AtomCell(Char('Q'))
-                    ).
-                env: list!(ListCell(box list!(AtomCell(Char('D')))))
+                    )),
+                env: list!(ListCell(box list!(AtomCell(Char('D'))))),
                 control: list!(InstCell(AP), InstCell(DUM)),
                 dump: Stack::empty()
             };
