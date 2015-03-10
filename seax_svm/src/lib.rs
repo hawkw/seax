@@ -333,7 +333,15 @@ pub mod svm {
                     }
                 },
                 Some((InstCell(AP), new_control @ _)) => {
-                    unimplemented!()
+                    match self.stack.pop().unwrap() {
+                        (ListCell(box Cons(ListCell(box closure), box Cons(ListCell(box params), box Nil))), new_stack) => State {
+                            stack: new_stack,
+                            env: params,
+                            control: closure,
+                            dump: self.dump.push(ListCell(box self.env)).push(ListCell(box new_control))
+                        },
+                        (closure, params) => panic!("[AP]: Fatal: Expected closure and arguments on stack, got:\nClosure: {:?}\nParams: {:?}", closure, params)
+                    }
                 },
                 Some((InstCell(RAP), new_control @ _)) => {
                     unimplemented!()
@@ -1624,24 +1632,28 @@ pub mod svm {
                 stack: list!(
                     ListCell(box list!(
                         ListCell(box list!(
-                            InstCell(RET), InstCell(ADD), AtomCell(SInt(1)), InstCell(LDC), ListCell(box list!(
-                                AtomCell(0), AtomCell(0)
-                                )),
+                            InstCell(RET), InstCell(ADD), AtomCell(SInt(1)), InstCell(LDC), ListCell(box list!(AtomCell(UInt(0)), AtomCell(UInt(0)))),
                             InstCell(LD)
+                            )),
+                        ListCell(box list!(
+                            ListCell(box Cons(
+                                AtomCell(SInt(1)), box Nil
+                                ))
                             ))
                         )),
-                    ListCell(box list!(ListCell(box list!(AtomCell(SInt(1))))),
                     AtomCell(Char('Q'))
+                    ),
+                env: list!(ListCell(
+                    box Cons(AtomCell(Char('D')), box Nil)
                     )),
-                env: list!(ListCell(box list!(AtomCell(Char('D'))))),
                 control: list!(InstCell(AP), InstCell(DUM)),
                 dump: Stack::empty()
             };
             state = state.eval();
-            assert_eq!(state.stack.peek(), None);
-            assert_eq!(state.control, list!(InstCell(RET), InstCell(ADD), AtomCell(SInt(1)), InstCell(LDC), ListCell(box list!(AtomCell(0), AtomCell(0))),InstCell(LD)));
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Char('Q'))));
+            assert_eq!(state.control, list!(InstCell(RET), InstCell(ADD), AtomCell(SInt(1)), InstCell(LDC), ListCell(box list!(AtomCell(UInt(0)), AtomCell(UInt(0)))),InstCell(LD)));
             assert_eq!(state.env, list!(ListCell(box list!(AtomCell(SInt(1))))));
-            assert_eq!(state.dump, list!(ListCell(box list!(AtomCell(Char('D'))))));
+            assert_eq!(state.dump, list!(ListCell(box list!(InstCell(DUM))),ListCell(box list!(ListCell(box list!(AtomCell(Char('D'))))))));
         }
 
     }
