@@ -4,7 +4,7 @@ if [ "$TRAVIS_REPO_SLUG" == "hawkw/seax" ] && [ "$TRAVIS_PULL_REQUEST" == "false
 
 	echo -e "Publishing RustDoc...\n"
 
-	cp -R target/doc $HOME/api/
+	cp -R target/doc api/
 
 	cd $HOME
 	git config --global user.email "travis@travis-ci.org"
