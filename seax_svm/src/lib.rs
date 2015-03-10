@@ -1586,35 +1586,6 @@ pub mod svm {
         }
 
         #[test]
-        fn test_eval_atom() {
-            let mut state = State {
-                stack: list!(
-                    AtomCell(UInt(1)),
-                    ListCell(box list!(
-                        AtomCell(UInt(1)),AtomCell(UInt(2))
-                        ))
-                    ),
-                env: Stack::empty(),
-                control: list!(InstCell(ATOM)),
-                dump: Stack::empty(),
-            };
-            state = state.eval();
-            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
-
-            state = State {
-                stack: list!(
-                    ListCell(box list!(AtomCell(UInt(1)),AtomCell(UInt(2)))),
-                    AtomCell(UInt(1))
-                    ),
-                env: Stack::empty(),
-                control: list!(InstCell(ATOM)),
-                dump: Stack::empty(),
-            };
-            state = state.eval();
-            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
-        }
-
-        #[test]
         fn test_eval_dum() {
             let mut state = State {
                 stack: Stack::empty(),
@@ -1660,32 +1631,68 @@ pub mod svm {
         fn test_eval_atom() {
             // true cases
             let mut state = State {
-                stack: list!(AtomCell(SInt(1)), AtomCell(UInt(0)), AtomCell(Char('C')), AtomCell(Bool(true)),AtomCell(Float(1.23f))),
+                stack: list!(AtomCell(SInt(1))),
                 env: Stack::empty(),
-                control: list!(InstCell(ATOM), ListCell(ATOM), List(Cell(ATOM)), ListCell(ATOM), List(Cell(ATOM))),
+                control: list!(InstCell(ATOM)),
                 dump: Stack::empty()
             };
             state = state.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(UInt(0))),
+                env: Stack::empty(),
+                control: list!(InstCell(ATOM)),
+                dump: Stack::empty()
+            };
             state = state.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(Char('C'))),
+                env: Stack::empty(),
+                control: list!(InstCell(ATOM)),
+                dump: Stack::empty()
+            };
             state = state.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(Bool(true))),
+                env: Stack::empty(),
+                control: list!(InstCell(ATOM)),
+                dump: Stack::empty()
+            };
             state = state.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
+            state = State {
+                stack: list!(AtomCell(Float(1.23f64))),
+                env: Stack::empty(),
+                control: list!(InstCell(ATOM)),
+                dump: Stack::empty()
+            };
             state = state.eval();
             assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+
             // false cases
             state = State {
-                stack: list!(InstCell(DUM), ListCell(box Nil)),
+                stack: list!(InstCell(DUM)),
                 env: Stack::empty(),
-                control: list!(InstCell(ATOM), ListCell(ATOM)),
+                control: list!(InstCell(ATOM)),
                 dump: Stack::empty()
-            }
+            };
             state = state.eval();
-            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
+
+            state = State {
+                stack: list!(ListCell(box Nil)),
+                env: Stack::empty(),
+                control: list!(InstCell(ATOM)),
+                dump: Stack::empty()
+            };
             state = state.eval();
-            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(true))));
+            assert_eq!(state.stack.peek(), Some(&AtomCell(Bool(false))));
         }
 
     }
