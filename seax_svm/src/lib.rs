@@ -1700,7 +1700,7 @@ pub mod svm {
             }.eval();
             assert_eq!(state.stack.peek(), None); // stack should be empty
             assert_eq!(state.control.peek(), Some(&InstCell(NIL)));
-            assert_eq!(state.dump.peek(), Some(&InstCell(JOIN))); // next instruction on dump
+            assert_eq!(state.dump.peek(), Some(&ListCell(box list!(InstCell(JOIN))))); // next instruction on dump
         }
 
         #[test]
@@ -1719,8 +1719,7 @@ pub mod svm {
             }.eval();
             assert_eq!(state.stack.peek(), None); // stack should be empty
             assert_eq!(state.control.peek(), Some(&InstCell(ATOM)));
-            assert_eq!(state.dump.peek(), Some(&InstCell(JOIN))); // next instruction on dump
-
+            assert_eq!(state.dump.peek(), Some(&ListCell(box list!(InstCell(JOIN))))); // next instruction on dump
         }
 
     }
