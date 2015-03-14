@@ -31,7 +31,7 @@ pub mod svm {
     pub mod cell;
 
     #[cfg(test)]
-    mod test;
+    mod tests;
 
     /// Represents a SVM machine state
     #[derive(PartialEq,Clone,Debug)]
