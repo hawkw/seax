@@ -357,20 +357,17 @@ pub mod svm {
                 },
                 Some((InstCell(AP), new_control @ _)) => {
                     match self.stack.pop().unwrap() {
-                        (ListCell(box Cons(ListCell(box closure), box Cons(ListCell(box params), box Nil))), new_stack) => State {
+                        (ListCell(box Cons(ListCell(box func), box Cons(ListCell(box params), box Nil))), new_stack) => State {
                             stack: new_stack,
                             env: params,
-                            control: closure,
+                            control: func,
                             dump: self.dump.push(ListCell(box self.env)).push(ListCell(box new_control))
                         },
                         (_, thing) => panic!("[AP]: Fatal: Expected closure on stack, got:\n{:?}", thing)
                     }
                 },
                 Some((InstCell(RAP), new_control @ _)) => {
-                    match self.stack.pop().unwrap() {
-                        (new_stack, closure @ ListCell(_)) => unimplemented!(),
-                        (new_stack, thing @ _) => panic!("[RAP]: Fatal: Expected closure on stack, got: {:?}",thing)
-                    }
+                    unimplemented!()
                 },
                 Some((InstCell(RET), new_control @ _)) => {
                     let (head, _) = self.stack.pop().unwrap();
