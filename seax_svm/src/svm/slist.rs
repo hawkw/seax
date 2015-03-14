@@ -1,7 +1,3 @@
-#![feature(box_syntax)]
-#![feature(box_patterns)]
-#![feature(core)]
-
 pub use svm::slist::List::{Cons,Nil};
 use std::fmt;
 use std::ops::Index;

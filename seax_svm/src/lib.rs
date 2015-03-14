@@ -391,7 +391,7 @@ pub mod svm {
                         (_, thing) => panic!("[AP]: Fatal: Expected closure on stack, got:\n{:?}", thing)
                     }
                 },
-                Some((InstCell(RET), new_control @ _)) => {
+                Some((InstCell(RET), _)) => {
                     let (head, _) = self.stack.pop().unwrap();
                     let (new_stack, new_dump) = {
                         match self.dump.pop().unwrap()  {

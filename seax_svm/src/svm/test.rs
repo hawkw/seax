@@ -1122,7 +1122,7 @@ fn test_eval_lte () {
 
 #[test]
 fn test_eval_ret() {
-    let mut state = State {
+    let state = State {
         stack: list!(AtomCell(SInt(100)), AtomCell(SInt(320))),
         env: Stack::empty(),
         control: list!(InstCell(RET)),
