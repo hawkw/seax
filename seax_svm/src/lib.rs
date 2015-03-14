@@ -363,11 +363,14 @@ pub mod svm {
                             control: closure,
                             dump: self.dump.push(ListCell(box self.env)).push(ListCell(box new_control))
                         },
-                        (closure, params) => panic!("[AP]: Fatal: Expected closure and arguments on stack, got:\nClosure: {:?}\nParams: {:?}", closure, params)
+                        (_, thing) => panic!("[AP]: Fatal: Expected closure on stack, got:\n{:?}", thing)
                     }
                 },
                 Some((InstCell(RAP), new_control @ _)) => {
-                    unimplemented!()
+                    match self.stack.pop().unwrap() {
+                        (new_stack, closure @ ListCell(_)) => unimplemented!(),
+                        (new_stack, thing @ _) => panic!("[RAP]: Fatal: Expected closure on stack, got: {:?}",thing)
+                    }
                 },
                 Some((InstCell(RET), new_control @ _)) => {
                     let (head, _) = self.stack.pop().unwrap();
