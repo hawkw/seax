@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.17/src/compile.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.19/src/compile.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>compile.rs.html -- source</title>
@@ -334,8 +334,10 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>repeat</span>;
 <span class='kw'>use</span> <span class='ident'>parse</span>;
 <span class='kw'>use</span> <span class='ident'>parse</span>::{<span class='ident'>Flags</span>, <span class='ident'>FLAG_EMPTY</span>};
-<span class='kw'>use</span> <span class='ident'>parse</span>::<span class='ident'>Ast</span>::{<span class='ident'>Nothing</span>, <span class='ident'>Literal</span>, <span class='ident'>Dot</span>, <span class='ident'>AstClass</span>, <span class='ident'>Begin</span>, <span class='ident'>End</span>, <span class='ident'>WordBoundary</span>, <span class='ident'>Capture</span>, <span class='ident'>Cat</span>, <span class='ident'>Alt</span>,
-                 <span class='ident'>Rep</span>};
+<span class='kw'>use</span> <span class='ident'>parse</span>::<span class='ident'>Ast</span>::{
+    <span class='ident'>Nothing</span>, <span class='ident'>Literal</span>, <span class='ident'>Dot</span>, <span class='ident'>AstClass</span>, <span class='ident'>Begin</span>, <span class='ident'>End</span>, <span class='ident'>WordBoundary</span>, <span class='ident'>Capture</span>,
+    <span class='ident'>Cat</span>, <span class='ident'>Alt</span>, <span class='ident'>Rep</span>,
+};
 <span class='kw'>use</span> <span class='ident'>parse</span>::<span class='ident'>Repeater</span>::{<span class='ident'>ZeroOne</span>, <span class='ident'>ZeroMore</span>, <span class='ident'>OneMore</span>};
 
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>InstIdx</span> <span class='op'>=</span> <span class='ident'>usize</span>;
@@ -352,8 +354,7 @@
 
     <span class='doccomment'>/// The CharClass instruction tries to match one input character against</span>
     <span class='doccomment'>/// the range of characters given.</span>
-    <span class='doccomment'>/// The flags indicate whether to do a case insensitive match and whether</span>
-    <span class='doccomment'>/// the character class is negated or not.</span>
+    <span class='doccomment'>/// The flags indicate whether to do a case insensitive match.</span>
     <span class='ident'>CharClass</span>(<span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>char</span>, <span class='ident'>char</span>)<span class='op'>&gt;</span>, <span class='ident'>Flags</span>),
 
     <span class='doccomment'>/// Matches any character except new lines.</span>
@@ -394,7 +395,7 @@
 <span class='doccomment'>/// All of the data in a compiled expression is wrapped in &quot;MaybeStatic&quot; or</span>
 <span class='doccomment'>/// &quot;MaybeOwned&quot; types so that a `Program` can be represented as static data.</span>
 <span class='doccomment'>/// (This makes it convenient and efficient for use with the `regex!` macro.)</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Program</span> {
     <span class='doccomment'>/// A sequence of instructions.</span>
     <span class='kw'>pub</span> <span class='ident'>insts</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Inst</span><span class='op'>&gt;</span>,
@@ -466,8 +467,7 @@
             <span class='ident'>Nothing</span> <span class='op'>=&gt;</span> {},
             <span class='ident'>Literal</span>(<span class='ident'>c</span>, <span class='ident'>flags</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>push</span>(<span class='ident'>OneChar</span>(<span class='ident'>c</span>, <span class='ident'>flags</span>)),
             <span class='ident'>Dot</span>(<span class='ident'>nl</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>push</span>(<span class='ident'>Any</span>(<span class='ident'>nl</span>)),
-            <span class='ident'>AstClass</span>(<span class='ident'>ranges</span>, <span class='ident'>flags</span>) <span class='op'>=&gt;</span>
-                <span class='self'>self</span>.<span class='ident'>push</span>(<span class='ident'>CharClass</span>(<span class='ident'>ranges</span>, <span class='ident'>flags</span>)),
+            <span class='ident'>AstClass</span>(<span class='ident'>ranges</span>, <span class='ident'>flags</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>push</span>(<span class='ident'>CharClass</span>(<span class='ident'>ranges</span>, <span class='ident'>flags</span>)),
             <span class='ident'>Begin</span>(<span class='ident'>flags</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>push</span>(<span class='ident'>EmptyBegin</span>(<span class='ident'>flags</span>)),
             <span class='ident'>End</span>(<span class='ident'>flags</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>push</span>(<span class='ident'>EmptyEnd</span>(<span class='ident'>flags</span>)),
             <span class='ident'>WordBoundary</span>(<span class='ident'>flags</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>push</span>(<span class='ident'>EmptyWordBoundary</span>(<span class='ident'>flags</span>)),
