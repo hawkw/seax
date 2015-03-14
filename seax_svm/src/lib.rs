@@ -513,14 +513,23 @@ pub mod svm {
         }
     }
 
-    /*
+
     /// Evaluates a program.
     ///
-    /// Evaluates a program represented as an `Iterator` of `Inst`s.
-    /// Returns the final machine state at the end of execution
-
-    pub fn evalProgram(insts: Iterator<Item=Inst>) -> State {
-        insts.fold(State::new(), |last_state: State, inst: Inst| last_state.eval(inst));
-    }*/
+    /// Evaluates a program (control stack) and returns the final state.
+    /// TODO: add (optional?) parameters for stdin and stdout
+    pub fn eval_program(program: List<SVMCell>) -> State {
+        let mut machine = State {
+            stack:      Stack::empty(),
+            env:        Stack::empty(),
+            control:    program,
+            dump:       Stack::empty()
+        };
+        // while there are more instructions,
+        while machine.control.peek() != None {  //TODO: this is kinda heavyweight
+            machine = machine.eval() // continue evaling
+        };
+        machine
+    }
 
 }
