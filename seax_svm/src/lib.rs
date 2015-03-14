@@ -367,7 +367,26 @@ pub mod svm {
                     }
                 },
                 Some((InstCell(RAP), new_control @ _)) => {
-                    unimplemented!()
+                     match self.stack.pop().unwrap() {
+                        (ListCell(box Cons(ListCell(box func), box Cons(ListCell(box params), box Nil))), new_stack) => {
+                            match new_stack.pop() {
+                                Some((v @ ListCell(_), newer_stack)) => {
+                                    State {
+                                        stack: Stack::empty(),
+                                        env: params.push(v),
+                                        control: func,
+                                        dump: self.dump
+                                                .push(ListCell(box new_control))
+                                                .push(ListCell(box self.env.pop().unwrap().1))
+                                                .push(ListCell(box newer_stack))
+                                    }
+                                },
+                                Some((thing, _)) => panic!("[AP]: Fatal: Expected closure on stack, got:\n{:?}", thing),
+                                None => panic!("[AP]: Fatal: expected non-empty stack")
+                            }
+                        },
+                        (_, thing) => panic!("[AP]: Fatal: Expected closure on stack, got:\n{:?}", thing)
+                    }
                 },
                 Some((InstCell(RET), new_control @ _)) => {
                     let (head, _) = self.stack.pop().unwrap();
