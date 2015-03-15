@@ -57,13 +57,16 @@ fn test_list_car() {
 /// ```
 #[test]
 fn test_list_cdr() {
-    let state = seax_svm::svm::eval_program(list!(
-        InstCell(NIL),
-        InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
-        InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
-        InstCell(CDR)
-        ));
-    assert_eq!(state.peek(), Some(&ListCell(box list!(AtomCell(SInt(10))))));
+    assert_eq!(
+        seax_svm::svm::eval_program(list!(
+            InstCell(NIL),
+            InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
+            InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
+            InstCell(CDR)
+            )
+        ).peek(),
+        Some(&ListCell(box list!(AtomCell(SInt(10)))))
+    );
 }
 
 /// Test for simple mathematics application
