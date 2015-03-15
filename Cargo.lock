@@ -6,7 +6,7 @@ dependencies = [
  "regex 0.1.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "seax_scheme 0.0.1",
- "seax_svm 0.1.0",
+ "seax_svm 0.1.1",
 ]
 
 [[package]]
@@ -40,5 +40,5 @@ version = "0.0.1"
 
 [[package]]
 name = "seax_svm"
-version = "0.1.0"
+version = "0.1.1"
 
