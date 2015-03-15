@@ -100,3 +100,23 @@ fn test_nested_arith() {
         ));
     assert_eq!(state.peek(), Some(&AtomCell(SInt(10))));
 }
+
+
+/// Test for basic branching
+///
+/// ```lisp
+/// ((if (= 0 (- 1 1)) true false)
+/// ```
+#[test]
+fn test_basic_branching() {
+    let state = seax_svm::svm::eval_program(list!(
+        InstCell(LDC), AtomCell(SInt(1)), InstCell(LDC), AtomCell(SInt(1)),
+        InstCell(SUB),
+        InstCell(LDC), AtomCell(SInt(0)),
+        InstCell(EQ),
+        InstCell(SEL),
+            ListCell(box list!(InstCell(LDC), AtomCell(SInt(1)), InstCell(JOIN))),
+            ListCell(box list!(InstCell(NIL), InstCell(JOIN)))
+        ));
+    assert_eq!(state.peek(), Some(&AtomCell(SInt(1))));
+}
