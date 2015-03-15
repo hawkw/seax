@@ -506,7 +506,9 @@ pub mod svm {
                     }
                 },
                 None => {panic!("[eval]: expected an instruction on control stack")}
-                it @ _ => { panic!("[eval]: Tried to evaluate an unsupported cell type {:?}.", it) }
+                Some((thing, new_control)) => {
+                    panic!("[fatal]: Tried to evaluate an unsupported cell type {:?}.\n[fatal]: State dump:\n[fatal]:\tstack: {:?}\n[fatal]:\tenv: {:?}\n[fatal]:\tcontrol: {:?}\n[fatal]:\tdump: {:?}",
+                 thing, self.stack, self.env, new_control, self.dump) }
             }
         }
     }
