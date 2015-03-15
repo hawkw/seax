@@ -1,6 +1,6 @@
 #![crate_name = "seax_svm"]
 #![crate_type = "lib"]
-#![feature(box_syntax,box_patterns)]
+#![feature(box_syntax,box_patterns,core)]
 
 /// Contains the Seax Virtual Machine (SVM) and miscellaneous
 /// support code.

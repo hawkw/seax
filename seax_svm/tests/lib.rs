@@ -4,7 +4,6 @@ extern crate seax_svm;
 
 use seax_svm::svm::slist::Stack;
 use seax_svm::svm::slist::List::{Cons,Nil};
-use seax_svm::svm::State;
 use seax_svm::svm::cell::Atom::*;
 use seax_svm::svm::cell::SVMCell::*;
 use seax_svm::svm::Inst::*;
@@ -33,7 +32,5 @@ fn test_list_creation() {
         InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
         InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS)
         ));
-    assert_eq!(state,
-        list!(ListCell(box list!(AtomCell(SInt(20)), AtomCell(SInt(10)))))
-    );
+    assert_eq!(state.peek(), Some(&ListCell( box list!(AtomCell(SInt(20)), AtomCell(SInt(10))))));
 }
