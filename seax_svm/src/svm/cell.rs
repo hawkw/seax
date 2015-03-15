@@ -343,6 +343,11 @@ pub enum Inst {
     /// Pops an item and a list from the stack and returns the list, with
     /// the item prepended.
     CONS,
+    /// `null`: test if `null`
+    ///
+    ///  Pops an item from the stack and returns true if it is `nil`, false
+    ///  otherwise.
+    NULL
     // TODO: add some hardcoded I/O instructions here so that you can
     //  do I/O without farming everything out to `stdio`
 }

@@ -508,6 +508,9 @@ pub mod svm {
                         None => panic!("[CONS]: Expected an item on the stack, found nothing")
                     }
                 },
+                Some((InstCell(NULL), new_control @ _)) => {
+                    unimplemented!()
+                },
                 None => {panic!("[eval]: expected an instruction on control stack")}
                 Some((thing, new_control)) => {
                     panic!("[fatal]: Tried to evaluate an unsupported cell type {:?}.\n[fatal]: State dump:\n[fatal]:\tstack: {:?}\n[fatal]:\tenv: {:?}\n[fatal]:\tcontrol: {:?}\n[fatal]:\tdump: {:?}",
