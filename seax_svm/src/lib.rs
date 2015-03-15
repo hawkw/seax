@@ -1,8 +1,6 @@
 #![crate_name = "seax_svm"]
 #![crate_type = "lib"]
-#![feature(box_syntax)]
-#![feature(box_patterns)]
-#![feature(core)]
+#![feature(box_syntax,box_patterns)]
 
 /// Contains the Seax Virtual Machine (SVM) and miscellaneous
 /// support code.
@@ -518,7 +516,7 @@ pub mod svm {
     ///
     /// Evaluates a program (control stack) and returns the final state.
     /// TODO: add (optional?) parameters for stdin and stdout
-    pub fn eval_program(program: List<SVMCell>) -> State {
+    pub fn eval_program(program: List<SVMCell>) -> List<SVMCell> {
         let mut machine = State {
             stack:      Stack::empty(),
             env:        Stack::empty(),
@@ -529,7 +527,7 @@ pub mod svm {
         while machine.control.peek() != None {  //TODO: this is kinda heavyweight
             machine = machine.eval() // continue evaling
         };
-        machine
+        machine.stack
     }
 
 }
