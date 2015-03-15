@@ -509,7 +509,18 @@ pub mod svm {
                     }
                 },
                 Some((InstCell(NULL), new_control @ _)) => {
-                    unimplemented!()
+                    let (target, new_stack) = self.stack.pop().unwrap();
+                    State {
+                        stack: new_stack.push(
+                            match target {
+                                ListCell(box Nil) => ListCell(box list!(AtomCell(SInt(1)))),
+                                _                 => ListCell(box Nil)
+                            }
+                            ),
+                        env: self.env,
+                        control: new_control,
+                        dump: self.dump
+                    }
                 },
                 None => {panic!("[eval]: expected an instruction on control stack")}
                 Some((thing, new_control)) => {
