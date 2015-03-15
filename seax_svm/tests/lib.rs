@@ -34,3 +34,66 @@ fn test_list_creation() {
         ));
     assert_eq!(state.peek(), Some(&ListCell( box list!(AtomCell(SInt(20)), AtomCell(SInt(10))))));
 }
+
+/// Test for simple list construction and destructuring
+///
+/// ```lisp
+/// (car (cons 10 (cons 20 nil)))
+/// ```
+#[test]
+fn test_list_car() {
+    let state = seax_svm::svm::eval_program(list!(
+        InstCell(NIL),
+        InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
+        InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
+        InstCell(CAR)
+        ));
+    assert_eq!(state.peek(), Some(&AtomCell(SInt(20))));
+}
+/// Test for simple list construction and destructuring
+///
+/// ```lisp
+/// (cdr (cons 10 (cons 20 nil)))
+/// ```
+#[test]
+fn test_list_cdr() {
+    let state = seax_svm::svm::eval_program(list!(
+        InstCell(NIL),
+        InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
+        InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
+        InstCell(CDR)
+        ));
+    assert_eq!(state.peek(), Some(&ListCell(box list!(AtomCell(SInt(10))))));
+}
+
+/// Test for simple mathematics application
+///
+/// ```lisp
+/// (+ 10 10)
+/// ```
+#[test]
+fn test_simple_add() {
+    let state = seax_svm::svm::eval_program(list!(
+        InstCell(LDC), AtomCell(SInt(10)),
+        InstCell(LDC), AtomCell(SInt(10)),
+        InstCell(ADD)
+        ));
+    assert_eq!(state.peek(), Some(&AtomCell(SInt(20))));
+}
+
+/// Test for nested arithmetic
+///
+/// ```lisp
+/// (- 20 (+ 5 5))
+/// ```
+#[test]
+fn test_nested_arith() {
+    let state = seax_svm::svm::eval_program(list!(
+        InstCell(LDC), AtomCell(SInt(5)),
+        InstCell(LDC), AtomCell(SInt(5)),
+        InstCell(ADD),
+        InstCell(LDC), AtomCell(SInt(20)),
+        InstCell(SUB)
+        ));
+    assert_eq!(state.peek(), Some(&AtomCell(SInt(10))));
+}
