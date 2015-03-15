@@ -573,14 +573,10 @@
 <span id="531">531</span>
 <span id="532">532</span>
 <span id="533">533</span>
-<span id="534">534</span>
-<span id="535">535</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;seax_svm&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_type</span> <span class='op'>=</span> <span class='string'>&quot;lib&quot;</span>]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_syntax</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_patterns</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>core</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_syntax</span>,<span class='ident'>box_patterns</span>,<span class='ident'>core</span>)]</span>
 
 <span class='doccomment'>/// Contains the Seax Virtual Machine (SVM) and miscellaneous</span>
 <span class='doccomment'>/// support code.</span>
@@ -1096,7 +1092,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Evaluates a program (control stack) and returns the final state.</span>
     <span class='doccomment'>/// TODO: add (optional?) parameters for stdin and stdout</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>eval_program</span>(<span class='ident'>program</span>: <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>State</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>eval_program</span>(<span class='ident'>program</span>: <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>machine</span> <span class='op'>=</span> <span class='ident'>State</span> {
             <span class='ident'>stack</span>:      <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
             <span class='ident'>env</span>:        <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
@@ -1107,7 +1103,7 @@
         <span class='kw'>while</span> <span class='ident'>machine</span>.<span class='ident'>control</span>.<span class='ident'>peek</span>() <span class='op'>!=</span> <span class='prelude-val'>None</span> {  <span class='comment'>//TODO: this is kinda heavyweight</span>
             <span class='ident'>machine</span> <span class='op'>=</span> <span class='ident'>machine</span>.<span class='ident'>eval</span>() <span class='comment'>// continue evaling</span>
         };
-        <span class='ident'>machine</span>
+        <span class='ident'>machine</span>.<span class='ident'>stack</span>
     }
 
 }
