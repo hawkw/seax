@@ -573,6 +573,11 @@
 <span id="531">531</span>
 <span id="532">532</span>
 <span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;seax_svm&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_type</span> <span class='op'>=</span> <span class='string'>&quot;lib&quot;</span>]</span>
@@ -693,7 +698,10 @@
                     <span class='ident'>State</span> {
                         <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>,
                         <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                        <span class='ident'>control</span>: <span class='ident'>new_control</span>.<span class='ident'>push</span>(<span class='ident'>top</span>),
+                        <span class='ident'>control</span>: <span class='kw'>match</span> <span class='ident'>top</span> {
+                            <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>) <span class='op'>=&gt;</span> <span class='ident'>new_control</span>,
+                            _                 <span class='op'>=&gt;</span> <span class='ident'>new_control</span>.<span class='ident'>push</span>(<span class='ident'>top</span>)
+                        },
                         <span class='ident'>dump</span>: <span class='ident'>new_dump</span>
                     }
                 },
@@ -1082,7 +1090,9 @@
                     }
                 },
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {<span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[eval]: expected an instruction on control stack&quot;</span>)}
-                <span class='ident'>it</span> <span class='kw-2'>@</span> _ <span class='op'>=&gt;</span> { <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[eval]: Tried to evaluate an unsupported cell type {:?}.&quot;</span>, <span class='ident'>it</span>) }
+                <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                    <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal]: Tried to evaluate an unsupported cell type {:?}.\n[fatal]: State dump:\n[fatal]:\tstack: {:?}\n[fatal]:\tenv: {:?}\n[fatal]:\tcontrol: {:?}\n[fatal]:\tdump: {:?}&quot;</span>,
+                 <span class='ident'>thing</span>, <span class='self'>self</span>.<span class='ident'>stack</span>, <span class='self'>self</span>.<span class='ident'>env</span>, <span class='ident'>new_control</span>.<span class='ident'>push</span>(<span class='ident'>thing</span>.<span class='ident'>clone</span>()), <span class='self'>self</span>.<span class='ident'>dump</span>) }
             }
         }
     }
