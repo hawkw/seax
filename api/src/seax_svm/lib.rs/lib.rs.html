@@ -578,6 +578,9 @@
 <span id="536">536</span>
 <span id="537">537</span>
 <span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;seax_svm&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_type</span> <span class='op'>=</span> <span class='string'>&quot;lib&quot;</span>]</span>
@@ -1088,6 +1091,9 @@
                         },
                         <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[CONS]: Expected an item on the stack, found nothing&quot;</span>)
                     }
+                },
+                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>NULL</span>), <span class='ident'>new_control</span> <span class='kw-2'>@</span> _)) <span class='op'>=&gt;</span> {
+                    <span class='macro'>unimplemented</span><span class='macro'>!</span>()
                 },
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {<span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[eval]: expected an instruction on control stack&quot;</span>)}
                 <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {

@@ -417,6 +417,11 @@
 <span id="375">375</span>
 <span id="376">376</span>
 <span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
 </pre><pre class='rust '>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>SVMCell</span>::<span class='op'>*</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>Atom</span>::<span class='op'>*</span>;
@@ -763,6 +768,11 @@
     <span class='doccomment'>/// Pops an item and a list from the stack and returns the list, with</span>
     <span class='doccomment'>/// the item prepended.</span>
     <span class='ident'>CONS</span>,
+    <span class='doccomment'>/// `null`: test if `null`</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>///  Pops an item from the stack and returns true if it is `nil`, false</span>
+    <span class='doccomment'>///  otherwise.</span>
+    <span class='ident'>NULL</span>
     <span class='comment'>// TODO: add some hardcoded I/O instructions here so that you can</span>
     <span class='comment'>//  do I/O without farming everything out to `stdio`</span>
 }

@@ -43,7 +43,7 @@
     <section id='main' class="content enum">
 <h1 class='fqn'><span class='in-band'>Enum <a href='../../index.html'>seax_svm</a>::<wbr><a href='../index.html'>svm</a>::<wbr><a href='index.html'>cell</a>::<wbr><a class='enum' href=''>Inst</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-4356' href='../../../src/seax_svm/svm/cell.rs.html#203-348'>[src]</a></span></h1>
+        </span><a id='src-4356' href='../../../src/seax_svm/svm/cell.rs.html#203-353'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Inst {
     NIL,
     LDC,
@@ -70,6 +70,7 @@
     CAR,
     CDR,
     CONS,
+    NULL,
 }</pre><div class='docblock'><p>SVM instruction types</p>
 </div><h2 class='variants'>Variants</h2>
 <table><tr><td id='variant.NIL'><a class='stability Unmarked' title='No stability level'></a><code>NIL</code></td><td><div class='docblock'><p><code>nil</code></p>
@@ -189,6 +190,10 @@ otherwise.</p>
 
 <p>Pops an item and a list from the stack and returns the list, with
 the item prepended.</p>
+</div></td></tr><tr><td id='variant.NULL'><a class='stability Unmarked' title='No stability level'></a><code>NULL</code></td><td><div class='docblock'><p><code>null</code>: test if <code>null</code></p>
+
+<p>Pops an item from the stack and returns true if it is <code>nil</code>, false
+ otherwise.</p>
 </div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../../../seax_svm/svm/cell/enum.Inst.html' title='seax_svm::svm::cell::Inst'>Inst</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../../../seax_svm/svm/cell/enum.Inst.html' title='seax_svm::svm::cell::Inst'>Inst</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <h4 id='method.ne' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.ne' class='fnname'>ne</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../../../seax_svm/svm/cell/enum.Inst.html' title='seax_svm::svm::cell::Inst'>Inst</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 </div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='enum' href='../../../seax_svm/svm/cell/enum.Inst.html' title='seax_svm::svm::cell::Inst'>Inst</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='enum' href='../../../seax_svm/svm/cell/enum.Inst.html' title='seax_svm::svm::cell::Inst'>Inst</a></code></h4>
