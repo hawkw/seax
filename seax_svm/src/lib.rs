@@ -117,7 +117,10 @@ pub mod svm {
                     State {
                         stack: self.stack,
                         env: self.env,
-                        control: new_control.push(top),
+                        control: match top {
+                            ListCell(box Nil) => new_control,
+                            _                 => new_control.push(top)
+                        },
                         dump: new_dump
                     }
                 },
