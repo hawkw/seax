@@ -1339,3 +1339,27 @@ fn test_eval_sel_false() {
     assert_eq!(state.control.peek(), Some(&InstCell(ATOM)));
     assert_eq!(state.dump.peek(), Some(&ListCell(box list!(InstCell(JOIN))))); // next instruction on dump
 }
+
+#[test]
+fn test_eval_null() {
+    // true case
+    assert_eq!(
+        State {
+            stack: list!(AtomCell(SInt(1))),
+            env: Stack::empty(),
+            control: list!(InstCell(NULL)),
+            dump: Stack::empty(),
+        }.eval().stack.peek(),
+        Some(&ListCell(box Nil))
+        );
+    // false case
+    assert_eq!(
+        State {
+            stack: list!(ListCell(box Nil)),
+            env: Stack::empty(),
+            control: list!(InstCell(NULL)),
+            dump: Stack::empty(),
+        }.eval().stack.peek(),
+        Some(&ListCell(box list!(AtomCell(SInt(1)))))
+        );
+}
