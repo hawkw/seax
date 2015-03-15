@@ -27,12 +27,14 @@ macro_rules! list(
 /// ```
 #[test]
 fn test_list_creation() {
-    let state = seax_svm::svm::eval_program(list!(
-        InstCell(NIL),
-        InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
-        InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS)
-        ));
-    assert_eq!(state.peek(), Some(&ListCell( box list!(AtomCell(SInt(20)), AtomCell(SInt(10))))));
+    assert_eq!(
+        seax_svm::svm::eval_program(list!(
+            InstCell(NIL),
+            InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
+            InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS)
+        )).peek(),
+        Some(&ListCell( box list!(AtomCell(SInt(20)), AtomCell(SInt(10)))))
+    );
 }
 
 /// Test for simple list construction and destructuring
@@ -42,13 +44,15 @@ fn test_list_creation() {
 /// ```
 #[test]
 fn test_list_car() {
-    let state = seax_svm::svm::eval_program(list!(
-        InstCell(NIL),
-        InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
-        InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
-        InstCell(CAR)
-        ));
-    assert_eq!(state.peek(), Some(&AtomCell(SInt(20))));
+    assert_eq!(
+        seax_svm::svm::eval_program(list!(
+            InstCell(NIL),
+            InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
+            InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
+            InstCell(CAR)
+        )).peek(),
+        Some(&AtomCell(SInt(20)))
+    );
 }
 /// Test for simple list construction and destructuring
 ///
@@ -63,8 +67,7 @@ fn test_list_cdr() {
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
             InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
             InstCell(CDR)
-            )
-        ).peek(),
+        )).peek(),
         Some(&ListCell(box list!(AtomCell(SInt(10)))))
     );
 }
@@ -76,12 +79,14 @@ fn test_list_cdr() {
 /// ```
 #[test]
 fn test_simple_add() {
-    let state = seax_svm::svm::eval_program(list!(
-        InstCell(LDC), AtomCell(SInt(10)),
-        InstCell(LDC), AtomCell(SInt(10)),
-        InstCell(ADD)
-        ));
-    assert_eq!(state.peek(), Some(&AtomCell(SInt(20))));
+    assert_eq!(
+        seax_svm::svm::eval_program(list!(
+            InstCell(LDC), AtomCell(SInt(10)),
+            InstCell(LDC), AtomCell(SInt(10)),
+            InstCell(ADD)
+        )).peek(),
+        Some(&AtomCell(SInt(20)))
+    );
 }
 
 /// Test for nested arithmetic
@@ -91,14 +96,16 @@ fn test_simple_add() {
 /// ```
 #[test]
 fn test_nested_arith() {
-    let state = seax_svm::svm::eval_program(list!(
-        InstCell(LDC), AtomCell(SInt(5)),
-        InstCell(LDC), AtomCell(SInt(5)),
-        InstCell(ADD),
-        InstCell(LDC), AtomCell(SInt(20)),
-        InstCell(SUB)
-        ));
-    assert_eq!(state.peek(), Some(&AtomCell(SInt(10))));
+     assert_eq!(
+        seax_svm::svm::eval_program(list!(
+            InstCell(LDC), AtomCell(SInt(5)),
+            InstCell(LDC), AtomCell(SInt(5)),
+            InstCell(ADD),
+            InstCell(LDC), AtomCell(SInt(20)),
+            InstCell(SUB)
+        )).peek(),
+        Some(&AtomCell(SInt(10)))
+    );
 }
 
 
@@ -109,14 +116,17 @@ fn test_nested_arith() {
 /// ```
 #[test]
 fn test_basic_branching() {
-    let state = seax_svm::svm::eval_program(list!(
-        InstCell(LDC), AtomCell(SInt(1)), InstCell(LDC), AtomCell(SInt(1)),
-        InstCell(SUB),
-        InstCell(LDC), AtomCell(SInt(0)),
-        InstCell(EQ),
-        InstCell(SEL),
-            ListCell(box list!(InstCell(LDC), AtomCell(SInt(1)), InstCell(JOIN))),
-            ListCell(box list!(InstCell(NIL), InstCell(JOIN)))
-        ));
-    assert_eq!(state.peek(), Some(&AtomCell(SInt(1))));
+    assert_eq!(
+        seax_svm::svm::eval_program(list!(
+            InstCell(LDC), AtomCell(SInt(1)), InstCell(LDC), AtomCell(SInt(1)),
+            InstCell(SUB),
+            InstCell(LDC), AtomCell(SInt(0)),
+            InstCell(EQ),
+            InstCell(SEL),
+                ListCell(box list!(InstCell(LDC), AtomCell(SInt(1)), InstCell(JOIN))),
+                ListCell(box list!(InstCell(NIL), InstCell(JOIN)))
+        )).peek(),
+        Some(&AtomCell(SInt(1)))
+    );
 }
+
