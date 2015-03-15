@@ -581,6 +581,17 @@
 <span id="539">539</span>
 <span id="540">540</span>
 <span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;seax_svm&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_type</span> <span class='op'>=</span> <span class='string'>&quot;lib&quot;</span>]</span>
@@ -1093,7 +1104,18 @@
                     }
                 },
                 <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>NULL</span>), <span class='ident'>new_control</span> <span class='kw-2'>@</span> _)) <span class='op'>=&gt;</span> {
-                    <span class='macro'>unimplemented</span><span class='macro'>!</span>()
+                    <span class='kw'>let</span> (<span class='ident'>target</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                    <span class='ident'>State</span> {
+                        <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(
+                            <span class='kw'>match</span> <span class='ident'>target</span> {
+                                <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>) <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
+                                _                 <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
+                            }
+                            ),
+                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                    }
                 },
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {<span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[eval]: expected an instruction on control stack&quot;</span>)}
                 <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
