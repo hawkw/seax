@@ -525,7 +525,7 @@ pub mod svm {
                 Some((InstCell(STOP), _)) => {
                     // TODO: does a new control have to be bound
                     // if it will basically just be discarded?
-                    unimplemented!()
+                    panic!("[fatal]: undefined behaviour\n[fatal]: evaluation of STOP word")
                 },
                 None => {panic!("[fatal]: expected an instruction on control stack")}
                 Some((thing, new_control)) => {
