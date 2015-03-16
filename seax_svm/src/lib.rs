@@ -119,7 +119,8 @@ pub mod svm {
                         env: self.env,
                         control: match top {
                             ListCell(box Nil) => new_control,
-                            _                 => new_control.push(top)
+                            ListCell(box it)  => it,
+                            anything          => panic!("[fatal][JOIN]: expected list on dump, found {:?}", anything)
                         },
                         dump: new_dump
                     }
