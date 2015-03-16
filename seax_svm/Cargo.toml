@@ -2,4 +2,10 @@
 
 name = "seax_svm"
 version = "0.1.2"
-authors = ["Hawk Weisman <hawk@meteorcodelabs.com>"]
+authors = ["Hawk Weisman <hi@hawkweisman.me>"]
+description = "SECD virtual machine for interpreting programs in FP languages"
+license = "MIT"
+homepage = "http://hawkweisman.me/seax"
+repository = "https://github.com/hawkw/seax"
+readme = "../README.md"
+keywords = ["vm","lisp","languages"]

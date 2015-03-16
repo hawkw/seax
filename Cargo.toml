@@ -2,8 +2,13 @@
 
 name = "seax"
 version = "0.0.1"
-authors = ["Hawk Weisman <hawk@meteorcodelabs.com>"]
-description = "SECD virtual machine for interpreting programs in FP languages"
+authors = ["Hawk Weisman <hi@hawkweisman.me>"]
+description = "SECD virtual machine for interpreting programs in FP languages and a Scheme compiler targeting that machine."
+license = "MIT"
+homepage = "http://hawkweisman.me/seax"
+repository = "https://github.com/hawkw/seax"
+readme = "README.md"
+keywords = ["vm","lisp","languages"]
 
 [dependencies]
 docopt = "*"
