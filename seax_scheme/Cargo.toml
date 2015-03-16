@@ -12,3 +12,6 @@ keywords = ["vm","lisp","languages"]
 
 [dependencies]
 nom = "~0.1.0"
+
+[dependencies.seax_svm]
+path = "../seax_svm"
