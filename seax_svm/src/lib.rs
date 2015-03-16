@@ -88,7 +88,7 @@ pub mod svm {
                         ), newer_control @ _)) => {
                             let environment = match self.env[level] {
                                 SVMCell::ListCell(ref l) => l.clone(),
-                                _ => panic!("[fatal]: [LD]: expected list in $e, found {:?}",self.env[level])
+                                _ => panic!("[fatal][LD]: expected list in $e, found {:?}",self.env[level])
                             };
                             State {
                                 stack: self.stack.push(environment[pos].clone()),
@@ -97,7 +97,7 @@ pub mod svm {
                                 dump: self.dump
                             }
                         },
-                       it @ _ => panic!("[fatal]: [LD] Fatal: expected pair, found {:?}", it)
+                       it @ _ => panic!("[fatal][LD]: expected pair, found {:?}", it)
                     }
                 },
 
@@ -136,10 +136,10 @@ pub mod svm {
                                     control: new_control,
                                     dump: self.dump
                                 },
-                                b => panic!("[fatal] [ADD] TypeError: expected compatible operands, found (ADD {:?} {:?})", a, b)
+                                b => panic!("[fatal][ADD]: TypeError: expected compatible operands, found (ADD {:?} {:?})", a, b)
                             }
                         },
-                        _ => panic!("[fatal]: [ADD] Expected first operand to be atom, found list or instruction"),
+                        _ => panic!("[fatal][ADD]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
                 Some((InstCell(SUB), new_control)) => {
@@ -154,10 +154,10 @@ pub mod svm {
                                     control: new_control,
                                     dump: self.dump
                                 },
-                                b => panic!("[fatal]: [SUB] TypeError: expected compatible operands, found (SUB {:?} {:?})", a, b)
+                                b => panic!("[fatal][SUB]: TypeError: expected compatible operands, found (SUB {:?} {:?})", a, b)
                             }
                         },
-                        _ => panic!("[fatal]: [SUB] Expected first operand to be atom, found list or instruction"),
+                        _ => panic!("[fatal][SUB]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
                 Some((InstCell(FDIV), new_control)) => {
@@ -196,10 +196,10 @@ pub mod svm {
                                     control: new_control,
                                     dump: self.dump
                                 },
-                                b => panic!("[fatal]: [FDIV] TypeError: expected compatible operands, found (FDIV {:?} {:?})", a, b)
+                                b => panic!("[fatal][FDIV]: TypeError: expected compatible operands, found (FDIV {:?} {:?})", a, b)
                             }
                         },
-                        _ => panic!("[fatal]: [FDIV] Expected first operand to be atom, found list or instruction"),
+                        _ => panic!("[fatal][FDIV]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
                 Some((InstCell(DIV), new_control)) => {
@@ -214,10 +214,10 @@ pub mod svm {
                                     control: new_control,
                                     dump: self.dump
                                 },
-                                b => panic!("[fatal]: [DIV] TypeError: expected compatible operands, found (DIV {:?} {:?})", a, b)
+                                b => panic!("[fatal][DIV]: TypeError: expected compatible operands, found (DIV {:?} {:?})", a, b)
                             }
                         },
-                        _ => panic!("[fatal]: [DIV] Expected first operand to be atom, found list or instruction"),
+                        _ => panic!("[fatal][DIV]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
                 Some((InstCell(MUL), new_control)) => {
@@ -232,10 +232,10 @@ pub mod svm {
                                     control: new_control,
                                     dump: self.dump
                                 },
-                                b => panic!("[fatal]: [MUL] TypeError: expected compatible operands, found (MUL {:?} {:?})", a, b)
+                                b => panic!("[fatal][MUL]: TypeError: expected compatible operands, found (MUL {:?} {:?})", a, b)
                             }
                         },
-                        _ => panic!("[fatal]: [MUL]: Expected first operand to be atom, found list or instruction"),
+                        _ => panic!("[fatal][MUL]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
                 Some((InstCell(MOD), new_control)) => {
@@ -250,10 +250,10 @@ pub mod svm {
                                     control: new_control,
                                     dump: self.dump
                                 },
-                                b => panic!("[fatal]: [MOD] TypeError: expected compatible operands, found (MOD {:?} {:?})", a, b)
+                                b => panic!("[fatal][MOD]: TypeError: expected compatible operands, found (MOD {:?} {:?})", a, b)
                             }
                         },
-                        _ => panic!("[fatal]: [MOD]: Expected first operand to be atom, found list or instruction"),
+                        _ => panic!("[fatal][MOD]: Expected first operand to be atom, found list or instruction"),
                     }
                 },
                 Some((InstCell(EQ), new_control)) => {
@@ -367,7 +367,7 @@ pub mod svm {
                             control: func,
                             dump: self.dump.push(ListCell(box self.env)).push(ListCell(box new_control))
                         },
-                        (_, thing) => panic!("[fatal]: [AP]: Expected closure on stack, got:\n{:?}", thing)
+                        (_, thing) => panic!("[fatal][AP]: Expected closure on stack, got:\n{:?}", thing)
                     }
                 },
                 Some((InstCell(RAP), new_control)) => {
@@ -385,11 +385,11 @@ pub mod svm {
                                                 .push(ListCell(box newer_stack))
                                     }
                                 },
-                                Some((thing, _)) => panic!("[fatal]: [AP]:  Expected closure on stack, got:\n{:?}", thing),
-                                None => panic!("[fatal]: [AP]: expected non-empty stack")
+                                Some((thing, _)) => panic!("[fatal][RAP]:  Expected closure on stack, got:\n{:?}", thing),
+                                None => panic!("[fatal][RAP]: expected non-empty stack")
                             }
                         },
-                        (_, thing) => panic!("[fatal]: [AP]: Expected closure on stack, got:\n{:?}", thing)
+                        (_, thing) => panic!("[fatal][RAP]: Expected closure on stack, got:\n{:?}", thing)
                     }
                 },
                 Some((InstCell(RET), _)) => {
@@ -398,20 +398,20 @@ pub mod svm {
                         match self.dump.pop().unwrap()  {
                             (ListCell(s), d @ _)    => (*s, d),
                             it @ (AtomCell(_),_)    => (list!(it.0), it.1),
-                            _                       => panic!("[fatal]: [RET]: Expected non-empty stack")
+                            _                       => panic!("[fatal][RET]: Expected non-empty stack")
                         }
                     };
                     let (new_env, newer_dump) = {
                         match new_dump.pop().unwrap() {
                             (ListCell(e), d @ _)    => (*e, d),
-                            _                       => panic!("[fatal]: [RET]: Expected new environment on dump stack")
+                            _                       => panic!("[fatal][RET]: Expected new environment on dump stack")
                         }
                     };
                     let (newer_control, newest_dump) = {
                         match newer_dump.pop().unwrap()  {
                             (ListCell(c), d @ _)    => (*c, d),
                             it @ (InstCell(_),_)    => (list!(it.0), it.1),
-                            _                       => panic!("[fatal]: [RET]: Expected new control stack on dump stack")
+                            _                       => panic!("[fatal][RET]: Expected new control stack on dump stack")
                         }
                     };
                     State {
@@ -451,15 +451,15 @@ pub mod svm {
                                                 dump: self.dump.push(ListCell(box newest_control))
                                             }
                                         },
-                                        None => panic!("[fatal]: [SEL]: expected non-empty stack")
+                                        None => panic!("[fatal][SEL]: expected non-empty stack")
                                     }
                                 },
-                                Some((thing, _)) => panic!("[fatal]: [SEL]: expected list on control, found {:?}", thing),
-                                None             => panic!("[fatal]: [SEL]: expected list on control, found nothing")
+                                Some((thing, _)) => panic!("[fatal][SEL]: expected list on control, found {:?}", thing),
+                                None             => panic!("[fatal][SEL]: expected list on control, found nothing")
                             }
                         },
-                        Some((thing, _)) => panic!("[fatal]: [SEL]: expected list on control, found {:?}", thing),
-                        None             => panic!("[fatal]: [SEL]: expected list on control, found nothing")
+                        Some((thing, _)) => panic!("[fatal][SEL]: expected list on control, found {:?}", thing),
+                        None             => panic!("[fatal][SEL]: expected list on control, found nothing")
 
                     }
                 },
@@ -471,9 +471,9 @@ pub mod svm {
                             control: new_control,
                             dump: self.dump
                         },
-                        Some((ListCell(box Nil), _)) => panic!("[fatal]: [CAR]: expected non-empty list, found Nil"),
-                        Some((thing, _))             => panic!("[fatal]: [CAR]: expected non-empty list, found {:?}", thing),
-                        None                         => panic!("[fatal]: [CAR]: Expected non-empty list, found nothing")
+                        Some((ListCell(box Nil), _)) => panic!("[fatal][CAR]: expected non-empty list, found Nil"),
+                        Some((thing, _))             => panic!("[fatal][CAR]: expected non-empty list, found {:?}", thing),
+                        None                         => panic!("[fatal][CAR]: Expected non-empty list, found nothing")
                     }
                 },
                 Some((InstCell(CDR), new_control)) => {
@@ -484,9 +484,9 @@ pub mod svm {
                             control: new_control,
                             dump: self.dump
                         },
-                        Some((ListCell(box Nil), _)) => panic!("[fatal]: [CDR]: expected non-empty list, found Nil"),
-                        Some((thing, _))             => panic!("[fatal]: [CDR]: expected non-empty list, found {:?}", thing),
-                        None                         => panic!("[fatal]: [CDR]: Expected non-empty list, found nothing")
+                        Some((ListCell(box Nil), _)) => panic!("[fatal][CDR]: expected non-empty list, found Nil"),
+                        Some((thing, _))             => panic!("[fatal][CDR]: expected non-empty list, found {:?}", thing),
+                        None                         => panic!("[fatal][CDR]: Expected non-empty list, found nothing")
                     }
                 },
                 Some((InstCell(CONS), new_control)) => {
@@ -501,11 +501,11 @@ pub mod svm {
                                         dump: self.dump
                                     }
                                 },
-                                Some((thing_else, _)) => panic!("[fatal]: [CONS]: Expected a list on the stack, found {:?}", thing_else),
-                                None               => panic!("[fatal]: [CONS]: Expected a list on the stack, found nothing.")
+                                Some((thing_else, _)) => panic!("[fatal][CONS]: Expected a list on the stack, found {:?}", thing_else),
+                                None               => panic!("[fatal][CONS]: Expected a list on the stack, found nothing.")
                             }
                         },
-                        None => panic!("[fatal]: [CONS]: Expected an item on the stack, found nothing")
+                        None => panic!("[fatal][CONS]: Expected an item on the stack, found nothing")
                     }
                 },
                 Some((InstCell(NULL), new_control)) => {
