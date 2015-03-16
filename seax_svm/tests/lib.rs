@@ -1,18 +1,13 @@
 
 #![feature(box_syntax,box_patterns)]
+#[macro_use]
 extern crate seax_svm;
 
-use seax_svm::svm::slist::Stack;
-use seax_svm::svm::slist::List::{Cons,Nil};
+use seax_svm::slist::Stack;
+use seax_svm::slist::List::{Cons,Nil};
 use seax_svm::svm::cell::Atom::*;
 use seax_svm::svm::cell::SVMCell::*;
 use seax_svm::svm::Inst::*;
-
-macro_rules! list(
-    ( $e:expr, $($rest:expr),+ ) => ( Cons($e, Box::new(list!( $( $rest ),+ )) ));
-    ( $e:expr ) => ( Cons($e, Box::new(Nil)) );
-    () => ( Box::new(Nil) );
-);
 
 /// SVM integration tests.
 ///
