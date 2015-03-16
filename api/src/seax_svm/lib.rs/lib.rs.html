@@ -600,6 +600,7 @@
 <span id="558">558</span>
 <span id="559">559</span>
 <span id="560">560</span>
+<span id="561">561</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;seax_svm&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_type</span> <span class='op'>=</span> <span class='string'>&quot;lib&quot;</span>]</span>
@@ -722,7 +723,8 @@
                         <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
                         <span class='ident'>control</span>: <span class='kw'>match</span> <span class='ident'>top</span> {
                             <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>) <span class='op'>=&gt;</span> <span class='ident'>new_control</span>,
-                            _                 <span class='op'>=&gt;</span> <span class='ident'>new_control</span>.<span class='ident'>push</span>(<span class='ident'>top</span>)
+                            <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>it</span>)  <span class='op'>=&gt;</span> <span class='ident'>it</span>,
+                            <span class='ident'>anything</span>          <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][JOIN]: expected list on dump, found {:?}&quot;</span>, <span class='ident'>anything</span>)
                         },
                         <span class='ident'>dump</span>: <span class='ident'>new_dump</span>
                     }
