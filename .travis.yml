@@ -11,12 +11,12 @@ script:
 after_success:
 - cargo doc
 - .travis/publish.sh
-- cargo login $CRATES_TOKEN
-- cargo package
-- cargo publish
-  on:
-    repo: hawkw/seax
-    tags: true
+#- cargo login $CRATES_TOKEN
+#- cargo package
+#- cargo publish
+  #on:
+  #  repo: hawkw/seax
+  #  tags: true
 env:
   global:
   - secure: iEGoVGb3OeqSqP4UP7nbLtMEmGi9JgI0nxjrpRrSg22pCCa+lMIIiYp9gY2558pwAbcxaJpahmTt3lYqe2wdKfXlGWRB7Tz99FR8lX+vRXpgxDLg1Sz8BAnN7X9bu+AGL/INwYOe6tVncXcQgKn4uSTYa001CqhlwPzMmtGSw/w=
