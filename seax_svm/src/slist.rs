@@ -1,4 +1,4 @@
-pub use svm::slist::List::{Cons,Nil};
+pub use slist::List::{Cons,Nil};
 use std::fmt;
 use std::ops::Index;
 
