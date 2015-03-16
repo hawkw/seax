@@ -522,6 +522,11 @@ pub mod svm {
                         dump: self.dump
                     }
                 },
+                Some((InstCell(STOP), new_control)) => {
+                    // TODO: does a new control have to be bound
+                    // if it will basically just be discarded?
+                    unimplemented!()
+                },
                 None => {panic!("[eval]: expected an instruction on control stack")}
                 Some((thing, new_control)) => {
                     panic!("[fatal]: Tried to evaluate an unsupported cell type {:?}.\n[fatal]: State dump:\n[fatal]:\tstack: {:?}\n[fatal]:\tenv: {:?}\n[fatal]:\tcontrol: {:?}\n[fatal]:\tdump: {:?}",

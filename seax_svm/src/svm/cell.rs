@@ -347,7 +347,12 @@ pub enum Inst {
     ///
     ///  Pops an item from the stack and returns true if it is `nil`, false
     ///  otherwise.
-    NULL
+    NULL,
+    /// `stop`: `stop` execution
+    ///
+    /// Terminates program execution. The `eval_program()` function will return
+    /// the last state of the VM.
+    STOP
     // TODO: add some hardcoded I/O instructions here so that you can
     //  do I/O without farming everything out to `stdio`
 }
