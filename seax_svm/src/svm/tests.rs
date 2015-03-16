@@ -6,7 +6,7 @@ use super::cell::SVMCell::*;
 use super::Inst::*;
 
 #[test]
-#[should_panic(expected="[eval]: expected an instruction on control stack")]
+#[should_panic(expected="[fatal]: expected an instruction on control stack")]
 fn test_empty_eval_fail() {
     State::new().eval();
 }
@@ -23,7 +23,7 @@ fn test_ld_empty_env_fail() {
 }
 
 #[test]
-#[should_panic(expected="[LD]: Fatal: expected list in $e, found AtomCell(Char('w'))")]
+#[should_panic(expected="[fatal][LD]: expected list in $e, found AtomCell(Char('w'))")]
 fn test_ld_unexpected_env_fail() {
     State {
         stack:      Stack::empty(),
@@ -34,7 +34,7 @@ fn test_ld_unexpected_env_fail() {
 }
 
 #[test]
-#[should_panic(expected="[LD] Fatal: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Nil)), Nil))")]
+#[should_panic(expected="[fatal][LD]: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Nil)), Nil))")]
 fn test_ld_arg_too_short_fail() {
     State {
         stack:      Stack::empty(),
@@ -44,7 +44,7 @@ fn test_ld_arg_too_short_fail() {
     }.eval();
 }
 #[test]
-#[should_panic(expected="[LD] Fatal: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Cons(AtomCell(SInt(1)), Cons(AtomCell(SInt(1)), Nil)))), Nil))")]
+#[should_panic(expected="[fatal][LD]: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Cons(AtomCell(SInt(1)), Cons(AtomCell(SInt(1)), Nil)))), Nil))")]
 fn test_ld_arg_too_long_fail() {
     State {
         stack:      Stack::empty(),
@@ -55,7 +55,7 @@ fn test_ld_arg_too_long_fail() {
 }
 
 #[test]
-#[should_panic(expected="[ADD]: Expected first operand to be atom, found list or instruction")]
+#[should_panic(expected="[fatal][ADD]: Expected first operand to be atom, found list or instruction")]
 fn test_add_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
@@ -67,7 +67,7 @@ fn test_add_unexpected_first_arg_fail () {
 
 
 #[test]
-#[should_panic(expected="[SUB]: Expected first operand to be atom, found list or instruction")]
+#[should_panic(expected="[fatal][SUB]: Expected first operand to be atom, found list or instruction")]
 fn test_sub_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
@@ -78,7 +78,7 @@ fn test_sub_unexpected_first_arg_fail () {
 }
 
 #[test]
-#[should_panic(expected="[DIV]: Expected first operand to be atom, found list or instruction")]
+#[should_panic(expected="[fatal][DIV]: Expected first operand to be atom, found list or instruction")]
 fn test_div_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
@@ -89,7 +89,7 @@ fn test_div_unexpected_first_arg_fail () {
 }
 
 #[test]
-#[should_panic(expected="[FDIV]: Expected first operand to be atom, found list or instruction")]
+#[should_panic(expected="[fatal][FDIV]: Expected first operand to be atom, found list or instruction")]
 fn test_fdiv_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
@@ -100,7 +100,7 @@ fn test_fdiv_unexpected_first_arg_fail () {
 }
 
 #[test]
-#[should_panic(expected="[MUL]: Expected first operand to be atom, found list or instruction")]
+#[should_panic(expected="[fatal][MUL]: Expected first operand to be atom, found list or instruction")]
 fn test_mul_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
@@ -111,7 +111,7 @@ fn test_mul_unexpected_first_arg_fail () {
 }
 
 #[test]
-#[should_panic(expected="[ADD] TypeError: expected compatible operands, found (ADD SInt(1) ListCell(Nil))")]
+#[should_panic(expected="[fatal][ADD]: TypeError: expected compatible operands, found (ADD SInt(1) ListCell(Nil))")]
 fn test_add_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
@@ -121,7 +121,7 @@ fn test_add_type_error () {
     }.eval();
 }
 #[test]
-#[should_panic(expected="[SUB] TypeError: expected compatible operands, found (SUB SInt(1) ListCell(Nil))")]
+#[should_panic(expected="[fatal][SUB]: TypeError: expected compatible operands, found (SUB SInt(1) ListCell(Nil))")]
 fn test_sub_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
@@ -132,7 +132,7 @@ fn test_sub_type_error () {
 }
 
 #[test]
-#[should_panic(expected="[DIV] TypeError: expected compatible operands, found (DIV SInt(1) ListCell(Nil))")]
+#[should_panic(expected="[fatal][DIV]: TypeError: expected compatible operands, found (DIV SInt(1) ListCell(Nil))")]
 fn test_div_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
@@ -143,7 +143,7 @@ fn test_div_type_error () {
 }
 
 #[test]
-#[should_panic(expected="[FDIV] TypeError: expected compatible operands, found (FDIV SInt(1) ListCell(Nil))")]
+#[should_panic(expected="[fatal][FDIV]: TypeError: expected compatible operands, found (FDIV SInt(1) ListCell(Nil))")]
 fn test_fdiv_type_error () {
    State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
@@ -154,7 +154,7 @@ fn test_fdiv_type_error () {
 }
 
 #[test]
-#[should_panic(expected="[MUL] TypeError: expected compatible operands, found (MUL SInt(1) ListCell(Nil))")]
+#[should_panic(expected="[fatal][MUL]: TypeError: expected compatible operands, found (MUL SInt(1) ListCell(Nil))")]
 fn test_mul_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
@@ -286,10 +286,8 @@ fn test_eval_join() {
             )))
     }.eval();
     assert_eq!(state.dump.peek(), None);
-    assert_eq!(state.control.peek(), Some(&ListCell(box list!(
-                AtomCell(SInt(1)),
-                AtomCell(SInt(2))
-            ))))
+    assert_eq!(state.control[0usize], AtomCell(SInt(1)));
+    assert_eq!(state.control[1usize], AtomCell(SInt(2)));
 }
 
 #[test]
