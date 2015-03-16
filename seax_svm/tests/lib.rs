@@ -109,10 +109,14 @@ fn test_nested_arith() {
 }
 
 
-/// Test for basic branching
+/// Tests for basic branching
 ///
 /// ```lisp
 /// ((if (= 0 (- 1 1)) true false)
+/// ```
+///
+/// ```lisp
+/// (+ 10 (if (nil? nil) 10 20))
 /// ```
 #[test]
 fn test_basic_branching() {
@@ -124,9 +128,21 @@ fn test_basic_branching() {
             InstCell(EQ),
             InstCell(SEL),
                 ListCell(box list!(InstCell(LDC), AtomCell(SInt(1)), InstCell(JOIN))),
-                ListCell(box list!(InstCell(NIL), InstCell(JOIN)))
+                ListCell(box list!(InstCell(NIL), InstCell(JOIN))
+            )
         )).peek(),
         Some(&AtomCell(SInt(1)))
+    );
+    assert_eq!(
+        seax_svm::svm::eval_program(list!(
+            InstCell(NIL), InstCell(NULL),
+            InstCell(SEL),
+                ListCell(box list!(InstCell(LDC), AtomCell(SInt(10)), InstCell(JOIN))),
+                ListCell(box list!(InstCell(LDC), AtomCell(SInt(20)), InstCell(JOIN))),
+            InstCell(LDC), AtomCell(SInt(10)),
+            InstCell(ADD)
+        )).peek(),
+        Some(&AtomCell(SInt(20)))
     );
 }
 
