@@ -8,8 +8,8 @@ use std::ops::Index;
 ///
 /// ```
 /// # #[macro_use] extern crate seax_svm;
-/// # use seax_svm::svm::slist;
-/// # use seax_svm::svm::slist::List::{Cons, Nil};
+/// # use seax_svm::slist;
+/// # use seax_svm::slist::List::{Cons, Nil};
 /// # fn main () {
 /// assert_eq!(
 ///     list!(1i32, 2i32, 3i32),
@@ -51,7 +51,7 @@ impl<T> Stack<T> for List<T> {
     ///
     /// # Examples:
     /// ```
-    /// use seax_svm::svm::slist::{List,Stack};
+    /// use seax_svm::slist::{List,Stack};
     ///
     /// let mut s: List<isize> = Stack::empty();
     /// assert_eq!(s.peek(), None);
@@ -73,7 +73,7 @@ impl<T> Stack<T> for List<T> {
     ///
     /// # Examples:
     /// ```
-    /// # use seax_svm::svm::slist::{List,Stack};
+    /// # use seax_svm::slist::{List,Stack};
     ///
     /// let mut s: List<isize> = Stack::empty();
     /// s = s.push(2);
@@ -103,7 +103,7 @@ impl<T> Stack<T> for List<T> {
     ///
     /// # Examples:
     /// ```
-    /// # use seax_svm::svm::slist::{List,Stack};
+    /// # use seax_svm::slist::{List,Stack};
     ///
     /// let mut s: List<isize> = Stack::empty();
     /// s = s.push(2);
@@ -210,9 +210,9 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
     /// # Examples:
     /// ```
     /// # #[macro_use] extern crate seax_svm;
-    /// # use seax_svm::svm::slist;
-    /// # use seax_svm::svm::slist::List;
-    /// # use seax_svm::svm::slist::List::{Cons, Nil};
+    /// # use seax_svm::slist;
+    /// # use seax_svm::slist::List;
+    /// # use seax_svm::slist::List::{Cons, Nil};
     /// # fn main () {
     /// let list = list!(1,2,3);
     /// let mut iter = list.iter();
@@ -223,9 +223,9 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
     /// ```
     /// ```
     /// # #[macro_use] extern crate seax_svm;
-    /// # use seax_svm::svm::slist;
-    /// # use seax_svm::svm::slist::List;
-    /// # use seax_svm::svm::slist::List::{Cons, Nil};
+    /// # use seax_svm::slist;
+    /// # use seax_svm::slist::List;
+    /// # use seax_svm::slist::List::{Cons, Nil};
     /// # fn main () {
     /// let l: List<isize> = list!(1,2,3,4,5,6);
     /// let mut string = String::new();
@@ -253,9 +253,9 @@ impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
 /// # Examples:
 /// ```
 /// # #[macro_use] extern crate seax_svm;
-/// # use seax_svm::svm::slist;
-/// # use seax_svm::svm::slist::List;
-/// # use seax_svm::svm::slist::List::{Cons, Nil};
+/// # use seax_svm::slist;
+/// # use seax_svm::slist::List;
+/// # use seax_svm::slist::List::{Cons, Nil};
 /// # fn main () {
 /// let list = list!(1,2,3,4,5,6);
 /// assert_eq!(list[0us], 1);
@@ -293,9 +293,9 @@ impl<T> Index<usize> for List<T> {
 /// # Examples:
 /// ```
 /// # #[macro_use] extern crate seax_svm;
-/// # use seax_svm::svm::slist;
-/// # use seax_svm::svm::slist::List;
-/// # use seax_svm::svm::slist::List::{Cons, Nil};
+/// # use seax_svm::slist;
+/// # use seax_svm::slist::List;
+/// # use seax_svm::slist::List::{Cons, Nil};
 /// # fn main () {
 /// let list = list!(1,2,3,4,5,6);
 /// assert_eq!(list[0is], 1);
