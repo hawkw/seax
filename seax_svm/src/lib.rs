@@ -548,7 +548,10 @@ pub mod svm {
             dump:       Stack::empty()
         };
         // while there are more instructions,
-        while machine.control.peek() != None {  //TODO: this is kinda heavyweight
+        while {
+            let next = machine.control.peek();
+            next != None && next != Some(&InstCell(STOP))
+        } {  //TODO: this is kinda heavyweight
             machine = machine.eval() // continue evaling
         };
         machine.stack
