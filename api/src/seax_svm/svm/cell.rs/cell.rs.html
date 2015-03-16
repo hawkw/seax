@@ -422,6 +422,11 @@
 <span id="380">380</span>
 <span id="381">381</span>
 <span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
 </pre><pre class='rust '>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>SVMCell</span>::<span class='op'>*</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>Atom</span>::<span class='op'>*</span>;
@@ -772,7 +777,12 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>///  Pops an item from the stack and returns true if it is `nil`, false</span>
     <span class='doccomment'>///  otherwise.</span>
-    <span class='ident'>NULL</span>
+    <span class='ident'>NULL</span>,
+    <span class='doccomment'>/// `stop`: `stop` execution</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Terminates program execution. The `eval_program()` function will return</span>
+    <span class='doccomment'>/// the last state of the VM.</span>
+    <span class='ident'>STOP</span>
     <span class='comment'>// TODO: add some hardcoded I/O instructions here so that you can</span>
     <span class='comment'>//  do I/O without farming everything out to `stdio`</span>
 }
