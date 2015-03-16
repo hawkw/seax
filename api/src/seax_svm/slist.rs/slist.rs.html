@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `seax_svm/src/svm/slist.rs`.">
+    <meta name="description" content="Source to the Rust file `seax_svm/src/slist.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>slist.rs.html -- source</title>
 
-    <link rel="stylesheet" type="text/css" href="../../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
 
     
     
@@ -470,7 +470,7 @@
 <span id="428">428</span>
 <span id="429">429</span>
 </pre><pre class='rust '>
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>svm</span>::<span class='ident'>slist</span>::<span class='ident'>List</span>::{<span class='ident'>Cons</span>,<span class='ident'>Nil</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>slist</span>::<span class='ident'>List</span>::{<span class='ident'>Cons</span>,<span class='ident'>Nil</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Index</span>;
 
@@ -480,8 +480,8 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
 <span class='doccomment'>/// # #[macro_use] extern crate seax_svm;</span>
-<span class='doccomment'>/// # use seax_svm::svm::slist;</span>
-<span class='doccomment'>/// # use seax_svm::svm::slist::List::{Cons, Nil};</span>
+<span class='doccomment'>/// # use seax_svm::slist;</span>
+<span class='doccomment'>/// # use seax_svm::slist::List::{Cons, Nil};</span>
 <span class='doccomment'>/// # fn main () {</span>
 <span class='doccomment'>/// assert_eq!(</span>
 <span class='doccomment'>///     list!(1i32, 2i32, 3i32),</span>
@@ -523,7 +523,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// # Examples:</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use seax_svm::svm::slist::{List,Stack};</span>
+    <span class='doccomment'>/// use seax_svm::slist::{List,Stack};</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let mut s: List&lt;isize&gt; = Stack::empty();</span>
     <span class='doccomment'>/// assert_eq!(s.peek(), None);</span>
@@ -545,7 +545,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// # Examples:</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// # use seax_svm::svm::slist::{List,Stack};</span>
+    <span class='doccomment'>/// # use seax_svm::slist::{List,Stack};</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let mut s: List&lt;isize&gt; = Stack::empty();</span>
     <span class='doccomment'>/// s = s.push(2);</span>
@@ -575,7 +575,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// # Examples:</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// # use seax_svm::svm::slist::{List,Stack};</span>
+    <span class='doccomment'>/// # use seax_svm::slist::{List,Stack};</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let mut s: List&lt;isize&gt; = Stack::empty();</span>
     <span class='doccomment'>/// s = s.push(2);</span>
@@ -682,9 +682,9 @@
     <span class='doccomment'>/// # Examples:</span>
     <span class='doccomment'>/// ```</span>
     <span class='doccomment'>/// # #[macro_use] extern crate seax_svm;</span>
-    <span class='doccomment'>/// # use seax_svm::svm::slist;</span>
-    <span class='doccomment'>/// # use seax_svm::svm::slist::List;</span>
-    <span class='doccomment'>/// # use seax_svm::svm::slist::List::{Cons, Nil};</span>
+    <span class='doccomment'>/// # use seax_svm::slist;</span>
+    <span class='doccomment'>/// # use seax_svm::slist::List;</span>
+    <span class='doccomment'>/// # use seax_svm::slist::List::{Cons, Nil};</span>
     <span class='doccomment'>/// # fn main () {</span>
     <span class='doccomment'>/// let list = list!(1,2,3);</span>
     <span class='doccomment'>/// let mut iter = list.iter();</span>
@@ -695,9 +695,9 @@
     <span class='doccomment'>/// ```</span>
     <span class='doccomment'>/// ```</span>
     <span class='doccomment'>/// # #[macro_use] extern crate seax_svm;</span>
-    <span class='doccomment'>/// # use seax_svm::svm::slist;</span>
-    <span class='doccomment'>/// # use seax_svm::svm::slist::List;</span>
-    <span class='doccomment'>/// # use seax_svm::svm::slist::List::{Cons, Nil};</span>
+    <span class='doccomment'>/// # use seax_svm::slist;</span>
+    <span class='doccomment'>/// # use seax_svm::slist::List;</span>
+    <span class='doccomment'>/// # use seax_svm::slist::List::{Cons, Nil};</span>
     <span class='doccomment'>/// # fn main () {</span>
     <span class='doccomment'>/// let l: List&lt;isize&gt; = list!(1,2,3,4,5,6);</span>
     <span class='doccomment'>/// let mut string = String::new();</span>
@@ -725,9 +725,9 @@
 <span class='doccomment'>/// # Examples:</span>
 <span class='doccomment'>/// ```</span>
 <span class='doccomment'>/// # #[macro_use] extern crate seax_svm;</span>
-<span class='doccomment'>/// # use seax_svm::svm::slist;</span>
-<span class='doccomment'>/// # use seax_svm::svm::slist::List;</span>
-<span class='doccomment'>/// # use seax_svm::svm::slist::List::{Cons, Nil};</span>
+<span class='doccomment'>/// # use seax_svm::slist;</span>
+<span class='doccomment'>/// # use seax_svm::slist::List;</span>
+<span class='doccomment'>/// # use seax_svm::slist::List::{Cons, Nil};</span>
 <span class='doccomment'>/// # fn main () {</span>
 <span class='doccomment'>/// let list = list!(1,2,3,4,5,6);</span>
 <span class='doccomment'>/// assert_eq!(list[0us], 1);</span>
@@ -765,9 +765,9 @@
 <span class='doccomment'>/// # Examples:</span>
 <span class='doccomment'>/// ```</span>
 <span class='doccomment'>/// # #[macro_use] extern crate seax_svm;</span>
-<span class='doccomment'>/// # use seax_svm::svm::slist;</span>
-<span class='doccomment'>/// # use seax_svm::svm::slist::List;</span>
-<span class='doccomment'>/// # use seax_svm::svm::slist::List::{Cons, Nil};</span>
+<span class='doccomment'>/// # use seax_svm::slist;</span>
+<span class='doccomment'>/// # use seax_svm::slist::List;</span>
+<span class='doccomment'>/// # use seax_svm::slist::List::{Cons, Nil};</span>
 <span class='doccomment'>/// # fn main () {</span>
 <span class='doccomment'>/// let list = list!(1,2,3,4,5,6);</span>
 <span class='doccomment'>/// assert_eq!(list[0is], 1);</span>
@@ -939,13 +939,13 @@
     
 
     <script>
-        window.rootPath = "../../../../";
+        window.rootPath = "../../../";
         window.currentCrate = "seax_svm";
         window.playgroundUrl = "";
     </script>
-    <script src="../../../../jquery.js"></script>
-    <script src="../../../../main.js"></script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
     
-    <script async src="../../../../search-index.js"></script>
+    <script async src="../../../search-index.js"></script>
 </body>
 </html>

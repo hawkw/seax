@@ -606,24 +606,24 @@
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_type</span> <span class='op'>=</span> <span class='string'>&quot;lib&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_syntax</span>,<span class='ident'>box_patterns</span>,<span class='ident'>core</span>)]</span>
 
+<span class='doccomment'>/// Singly-linked list and stack implementations.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// `List&lt;T&gt;` is a singly-linked cons list with boxed items. `Stack&lt;T&gt;` is</span>
+<span class='doccomment'>///  defined as a trait providing stack operations(`push()`, `pop()`, and</span>
+<span class='doccomment'>///  `peek()`), and an implementation for `List`.</span>
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>slist</span>;
+
 <span class='doccomment'>/// Contains the Seax Virtual Machine (SVM) and miscellaneous</span>
 <span class='doccomment'>/// support code.</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>svm</span> {
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>slist</span>::<span class='ident'>List</span>;
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>slist</span>::<span class='ident'>List</span>::{<span class='ident'>Cons</span>,<span class='ident'>Nil</span>};
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>slist</span>::<span class='ident'>Stack</span>;
+    <span class='kw'>pub</span> <span class='kw'>use</span> ::<span class='ident'>slist</span>::<span class='ident'>List</span>;
+    <span class='kw'>pub</span> <span class='kw'>use</span> ::<span class='ident'>slist</span>::<span class='ident'>List</span>::{<span class='ident'>Cons</span>,<span class='ident'>Nil</span>};
+    <span class='kw'>pub</span> <span class='kw'>use</span> ::<span class='ident'>slist</span>::<span class='ident'>Stack</span>;
     <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::{<span class='ident'>SVMCell</span>,<span class='ident'>Atom</span>,<span class='ident'>Inst</span>};
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::<span class='ident'>SVMCell</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::<span class='ident'>Atom</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::<span class='ident'>Inst</span>::<span class='op'>*</span>;
-
-    <span class='doccomment'>/// Singly-linked list and stack implementations.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// `List&lt;T&gt;` is a singly-linked cons list with boxed items. `Stack&lt;T&gt;` is</span>
-    <span class='doccomment'>///  defined as a trait providing stack operations(`push()`, `pop()`, and</span>
-    <span class='doccomment'>///  `peek()`), and an implementation for `List`.</span>
-    <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>slist</span>;
 
     <span class='doccomment'>/// SVM cell types.</span>
     <span class='doccomment'>///</span>
