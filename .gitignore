@@ -54,3 +54,6 @@ Temporary Items
 # sftp configuration file
 sftp-config.json
 
+# Cargo.lock for libs
+/seax_svm/Cargo.lock
+/seax_scheme/Cargo.lock
