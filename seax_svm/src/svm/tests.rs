@@ -286,10 +286,8 @@ fn test_eval_join() {
             )))
     }.eval();
     assert_eq!(state.dump.peek(), None);
-    assert_eq!(state.control.peek(), Some(&ListCell(box list!(
-                AtomCell(SInt(1)),
-                AtomCell(SInt(2))
-            ))))
+    assert_eq!(state.control[0usize], AtomCell(SInt(1)));
+    assert_eq!(state.control[1usize], AtomCell(SInt(2)));
 }
 
 #[test]
