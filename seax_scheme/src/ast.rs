@@ -83,3 +83,7 @@ pub struct BoolNode { pub value: bool }
 #[derive(Clone, PartialEq)]
 pub struct CharNode { pub value: char }
 
+/// AST node for a  string constant
+#[derive(Clone, PartialEq)]
+pub struct StringNode { pub value: String }
+
