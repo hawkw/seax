@@ -1,13 +1,13 @@
 
 #![feature(box_syntax,box_patterns)]
 #[macro_use]
-extern crate seax_svm;
+extern crate "seax_svm" as svm;
 
-use seax_svm::slist::Stack;
-use seax_svm::slist::List::{Cons,Nil};
-use seax_svm::svm::cell::Atom::*;
-use seax_svm::svm::cell::SVMCell::*;
-use seax_svm::svm::Inst::*;
+use svm::slist::Stack;
+use svm::slist::List::{Cons,Nil};
+use svm::cell::Atom::*;
+use svm::cell::SVMCell::*;
+use svm::Inst::*;
 
 /// SVM integration tests.
 ///
@@ -23,7 +23,7 @@ use seax_svm::svm::Inst::*;
 #[test]
 fn test_list_creation() {
     assert_eq!(
-        seax_svm::svm::eval_program(list!(
+        svm::eval_program(list!(
             InstCell(NIL),
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
             InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS)
@@ -40,7 +40,7 @@ fn test_list_creation() {
 #[test]
 fn test_list_car() {
     assert_eq!(
-        seax_svm::svm::eval_program(list!(
+        svm::eval_program(list!(
             InstCell(NIL),
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
             InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
@@ -57,7 +57,7 @@ fn test_list_car() {
 #[test]
 fn test_list_cdr() {
     assert_eq!(
-        seax_svm::svm::eval_program(list!(
+        svm::eval_program(list!(
             InstCell(NIL),
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
             InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
@@ -75,7 +75,7 @@ fn test_list_cdr() {
 #[test]
 fn test_simple_add() {
     assert_eq!(
-        seax_svm::svm::eval_program(list!(
+        svm::eval_program(list!(
             InstCell(LDC), AtomCell(SInt(10)),
             InstCell(LDC), AtomCell(SInt(10)),
             InstCell(ADD)
@@ -92,7 +92,7 @@ fn test_simple_add() {
 #[test]
 fn test_nested_arith() {
      assert_eq!(
-        seax_svm::svm::eval_program(list!(
+        svm::eval_program(list!(
             InstCell(LDC), AtomCell(SInt(5)),
             InstCell(LDC), AtomCell(SInt(5)),
             InstCell(ADD),
@@ -116,7 +116,7 @@ fn test_nested_arith() {
 #[test]
 fn test_basic_branching() {
     assert_eq!(
-        seax_svm::svm::eval_program(list!(
+        svm::eval_program(list!(
             InstCell(LDC), AtomCell(SInt(1)), InstCell(LDC), AtomCell(SInt(1)),
             InstCell(SUB),
             InstCell(LDC), AtomCell(SInt(0)),
@@ -129,7 +129,7 @@ fn test_basic_branching() {
         Some(&AtomCell(SInt(1)))
     );
     assert_eq!(
-        seax_svm::svm::eval_program(list!(
+        svm::eval_program(list!(
             InstCell(NIL), InstCell(NULL),
             InstCell(SEL),
                 ListCell(box list!(InstCell(LDC), AtomCell(SInt(10)), InstCell(JOIN))),
