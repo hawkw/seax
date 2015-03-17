@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["cell","SVM cell types."]],"struct":[["State","Represents a SVM machine state"]],"fn":[["eval_program","Evaluates a program."]]});

@@ -43,21 +43,23 @@
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>seax_svm</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-0' href='../src/seax_svm/lib.rs.html#1-561'>[src]</a></span></h1>
-<h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+        </span><a id='src-0' href='../src/seax_svm/lib.rs.html#1-560'>[src]</a></span></h1>
+<h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use self::<a class='mod'
+                                            href='./slist/index.html'>slist</a>::<a class='enum' href='../seax_svm/slist/enum.List.html' title='seax_svm::slist::List'>List</a>;</code></td></tr><tr><td><code>pub use self::slist::List::{<a class='enum' href='../seax_svm/slist/enum.List.html' title='seax_svm::slist::List'>Cons</a>, <a class='enum' href='../seax_svm/slist/enum.List.html' title='seax_svm::slist::List'>Nil</a>};</code></td></tr><tr><td><code>pub use self::<a class='mod'
+                                            href='./slist/index.html'>slist</a>::<a class='trait' href='../seax_svm/slist/trait.Stack.html' title='seax_svm::slist::Stack'>Stack</a>;</code></td></tr><tr><td><code>pub use self::cell::{<a class='enum' href='../seax_svm/cell/enum.SVMCell.html' title='seax_svm::cell::SVMCell'>SVMCell</a>, <a class='enum' href='../seax_svm/cell/enum.Atom.html' title='seax_svm::cell::Atom'>Atom</a>, <a class='enum' href='../seax_svm/cell/enum.Inst.html' title='seax_svm::cell::Inst'>Inst</a>};</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='slist/index.html'
-                               title='seax_svm::slist'>slist</a></td>
-                        <td class='docblock short'><p>Singly-linked list and stack implementations.</p>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='cell/index.html'
+                               title='seax_svm::cell'>cell</a></td>
+                        <td class='docblock short'><p>SVM cell types.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='svm/index.html'
-                               title='seax_svm::svm'>svm</a></td>
-                        <td class='docblock short'><p>Contains the Seax Virtual Machine (SVM) and miscellaneous
-support code.</p>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='slist/index.html'
+                               title='seax_svm::slist'>slist</a></td>
+                        <td class='docblock short'><p>Singly-linked list and stack implementations.</p>
 </td>
                     </tr>
                 </table><h2 id='macros' class='section-header'><a href="#macros">Macros</a></h2>
@@ -66,6 +68,22 @@ support code.</p>
                         <td><a class='stability Unmarked' title='No stability level'></a><a class='macro' href='macro.list!.html'
                                title='seax_svm::list!'>list!</a></td>
                         <td class='docblock short'><p>Convenience macro for making lists.</p>
+</td>
+                    </tr>
+                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.State.html'
+                               title='seax_svm::State'>State</a></td>
+                        <td class='docblock short'><p>Represents a SVM machine state</p>
+</td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.eval_program.html'
+                               title='seax_svm::eval_program'>eval_program</a></td>
+                        <td class='docblock short'><p>Evaluates a program.</p>
 </td>
                     </tr>
                 </table></section>

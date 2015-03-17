@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `as_json` fn in crate `rustc-serialize`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, as_json">
+    <meta name="description" content="API documentation for the Rust `eval_program` fn in crate `seax_svm`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, eval_program">
 
-    <title>rustc-serialize::json::as_json - Rust</title>
+    <title>seax_svm::eval_program - Rust</title>
 
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
 
-    <link rel="shortcut icon" href="http://www.rust-lang.org/favicon.ico">
+    
     
 </head>
 <body class="rustdoc">
@@ -25,8 +25,8 @@
     
 
     <section class="sidebar">
-        <a href='../../rustc-serialize/index.html'><img src='http://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png' alt='' width='100'></a>
-        <p class='location'><a href='../index.html'>rustc-serialize</a>::<wbr><a href='index.html'>json</a></p><script>window.sidebarCurrent = {name: 'as_json', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        
+        <p class='location'><a href='index.html'>seax_svm</a></p><script>window.sidebarCurrent = {name: 'eval_program', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -41,11 +41,13 @@
     </nav>
 
     <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>rustc-serialize</a>::<wbr><a href='index.html'>json</a>::<wbr><a class='fn' href=''>as_json</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Function <a href='index.html'>seax_svm</a>::<wbr><a class='fn' href=''>eval_program</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-22555' href='../../src/rustc-serialize/json.rs.html#905-907'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn as_json&lt;T: <a class='trait' href='../../rustc-serialize/trait.Encodable.html' title='rustc-serialize::Encodable'>Encodable</a>&gt;(t: &amp;T) -&gt; <a class='struct' href='../../rustc-serialize/json/struct.AsJson.html' title='rustc-serialize::json::AsJson'>AsJson</a>&lt;T&gt;</pre><div class='docblock'><p>Create an <code>AsJson</code> wrapper which can be used to print a value as JSON
-on-the-fly via <code>write!</code></p>
+        </span><a id='src-8726' href='../src/seax_svm/lib.rs.html#545-560'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn eval_program(program: <a class='enum' href='../seax_svm/slist/enum.List.html' title='seax_svm::slist::List'>List</a>&lt;<a class='enum' href='../seax_svm/cell/enum.SVMCell.html' title='seax_svm::cell::SVMCell'>SVMCell</a>&gt;) -&gt; <a class='enum' href='../seax_svm/slist/enum.List.html' title='seax_svm::slist::List'>List</a>&lt;<a class='enum' href='../seax_svm/cell/enum.SVMCell.html' title='seax_svm::cell::SVMCell'>SVMCell</a>&gt;</pre><div class='docblock'><p>Evaluates a program.</p>
+
+<p>Evaluates a program (control stack) and returns the final state.
+TODO: add (optional?) parameters for stdin and stdout</p>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -85,13 +87,13 @@ on-the-fly via <code>write!</code></p>
     
 
     <script>
-        window.rootPath = "../../";
-        window.currentCrate = "rustc-serialize";
+        window.rootPath = "../";
+        window.currentCrate = "seax_svm";
         window.playgroundUrl = "";
     </script>
-    <script src="../../jquery.js"></script>
-    <script src="../../main.js"></script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script async src="../search-index.js"></script>
 </body>
 </html>

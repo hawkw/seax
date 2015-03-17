@@ -600,7 +600,6 @@
 <span id="558">558</span>
 <span id="559">559</span>
 <span id="560">560</span>
-<span id="561">561</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;seax_svm&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_type</span> <span class='op'>=</span> <span class='string'>&quot;lib&quot;</span>]</span>
@@ -614,554 +613,553 @@
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>slist</span>;
 
+<span class='doccomment'>/// SVM cell types.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// A cell in the VM can be either an atom (single item, either unsigned</span>
+<span class='doccomment'>/// int, signed int, float, or string), a pointer to a list cell, or an</span>
+<span class='doccomment'>/// instruction.</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>cell</span>;
+
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='kw'>mod</span> <span class='ident'>tests</span>;
+
 <span class='doccomment'>/// Contains the Seax Virtual Machine (SVM) and miscellaneous</span>
 <span class='doccomment'>/// support code.</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>svm</span> {
-    <span class='kw'>pub</span> <span class='kw'>use</span> ::<span class='ident'>slist</span>::<span class='ident'>List</span>;
-    <span class='kw'>pub</span> <span class='kw'>use</span> ::<span class='ident'>slist</span>::<span class='ident'>List</span>::{<span class='ident'>Cons</span>,<span class='ident'>Nil</span>};
-    <span class='kw'>pub</span> <span class='kw'>use</span> ::<span class='ident'>slist</span>::<span class='ident'>Stack</span>;
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::{<span class='ident'>SVMCell</span>,<span class='ident'>Atom</span>,<span class='ident'>Inst</span>};
-    <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::<span class='ident'>SVMCell</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::<span class='ident'>Atom</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::<span class='ident'>Inst</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>slist</span>::<span class='ident'>List</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>slist</span>::<span class='ident'>List</span>::{<span class='ident'>Cons</span>,<span class='ident'>Nil</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>slist</span>::<span class='ident'>Stack</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::{<span class='ident'>SVMCell</span>,<span class='ident'>Atom</span>,<span class='ident'>Inst</span>};
+<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::<span class='ident'>SVMCell</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::<span class='ident'>Atom</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>cell</span>::<span class='ident'>Inst</span>::<span class='op'>*</span>;
 
-    <span class='doccomment'>/// SVM cell types.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// A cell in the VM can be either an atom (single item, either unsigned</span>
-    <span class='doccomment'>/// int, signed int, float, or string), a pointer to a list cell, or an</span>
-    <span class='doccomment'>/// instruction.</span>
-    <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>cell</span>;
 
-    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
-    <span class='kw'>mod</span> <span class='ident'>tests</span>;
+<span class='doccomment'>/// Represents a SVM machine state</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>,<span class='ident'>Clone</span>,<span class='ident'>Debug</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>State</span> {
+    <span class='ident'>stack</span>:  <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>,
+    <span class='ident'>env</span>:  <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>,
+    <span class='ident'>control</span>:  <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>,
+    <span class='ident'>dump</span>:  <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>
+}
 
-    <span class='doccomment'>/// Represents a SVM machine state</span>
-    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>,<span class='ident'>Clone</span>,<span class='ident'>Debug</span>)]</span>
-    <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>State</span> {
-        <span class='ident'>stack</span>:  <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>,
-        <span class='ident'>env</span>:  <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>,
-        <span class='ident'>control</span>:  <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>,
-        <span class='ident'>dump</span>:  <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>
+<span class='kw'>impl</span> <span class='ident'>State</span> {
+
+    <span class='doccomment'>/// Creates a new empty state</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>State</span> {
+        <span class='ident'>State</span> {
+            <span class='ident'>stack</span>: <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
+            <span class='ident'>env</span>: <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
+            <span class='ident'>control</span>: <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
+            <span class='ident'>dump</span>: <span class='ident'>Stack</span>::<span class='ident'>empty</span>()
+        }
     }
 
-    <span class='kw'>impl</span> <span class='ident'>State</span> {
-
-        <span class='doccomment'>/// Creates a new empty state</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>State</span> {
-            <span class='ident'>State</span> {
-                <span class='ident'>stack</span>: <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
-                <span class='ident'>env</span>: <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
-                <span class='ident'>control</span>: <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
-                <span class='ident'>dump</span>: <span class='ident'>Stack</span>::<span class='ident'>empty</span>()
-            }
-        }
-
-        <span class='doccomment'>/// Evaluates an instruction.</span>
-        <span class='doccomment'>///</span>
-        <span class='doccomment'>/// Evaluates an instruction against a state, returning a new state.</span>
-        <span class='doccomment'>/// TODO: rewrite me to use the next instruction on the control stack,</span>
-        <span class='doccomment'>/// rather than a parameter.</span>
-        <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>eval</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>State</span> {
-            <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>control</span>.<span class='ident'>pop</span>() {
-                <span class='comment'>// NIL: pop an empty list onto the stack</span>
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>NIL</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='ident'>State</span> {
-                        <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>List</span>::<span class='ident'>new</span>())),
-                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                    }
+    <span class='doccomment'>/// Evaluates an instruction.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Evaluates an instruction against a state, returning a new state.</span>
+    <span class='doccomment'>/// TODO: rewrite me to use the next instruction on the control stack,</span>
+    <span class='doccomment'>/// rather than a parameter.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>eval</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>State</span> {
+        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>control</span>.<span class='ident'>pop</span>() {
+            <span class='comment'>// NIL: pop an empty list onto the stack</span>
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>NIL</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='ident'>State</span> {
+                    <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>List</span>::<span class='ident'>new</span>())),
+                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
                 }
-                <span class='comment'>// LDC: load constant</span>
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>LDC</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>atom</span>,<span class='ident'>newer_control</span>) <span class='op'>=</span> <span class='ident'>new_control</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='ident'>State</span> {
-                        <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>atom</span>),
-                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                        <span class='ident'>control</span>: <span class='ident'>newer_control</span>,
-                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                    }
-                },
-                <span class='comment'>// LD: load variable</span>
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>LD</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>match</span> <span class='ident'>new_control</span>.<span class='ident'>pop</span>() {
-                       <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(
-                            <span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='ident'>level</span>)),
-                            <span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='ident'>pos</span>)),
-                            <span class='kw'>box</span> <span class='ident'>Nil</span>))
-                        ), <span class='ident'>newer_control</span> <span class='kw-2'>@</span> _)) <span class='op'>=&gt;</span> {
-                            <span class='kw'>let</span> <span class='ident'>environment</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>env</span>[<span class='ident'>level</span>] {
-                                <span class='ident'>SVMCell</span>::<span class='ident'>ListCell</span>(<span class='kw-2'>ref</span> <span class='ident'>l</span>) <span class='op'>=&gt;</span> <span class='ident'>l</span>.<span class='ident'>clone</span>(),
-                                _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][LD]: expected list in $e, found {:?}&quot;</span>,<span class='self'>self</span>.<span class='ident'>env</span>[<span class='ident'>level</span>])
-                            };
-                            <span class='ident'>State</span> {
-                                <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>environment</span>[<span class='ident'>pos</span>].<span class='ident'>clone</span>()),
-                                <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                                <span class='ident'>control</span>: <span class='ident'>newer_control</span>,
-                                <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                            }
-                        },
-                       <span class='ident'>it</span> <span class='kw-2'>@</span> _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][LD]: expected pair, found {:?}&quot;</span>, <span class='ident'>it</span>)
-                    }
-                },
-
-                <span class='comment'>// LDF: load function</span>
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>LDF</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>func</span>, <span class='ident'>newer_control</span>) <span class='op'>=</span> <span class='ident'>new_control</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='ident'>State</span> {
-                        <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>func</span>,<span class='self'>self</span>.<span class='ident'>env</span>[<span class='number'>0usize</span>].<span class='ident'>clone</span>()))),
-                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                        <span class='ident'>control</span>: <span class='ident'>newer_control</span>,
-                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                    }
-                },
-
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>JOIN</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>top</span>, <span class='ident'>new_dump</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dump</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='ident'>State</span> {
-                        <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>,
-                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                        <span class='ident'>control</span>: <span class='kw'>match</span> <span class='ident'>top</span> {
-                            <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>) <span class='op'>=&gt;</span> <span class='ident'>new_control</span>,
-                            <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>it</span>)  <span class='op'>=&gt;</span> <span class='ident'>it</span>,
-                            <span class='ident'>anything</span>          <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][JOIN]: expected list on dump, found {:?}&quot;</span>, <span class='ident'>anything</span>)
-                        },
-                        <span class='ident'>dump</span>: <span class='ident'>new_dump</span>
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>ADD</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> <span class='ident'>op1</span> {
-                        <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
-                            <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                            <span class='kw'>match</span> <span class='ident'>op2</span> {
-                                <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                                    <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(<span class='ident'>a</span> <span class='op'>+</span> <span class='ident'>b</span>)),
-                                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                                },
-                                <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][ADD]: TypeError: expected compatible operands, found (ADD {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
-                            }
-                        },
-                        _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][ADD]: Expected first operand to be atom, found list or instruction&quot;</span>),
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>SUB</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> <span class='ident'>op1</span> {
-                        <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
-                            <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                            <span class='kw'>match</span> <span class='ident'>op2</span> {
-                                <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                                    <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(<span class='ident'>a</span> <span class='op'>-</span> <span class='ident'>b</span>)),
-                                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                                },
-                                <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SUB]: TypeError: expected compatible operands, found (SUB {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
-                            }
-                        },
-                        _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SUB]: Expected first operand to be atom, found list or instruction&quot;</span>),
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>FDIV</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> <span class='ident'>op1</span> {
-                        <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
-                            <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                            <span class='kw'>match</span> <span class='ident'>op2</span> {
-                                <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                                    <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(
-                                        <span class='kw'>match</span> (<span class='ident'>a</span>, <span class='ident'>b</span>) {
-                                            <span class='comment'>// same type: coerce to float</span>
-                                            (<span class='ident'>SInt</span>(<span class='ident'>a</span>), <span class='ident'>SInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>UInt</span>(<span class='ident'>a</span>), <span class='ident'>UInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>Float</span>(<span class='ident'>a</span>), <span class='ident'>Float</span>(<span class='ident'>b</span>))    <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='op'>/</span> <span class='ident'>b</span>),
-                                            <span class='comment'>// float + int: coerce to float</span>
-                                            (<span class='ident'>Float</span>(<span class='ident'>a</span>), <span class='ident'>SInt</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>Float</span>(<span class='ident'>a</span>), <span class='ident'>UInt</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>SInt</span>(<span class='ident'>a</span>), <span class='ident'>Float</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span>),
-                                            (<span class='ident'>UInt</span>(<span class='ident'>a</span>), <span class='ident'>Float</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span>),
-                                            <span class='comment'>// uint + sint: coerce to float</span>
-                                            (<span class='ident'>UInt</span>(<span class='ident'>a</span>), <span class='ident'>SInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>SInt</span>(<span class='ident'>a</span>), <span class='ident'>UInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            <span class='comment'>// char + any: coerce to int -&gt; float</span>
-                                            <span class='comment'>// but if you ever actually do this, then ...wat?</span>
-                                            (<span class='ident'>Char</span>(<span class='ident'>a</span>), <span class='ident'>Char</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>Char</span>(<span class='ident'>a</span>), <span class='ident'>UInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>Char</span>(<span class='ident'>a</span>), <span class='ident'>SInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>Char</span>(<span class='ident'>a</span>), <span class='ident'>Float</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>UInt</span>(<span class='ident'>a</span>), <span class='ident'>Char</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>SInt</span>(<span class='ident'>a</span>), <span class='ident'>Char</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
-                                            (<span class='ident'>Float</span>(<span class='ident'>a</span>), <span class='ident'>Char</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span>)
-                                        }
-                                        )),
-                                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                                },
-                                <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][FDIV]: TypeError: expected compatible operands, found (FDIV {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
-                            }
-                        },
-                        _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][FDIV]: Expected first operand to be atom, found list or instruction&quot;</span>),
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>DIV</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> <span class='ident'>op1</span> {
-                        <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
-                            <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                            <span class='kw'>match</span> <span class='ident'>op2</span> {
-                                <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                                    <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(<span class='ident'>a</span> <span class='op'>/</span> <span class='ident'>b</span>)),
-                                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                                },
-                                <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][DIV]: TypeError: expected compatible operands, found (DIV {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
-                            }
-                        },
-                        _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][DIV]: Expected first operand to be atom, found list or instruction&quot;</span>),
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>MUL</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> <span class='ident'>op1</span> {
-                        <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
-                            <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                            <span class='kw'>match</span> <span class='ident'>op2</span> {
-                                <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                                    <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(<span class='ident'>a</span> <span class='op'>*</span> <span class='ident'>b</span>)),
-                                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                                },
-                                <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][MUL]: TypeError: expected compatible operands, found (MUL {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
-                            }
-                        },
-                        _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][MUL]: Expected first operand to be atom, found list or instruction&quot;</span>),
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>MOD</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> <span class='ident'>op1</span> {
-                        <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
-                            <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                            <span class='kw'>match</span> <span class='ident'>op2</span> {
-                                <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                                    <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(<span class='ident'>a</span> <span class='op'>%</span> <span class='ident'>b</span>)),
-                                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                                },
-                                <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][MOD]: TypeError: expected compatible operands, found (MOD {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
-                            }
-                        },
-                        _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][MOD]: Expected first operand to be atom, found list or instruction&quot;</span>),
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>EQ</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> (<span class='ident'>op1</span>,<span class='ident'>op2</span>) {
-                        (<span class='ident'>AtomCell</span>(<span class='ident'>a</span>), <span class='ident'>AtomCell</span>(<span class='ident'>b</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                            <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(
-                                <span class='kw'>match</span> <span class='ident'>a</span> <span class='op'>==</span> <span class='ident'>b</span> {
-                                    <span class='boolval'>true</span>    <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
-                                    <span class='boolval'>false</span>   <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
-                                }
-                            ),
-                            <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                            <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                        },
-                    (_,_) <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>()
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>GT</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> (<span class='ident'>op1</span>,<span class='ident'>op2</span>) {
-                        (<span class='ident'>AtomCell</span>(<span class='ident'>a</span>), <span class='ident'>AtomCell</span>(<span class='ident'>b</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                            <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(
-                                <span class='kw'>match</span> <span class='ident'>a</span> <span class='op'>&gt;</span> <span class='ident'>b</span> {
-                                    <span class='boolval'>true</span>    <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
-                                    <span class='boolval'>false</span>   <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
-                                }
-                            ),
-                            <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                            <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                        },
-                    (_,_) <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>()
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>GTE</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> (<span class='ident'>op1</span>,<span class='ident'>op2</span>) {
-                        (<span class='ident'>AtomCell</span>(<span class='ident'>a</span>), <span class='ident'>AtomCell</span>(<span class='ident'>b</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {                            <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(
-                                <span class='kw'>match</span> <span class='ident'>a</span> <span class='op'>&gt;=</span> <span class='ident'>b</span> {
-                                    <span class='boolval'>true</span>    <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
-                                    <span class='boolval'>false</span>   <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
-                                }
-                            ),
-                            <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                            <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                        },
-                    (_,_) <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>()
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>LT</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> (<span class='ident'>op1</span>,<span class='ident'>op2</span>) {
-                        (<span class='ident'>AtomCell</span>(<span class='ident'>a</span>), <span class='ident'>AtomCell</span>(<span class='ident'>b</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                            <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(
-                                <span class='kw'>match</span> <span class='ident'>a</span> <span class='op'>&lt;</span> <span class='ident'>b</span> {
-                                    <span class='boolval'>true</span>    <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
-                                    <span class='boolval'>false</span>   <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
-                                }
-                            ),
-                            <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                            <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                        },
-                    (_,_) <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>()
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>LTE</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>match</span> (<span class='ident'>op1</span>,<span class='ident'>op2</span>) {
-                        (<span class='ident'>AtomCell</span>(<span class='ident'>a</span>), <span class='ident'>AtomCell</span>(<span class='ident'>b</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                            <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(
-                                <span class='kw'>match</span> <span class='ident'>a</span> <span class='op'>&lt;=</span> <span class='ident'>b</span> {
-                                    <span class='boolval'>true</span>    <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
-                                    <span class='boolval'>false</span>   <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
-                                }
-                            ),
-                            <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                            <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                        },
-                    (_,_) <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>()
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>ATOM</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>target</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='ident'>State</span> {
-                        <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(
-                            <span class='kw'>match</span> <span class='ident'>target</span> {
-                                <span class='ident'>AtomCell</span>(_) <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
-                                _           <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
-                            }
-                            ),
-                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>AP</span>), <span class='ident'>new_control</span> <span class='kw-2'>@</span> _)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>() {
-                        (<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>func</span>), <span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>params</span>), <span class='kw'>box</span> <span class='ident'>Nil</span>))), <span class='ident'>new_stack</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                            <span class='ident'>stack</span>: <span class='ident'>new_stack</span>,
-                            <span class='ident'>env</span>: <span class='ident'>params</span>,
-                            <span class='ident'>control</span>: <span class='ident'>func</span>,
-                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='self'>self</span>.<span class='ident'>env</span>)).<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>new_control</span>))
-                        },
-                        (_, <span class='ident'>thing</span>) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][AP]: Expected closure on stack, got:\n{:?}&quot;</span>, <span class='ident'>thing</span>)
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>RAP</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                     <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>() {
-                        (<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>func</span>), <span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>params</span>), <span class='kw'>box</span> <span class='ident'>Nil</span>))), <span class='ident'>new_stack</span>) <span class='op'>=&gt;</span> {
-                            <span class='kw'>match</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>() {
-                                <span class='prelude-val'>Some</span>((<span class='ident'>v</span> <span class='kw-2'>@</span> <span class='ident'>ListCell</span>(_), <span class='ident'>newer_stack</span>)) <span class='op'>=&gt;</span> {
-                                    <span class='ident'>State</span> {
-                                        <span class='ident'>stack</span>: <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
-                                        <span class='ident'>env</span>: <span class='ident'>params</span>.<span class='ident'>push</span>(<span class='ident'>v</span>),
-                                        <span class='ident'>control</span>: <span class='ident'>func</span>,
-                                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                                                .<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>new_control</span>))
-                                                .<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='self'>self</span>.<span class='ident'>env</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>().<span class='number'>1</span>))
-                                                .<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>newer_stack</span>))
-                                    }
-                                },
-                                <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RAP]:  Expected closure on stack, got:\n{:?}&quot;</span>, <span class='ident'>thing</span>),
-                                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RAP]: expected non-empty stack&quot;</span>)
-                            }
-                        },
-                        (_, <span class='ident'>thing</span>) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RAP]: Expected closure on stack, got:\n{:?}&quot;</span>, <span class='ident'>thing</span>)
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>RET</span>), _)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>head</span>, _) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='kw'>let</span> (<span class='ident'>new_stack</span>, <span class='ident'>new_dump</span>) <span class='op'>=</span> {
-                        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>dump</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>()  {
-                            (<span class='ident'>ListCell</span>(<span class='ident'>s</span>), <span class='ident'>d</span> <span class='kw-2'>@</span> _)    <span class='op'>=&gt;</span> (<span class='op'>*</span><span class='ident'>s</span>, <span class='ident'>d</span>),
-                            <span class='ident'>it</span> <span class='kw-2'>@</span> (<span class='ident'>AtomCell</span>(_),_)    <span class='op'>=&gt;</span> (<span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>it</span>.<span class='number'>0</span>), <span class='ident'>it</span>.<span class='number'>1</span>),
-                            _                       <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RET]: Expected non-empty stack&quot;</span>)
-                        }
-                    };
-                    <span class='kw'>let</span> (<span class='ident'>new_env</span>, <span class='ident'>newer_dump</span>) <span class='op'>=</span> {
-                        <span class='kw'>match</span> <span class='ident'>new_dump</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>() {
-                            (<span class='ident'>ListCell</span>(<span class='ident'>e</span>), <span class='ident'>d</span> <span class='kw-2'>@</span> _)    <span class='op'>=&gt;</span> (<span class='op'>*</span><span class='ident'>e</span>, <span class='ident'>d</span>),
-                            _                       <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RET]: Expected new environment on dump stack&quot;</span>)
-                        }
-                    };
-                    <span class='kw'>let</span> (<span class='ident'>newer_control</span>, <span class='ident'>newest_dump</span>) <span class='op'>=</span> {
-                        <span class='kw'>match</span> <span class='ident'>newer_dump</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>()  {
-                            (<span class='ident'>ListCell</span>(<span class='ident'>c</span>), <span class='ident'>d</span> <span class='kw-2'>@</span> _)    <span class='op'>=&gt;</span> (<span class='op'>*</span><span class='ident'>c</span>, <span class='ident'>d</span>),
-                            <span class='ident'>it</span> <span class='kw-2'>@</span> (<span class='ident'>InstCell</span>(_),_)    <span class='op'>=&gt;</span> (<span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>it</span>.<span class='number'>0</span>), <span class='ident'>it</span>.<span class='number'>1</span>),
-                            _                       <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RET]: Expected new control stack on dump stack&quot;</span>)
-                        }
-                    };
-                    <span class='ident'>State</span> {
-                        <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(<span class='ident'>head</span>),
-                        <span class='ident'>env</span>: <span class='ident'>new_env</span>,
-                        <span class='ident'>control</span>: <span class='ident'>newer_control</span>,
-                        <span class='ident'>dump</span>: <span class='ident'>newest_dump</span>
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>DUM</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='ident'>State</span> {
-                        <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>,
-                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='macro'>list</span><span class='macro'>!</span>())),
-                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>SEL</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>match</span> <span class='ident'>new_control</span>.<span class='ident'>pop</span>() {
-                        <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>true_case</span>), <span class='ident'>newer_control</span>)) <span class='op'>=&gt;</span> {
-                            <span class='kw'>match</span> <span class='ident'>newer_control</span>.<span class='ident'>pop</span>() {
-                                <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>false_case</span>), <span class='ident'>newest_control</span>)) <span class='op'>=&gt;</span> {
-                                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>() {
-                                        <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>), <span class='ident'>new_stack</span>)) <span class='op'>=&gt;</span> { <span class='comment'>// false case</span>
-                                            <span class='ident'>State</span> {
-                                                <span class='ident'>stack</span>: <span class='ident'>new_stack</span>,
-                                                <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                                                <span class='ident'>control</span>: <span class='ident'>false_case</span>,
-                                                <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>newest_control</span>))
-                                            }
-                                        },
-                                        <span class='prelude-val'>Some</span>((_, <span class='ident'>new_stack</span>)) <span class='op'>=&gt;</span> { <span class='comment'>// true case</span>
-                                            <span class='ident'>State</span> {
-                                                <span class='ident'>stack</span>: <span class='ident'>new_stack</span>,
-                                                <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                                                <span class='ident'>control</span>: <span class='ident'>true_case</span>,
-                                                <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>newest_control</span>))
-                                            }
-                                        },
-                                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SEL]: expected non-empty stack&quot;</span>)
-                                    }
-                                },
-                                <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SEL]: expected list on control, found {:?}&quot;</span>, <span class='ident'>thing</span>),
-                                <span class='prelude-val'>None</span>             <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SEL]: expected list on control, found nothing&quot;</span>)
-                            }
-                        },
-                        <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SEL]: expected list on control, found {:?}&quot;</span>, <span class='ident'>thing</span>),
-                        <span class='prelude-val'>None</span>             <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SEL]: expected list on control, found nothing&quot;</span>)
-
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>CAR</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>() {
-                        <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>car</span>, _)), <span class='ident'>new_stack</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                            <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(<span class='ident'>car</span>),
-                            <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                            <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                        },
-                        <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>), _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CAR]: expected non-empty list, found Nil&quot;</span>),
-                        <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, _))             <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CAR]: expected non-empty list, found {:?}&quot;</span>, <span class='ident'>thing</span>),
-                        <span class='prelude-val'>None</span>                         <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CAR]: Expected non-empty list, found nothing&quot;</span>)
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>CDR</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>() {
-                        <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Cons</span>(_, <span class='ident'>cdr</span>)), <span class='ident'>new_stack</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
-                            <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='ident'>cdr</span>)),
-                            <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                            <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                        },
-                        <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>), _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CDR]: expected non-empty list, found Nil&quot;</span>),
-                        <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, _))             <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CDR]: expected non-empty list, found {:?}&quot;</span>, <span class='ident'>thing</span>),
-                        <span class='prelude-val'>None</span>                         <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CDR]: Expected non-empty list, found nothing&quot;</span>)
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>CONS</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>() {
-                        <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, <span class='ident'>new_stack</span>)) <span class='op'>=&gt;</span> {
-                            <span class='kw'>match</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>() {
-                                <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='ident'>list</span>), <span class='ident'>newer_stack</span>)) <span class='op'>=&gt;</span> {
-                                    <span class='ident'>State</span> {
-                                        <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>thing</span>, <span class='ident'>list</span>))),
-                                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                                    }
-                                },
-                                <span class='prelude-val'>Some</span>((<span class='ident'>thing_else</span>, _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CONS]: Expected a list on the stack, found {:?}&quot;</span>, <span class='ident'>thing_else</span>),
-                                <span class='prelude-val'>None</span>               <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CONS]: Expected a list on the stack, found nothing.&quot;</span>)
-                            }
-                        },
-                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CONS]: Expected an item on the stack, found nothing&quot;</span>)
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>NULL</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='kw'>let</span> (<span class='ident'>target</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
-                    <span class='ident'>State</span> {
-                        <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(
-                            <span class='kw'>match</span> <span class='ident'>target</span> {
-                                <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>) <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
-                                _                 <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
-                            }
-                            ),
-                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
-                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
-                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
-                    }
-                },
-                <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>STOP</span>), _)) <span class='op'>=&gt;</span> {
-                    <span class='comment'>// TODO: does a new control have to be bound</span>
-                    <span class='comment'>// if it will basically just be discarded?</span>
-                    <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal]: undefined behaviour\n[fatal]: evaluation of STOP word&quot;</span>)
-                },
-                <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {<span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal]: expected an instruction on control stack&quot;</span>)}
-                <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
-                    <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal]: Tried to evaluate an unsupported cell type {:?}.\n[fatal]: State dump:\n[fatal]:\tstack: {:?}\n[fatal]: \tenv: {:?}\n[fatal]:\tcontrol: {:?}\n[fatal]:\tdump: {:?}&quot;</span>,
-                 <span class='ident'>thing</span>, <span class='self'>self</span>.<span class='ident'>stack</span>, <span class='self'>self</span>.<span class='ident'>env</span>, <span class='ident'>new_control</span>.<span class='ident'>push</span>(<span class='ident'>thing</span>.<span class='ident'>clone</span>()), <span class='self'>self</span>.<span class='ident'>dump</span>) }
             }
+            <span class='comment'>// LDC: load constant</span>
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>LDC</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>atom</span>,<span class='ident'>newer_control</span>) <span class='op'>=</span> <span class='ident'>new_control</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='ident'>State</span> {
+                    <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>atom</span>),
+                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                    <span class='ident'>control</span>: <span class='ident'>newer_control</span>,
+                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                }
+            },
+            <span class='comment'>// LD: load variable</span>
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>LD</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>match</span> <span class='ident'>new_control</span>.<span class='ident'>pop</span>() {
+                   <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(
+                        <span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='ident'>level</span>)),
+                        <span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='ident'>pos</span>)),
+                        <span class='kw'>box</span> <span class='ident'>Nil</span>))
+                    ), <span class='ident'>newer_control</span> <span class='kw-2'>@</span> _)) <span class='op'>=&gt;</span> {
+                        <span class='kw'>let</span> <span class='ident'>environment</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>env</span>[<span class='ident'>level</span>] {
+                            <span class='ident'>SVMCell</span>::<span class='ident'>ListCell</span>(<span class='kw-2'>ref</span> <span class='ident'>l</span>) <span class='op'>=&gt;</span> <span class='ident'>l</span>.<span class='ident'>clone</span>(),
+                            _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][LD]: expected list in $e, found {:?}&quot;</span>,<span class='self'>self</span>.<span class='ident'>env</span>[<span class='ident'>level</span>])
+                        };
+                        <span class='ident'>State</span> {
+                            <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>environment</span>[<span class='ident'>pos</span>].<span class='ident'>clone</span>()),
+                            <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                            <span class='ident'>control</span>: <span class='ident'>newer_control</span>,
+                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                        }
+                    },
+                   <span class='ident'>it</span> <span class='kw-2'>@</span> _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][LD]: expected pair, found {:?}&quot;</span>, <span class='ident'>it</span>)
+                }
+            },
+
+            <span class='comment'>// LDF: load function</span>
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>LDF</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>func</span>, <span class='ident'>newer_control</span>) <span class='op'>=</span> <span class='ident'>new_control</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='ident'>State</span> {
+                    <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>func</span>,<span class='self'>self</span>.<span class='ident'>env</span>[<span class='number'>0usize</span>].<span class='ident'>clone</span>()))),
+                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                    <span class='ident'>control</span>: <span class='ident'>newer_control</span>,
+                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                }
+            },
+
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>JOIN</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>top</span>, <span class='ident'>new_dump</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dump</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='ident'>State</span> {
+                    <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>,
+                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                    <span class='ident'>control</span>: <span class='kw'>match</span> <span class='ident'>top</span> {
+                        <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>) <span class='op'>=&gt;</span> <span class='ident'>new_control</span>,
+                        <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>it</span>)  <span class='op'>=&gt;</span> <span class='ident'>it</span>,
+                        <span class='ident'>anything</span>          <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][JOIN]: expected list on dump, found {:?}&quot;</span>, <span class='ident'>anything</span>)
+                    },
+                    <span class='ident'>dump</span>: <span class='ident'>new_dump</span>
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>ADD</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> <span class='ident'>op1</span> {
+                    <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
+                        <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                        <span class='kw'>match</span> <span class='ident'>op2</span> {
+                            <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                                <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(<span class='ident'>a</span> <span class='op'>+</span> <span class='ident'>b</span>)),
+                                <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                                <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                                <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                            },
+                            <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][ADD]: TypeError: expected compatible operands, found (ADD {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
+                        }
+                    },
+                    _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][ADD]: Expected first operand to be atom, found list or instruction&quot;</span>),
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>SUB</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> <span class='ident'>op1</span> {
+                    <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
+                        <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                        <span class='kw'>match</span> <span class='ident'>op2</span> {
+                            <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                                <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(<span class='ident'>a</span> <span class='op'>-</span> <span class='ident'>b</span>)),
+                                <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                                <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                                <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                            },
+                            <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SUB]: TypeError: expected compatible operands, found (SUB {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
+                        }
+                    },
+                    _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SUB]: Expected first operand to be atom, found list or instruction&quot;</span>),
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>FDIV</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> <span class='ident'>op1</span> {
+                    <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
+                        <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                        <span class='kw'>match</span> <span class='ident'>op2</span> {
+                            <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                                <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(
+                                    <span class='kw'>match</span> (<span class='ident'>a</span>, <span class='ident'>b</span>) {
+                                        <span class='comment'>// same type: coerce to float</span>
+                                        (<span class='ident'>SInt</span>(<span class='ident'>a</span>), <span class='ident'>SInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>UInt</span>(<span class='ident'>a</span>), <span class='ident'>UInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>Float</span>(<span class='ident'>a</span>), <span class='ident'>Float</span>(<span class='ident'>b</span>))    <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='op'>/</span> <span class='ident'>b</span>),
+                                        <span class='comment'>// float + int: coerce to float</span>
+                                        (<span class='ident'>Float</span>(<span class='ident'>a</span>), <span class='ident'>SInt</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>Float</span>(<span class='ident'>a</span>), <span class='ident'>UInt</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>SInt</span>(<span class='ident'>a</span>), <span class='ident'>Float</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span>),
+                                        (<span class='ident'>UInt</span>(<span class='ident'>a</span>), <span class='ident'>Float</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span>),
+                                        <span class='comment'>// uint + sint: coerce to float</span>
+                                        (<span class='ident'>UInt</span>(<span class='ident'>a</span>), <span class='ident'>SInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>SInt</span>(<span class='ident'>a</span>), <span class='ident'>UInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        <span class='comment'>// char + any: coerce to int -&gt; float</span>
+                                        <span class='comment'>// but if you ever actually do this, then ...wat?</span>
+                                        (<span class='ident'>Char</span>(<span class='ident'>a</span>), <span class='ident'>Char</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>Char</span>(<span class='ident'>a</span>), <span class='ident'>UInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>Char</span>(<span class='ident'>a</span>), <span class='ident'>SInt</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>Char</span>(<span class='ident'>a</span>), <span class='ident'>Float</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>UInt</span>(<span class='ident'>a</span>), <span class='ident'>Char</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>SInt</span>(<span class='ident'>a</span>), <span class='ident'>Char</span>(<span class='ident'>b</span>))      <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
+                                        (<span class='ident'>Float</span>(<span class='ident'>a</span>), <span class='ident'>Char</span>(<span class='ident'>b</span>))     <span class='op'>=&gt;</span> <span class='ident'>Float</span>(<span class='ident'>a</span> <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>b</span> <span class='kw'>as</span> <span class='ident'>u8</span> <span class='kw'>as</span> <span class='ident'>f64</span>)
+                                    }
+                                    )),
+                                <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                                <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                                <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                            },
+                            <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][FDIV]: TypeError: expected compatible operands, found (FDIV {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
+                        }
+                    },
+                    _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][FDIV]: Expected first operand to be atom, found list or instruction&quot;</span>),
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>DIV</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> <span class='ident'>op1</span> {
+                    <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
+                        <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                        <span class='kw'>match</span> <span class='ident'>op2</span> {
+                            <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                                <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(<span class='ident'>a</span> <span class='op'>/</span> <span class='ident'>b</span>)),
+                                <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                                <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                                <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                            },
+                            <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][DIV]: TypeError: expected compatible operands, found (DIV {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
+                        }
+                    },
+                    _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][DIV]: Expected first operand to be atom, found list or instruction&quot;</span>),
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>MUL</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> <span class='ident'>op1</span> {
+                    <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
+                        <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                        <span class='kw'>match</span> <span class='ident'>op2</span> {
+                            <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                                <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(<span class='ident'>a</span> <span class='op'>*</span> <span class='ident'>b</span>)),
+                                <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                                <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                                <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                            },
+                            <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][MUL]: TypeError: expected compatible operands, found (MUL {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
+                        }
+                    },
+                    _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][MUL]: Expected first operand to be atom, found list or instruction&quot;</span>),
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>MOD</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> <span class='ident'>op1</span> {
+                    <span class='ident'>AtomCell</span>(<span class='ident'>a</span>) <span class='op'>=&gt;</span> {
+                        <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                        <span class='kw'>match</span> <span class='ident'>op2</span> {
+                            <span class='ident'>AtomCell</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                                <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>AtomCell</span>(<span class='ident'>a</span> <span class='op'>%</span> <span class='ident'>b</span>)),
+                                <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                                <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                                <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                            },
+                            <span class='ident'>b</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][MOD]: TypeError: expected compatible operands, found (MOD {:?} {:?})&quot;</span>, <span class='ident'>a</span>, <span class='ident'>b</span>)
+                        }
+                    },
+                    _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][MOD]: Expected first operand to be atom, found list or instruction&quot;</span>),
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>EQ</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> (<span class='ident'>op1</span>,<span class='ident'>op2</span>) {
+                    (<span class='ident'>AtomCell</span>(<span class='ident'>a</span>), <span class='ident'>AtomCell</span>(<span class='ident'>b</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                        <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(
+                            <span class='kw'>match</span> <span class='ident'>a</span> <span class='op'>==</span> <span class='ident'>b</span> {
+                                <span class='boolval'>true</span>    <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
+                                <span class='boolval'>false</span>   <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
+                            }
+                        ),
+                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                    },
+                (_,_) <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>()
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>GT</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> (<span class='ident'>op1</span>,<span class='ident'>op2</span>) {
+                    (<span class='ident'>AtomCell</span>(<span class='ident'>a</span>), <span class='ident'>AtomCell</span>(<span class='ident'>b</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                        <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(
+                            <span class='kw'>match</span> <span class='ident'>a</span> <span class='op'>&gt;</span> <span class='ident'>b</span> {
+                                <span class='boolval'>true</span>    <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
+                                <span class='boolval'>false</span>   <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
+                            }
+                        ),
+                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                    },
+                (_,_) <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>()
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>GTE</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> (<span class='ident'>op1</span>,<span class='ident'>op2</span>) {
+                    (<span class='ident'>AtomCell</span>(<span class='ident'>a</span>), <span class='ident'>AtomCell</span>(<span class='ident'>b</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {                            <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(
+                            <span class='kw'>match</span> <span class='ident'>a</span> <span class='op'>&gt;=</span> <span class='ident'>b</span> {
+                                <span class='boolval'>true</span>    <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
+                                <span class='boolval'>false</span>   <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
+                            }
+                        ),
+                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                    },
+                (_,_) <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>()
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>LT</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> (<span class='ident'>op1</span>,<span class='ident'>op2</span>) {
+                    (<span class='ident'>AtomCell</span>(<span class='ident'>a</span>), <span class='ident'>AtomCell</span>(<span class='ident'>b</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                        <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(
+                            <span class='kw'>match</span> <span class='ident'>a</span> <span class='op'>&lt;</span> <span class='ident'>b</span> {
+                                <span class='boolval'>true</span>    <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
+                                <span class='boolval'>false</span>   <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
+                            }
+                        ),
+                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                    },
+                (_,_) <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>()
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>LTE</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>op1</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>let</span> (<span class='ident'>op2</span>, <span class='ident'>newer_stack</span>) <span class='op'>=</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>match</span> (<span class='ident'>op1</span>,<span class='ident'>op2</span>) {
+                    (<span class='ident'>AtomCell</span>(<span class='ident'>a</span>), <span class='ident'>AtomCell</span>(<span class='ident'>b</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                        <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(
+                            <span class='kw'>match</span> <span class='ident'>a</span> <span class='op'>&lt;=</span> <span class='ident'>b</span> {
+                                <span class='boolval'>true</span>    <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
+                                <span class='boolval'>false</span>   <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
+                            }
+                        ),
+                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                    },
+                (_,_) <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>()
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>ATOM</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>target</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='ident'>State</span> {
+                    <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(
+                        <span class='kw'>match</span> <span class='ident'>target</span> {
+                            <span class='ident'>AtomCell</span>(_) <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
+                            _           <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
+                        }
+                        ),
+                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>AP</span>), <span class='ident'>new_control</span> <span class='kw-2'>@</span> _)) <span class='op'>=&gt;</span> {
+                <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>() {
+                    (<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>func</span>), <span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>params</span>), <span class='kw'>box</span> <span class='ident'>Nil</span>))), <span class='ident'>new_stack</span>) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                        <span class='ident'>stack</span>: <span class='ident'>new_stack</span>,
+                        <span class='ident'>env</span>: <span class='ident'>params</span>,
+                        <span class='ident'>control</span>: <span class='ident'>func</span>,
+                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='self'>self</span>.<span class='ident'>env</span>)).<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>new_control</span>))
+                    },
+                    (_, <span class='ident'>thing</span>) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][AP]: Expected closure on stack, got:\n{:?}&quot;</span>, <span class='ident'>thing</span>)
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>RAP</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                 <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>() {
+                    (<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>func</span>), <span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>params</span>), <span class='kw'>box</span> <span class='ident'>Nil</span>))), <span class='ident'>new_stack</span>) <span class='op'>=&gt;</span> {
+                        <span class='kw'>match</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>() {
+                            <span class='prelude-val'>Some</span>((<span class='ident'>v</span> <span class='kw-2'>@</span> <span class='ident'>ListCell</span>(_), <span class='ident'>newer_stack</span>)) <span class='op'>=&gt;</span> {
+                                <span class='ident'>State</span> {
+                                    <span class='ident'>stack</span>: <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
+                                    <span class='ident'>env</span>: <span class='ident'>params</span>.<span class='ident'>push</span>(<span class='ident'>v</span>),
+                                    <span class='ident'>control</span>: <span class='ident'>func</span>,
+                                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                                            .<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>new_control</span>))
+                                            .<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='self'>self</span>.<span class='ident'>env</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>().<span class='number'>1</span>))
+                                            .<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>newer_stack</span>))
+                                }
+                            },
+                            <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RAP]:  Expected closure on stack, got:\n{:?}&quot;</span>, <span class='ident'>thing</span>),
+                            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RAP]: expected non-empty stack&quot;</span>)
+                        }
+                    },
+                    (_, <span class='ident'>thing</span>) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RAP]: Expected closure on stack, got:\n{:?}&quot;</span>, <span class='ident'>thing</span>)
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>RET</span>), _)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>head</span>, _) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='kw'>let</span> (<span class='ident'>new_stack</span>, <span class='ident'>new_dump</span>) <span class='op'>=</span> {
+                    <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>dump</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>()  {
+                        (<span class='ident'>ListCell</span>(<span class='ident'>s</span>), <span class='ident'>d</span> <span class='kw-2'>@</span> _)    <span class='op'>=&gt;</span> (<span class='op'>*</span><span class='ident'>s</span>, <span class='ident'>d</span>),
+                        <span class='ident'>it</span> <span class='kw-2'>@</span> (<span class='ident'>AtomCell</span>(_),_)    <span class='op'>=&gt;</span> (<span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>it</span>.<span class='number'>0</span>), <span class='ident'>it</span>.<span class='number'>1</span>),
+                        _                       <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RET]: Expected non-empty stack&quot;</span>)
+                    }
+                };
+                <span class='kw'>let</span> (<span class='ident'>new_env</span>, <span class='ident'>newer_dump</span>) <span class='op'>=</span> {
+                    <span class='kw'>match</span> <span class='ident'>new_dump</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>() {
+                        (<span class='ident'>ListCell</span>(<span class='ident'>e</span>), <span class='ident'>d</span> <span class='kw-2'>@</span> _)    <span class='op'>=&gt;</span> (<span class='op'>*</span><span class='ident'>e</span>, <span class='ident'>d</span>),
+                        _                       <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RET]: Expected new environment on dump stack&quot;</span>)
+                    }
+                };
+                <span class='kw'>let</span> (<span class='ident'>newer_control</span>, <span class='ident'>newest_dump</span>) <span class='op'>=</span> {
+                    <span class='kw'>match</span> <span class='ident'>newer_dump</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>()  {
+                        (<span class='ident'>ListCell</span>(<span class='ident'>c</span>), <span class='ident'>d</span> <span class='kw-2'>@</span> _)    <span class='op'>=&gt;</span> (<span class='op'>*</span><span class='ident'>c</span>, <span class='ident'>d</span>),
+                        <span class='ident'>it</span> <span class='kw-2'>@</span> (<span class='ident'>InstCell</span>(_),_)    <span class='op'>=&gt;</span> (<span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>it</span>.<span class='number'>0</span>), <span class='ident'>it</span>.<span class='number'>1</span>),
+                        _                       <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][RET]: Expected new control stack on dump stack&quot;</span>)
+                    }
+                };
+                <span class='ident'>State</span> {
+                    <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(<span class='ident'>head</span>),
+                    <span class='ident'>env</span>: <span class='ident'>new_env</span>,
+                    <span class='ident'>control</span>: <span class='ident'>newer_control</span>,
+                    <span class='ident'>dump</span>: <span class='ident'>newest_dump</span>
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>DUM</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='ident'>State</span> {
+                    <span class='ident'>stack</span>: <span class='self'>self</span>.<span class='ident'>stack</span>,
+                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='macro'>list</span><span class='macro'>!</span>())),
+                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>SEL</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>match</span> <span class='ident'>new_control</span>.<span class='ident'>pop</span>() {
+                    <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>true_case</span>), <span class='ident'>newer_control</span>)) <span class='op'>=&gt;</span> {
+                        <span class='kw'>match</span> <span class='ident'>newer_control</span>.<span class='ident'>pop</span>() {
+                            <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>false_case</span>), <span class='ident'>newest_control</span>)) <span class='op'>=&gt;</span> {
+                                <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>() {
+                                    <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>), <span class='ident'>new_stack</span>)) <span class='op'>=&gt;</span> { <span class='comment'>// false case</span>
+                                        <span class='ident'>State</span> {
+                                            <span class='ident'>stack</span>: <span class='ident'>new_stack</span>,
+                                            <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                                            <span class='ident'>control</span>: <span class='ident'>false_case</span>,
+                                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>newest_control</span>))
+                                        }
+                                    },
+                                    <span class='prelude-val'>Some</span>((_, <span class='ident'>new_stack</span>)) <span class='op'>=&gt;</span> { <span class='comment'>// true case</span>
+                                        <span class='ident'>State</span> {
+                                            <span class='ident'>stack</span>: <span class='ident'>new_stack</span>,
+                                            <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                                            <span class='ident'>control</span>: <span class='ident'>true_case</span>,
+                                            <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>newest_control</span>))
+                                        }
+                                    },
+                                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SEL]: expected non-empty stack&quot;</span>)
+                                }
+                            },
+                            <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SEL]: expected list on control, found {:?}&quot;</span>, <span class='ident'>thing</span>),
+                            <span class='prelude-val'>None</span>             <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SEL]: expected list on control, found nothing&quot;</span>)
+                        }
+                    },
+                    <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SEL]: expected list on control, found {:?}&quot;</span>, <span class='ident'>thing</span>),
+                    <span class='prelude-val'>None</span>             <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][SEL]: expected list on control, found nothing&quot;</span>)
+
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>CAR</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>() {
+                    <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>car</span>, _)), <span class='ident'>new_stack</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                        <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(<span class='ident'>car</span>),
+                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                    },
+                    <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>), _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CAR]: expected non-empty list, found Nil&quot;</span>),
+                    <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, _))             <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CAR]: expected non-empty list, found {:?}&quot;</span>, <span class='ident'>thing</span>),
+                    <span class='prelude-val'>None</span>                         <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CAR]: Expected non-empty list, found nothing&quot;</span>)
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>CDR</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>() {
+                    <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Cons</span>(_, <span class='ident'>cdr</span>)), <span class='ident'>new_stack</span>)) <span class='op'>=&gt;</span> <span class='ident'>State</span> {
+                        <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='ident'>cdr</span>)),
+                        <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                        <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                        <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                    },
+                    <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>), _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CDR]: expected non-empty list, found Nil&quot;</span>),
+                    <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, _))             <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CDR]: expected non-empty list, found {:?}&quot;</span>, <span class='ident'>thing</span>),
+                    <span class='prelude-val'>None</span>                         <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CDR]: Expected non-empty list, found nothing&quot;</span>)
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>CONS</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>() {
+                    <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, <span class='ident'>new_stack</span>)) <span class='op'>=&gt;</span> {
+                        <span class='kw'>match</span> <span class='ident'>new_stack</span>.<span class='ident'>pop</span>() {
+                            <span class='prelude-val'>Some</span>((<span class='ident'>ListCell</span>(<span class='ident'>list</span>), <span class='ident'>newer_stack</span>)) <span class='op'>=&gt;</span> {
+                                <span class='ident'>State</span> {
+                                    <span class='ident'>stack</span>: <span class='ident'>newer_stack</span>.<span class='ident'>push</span>(<span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Cons</span>(<span class='ident'>thing</span>, <span class='ident'>list</span>))),
+                                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                                }
+                            },
+                            <span class='prelude-val'>Some</span>((<span class='ident'>thing_else</span>, _)) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CONS]: Expected a list on the stack, found {:?}&quot;</span>, <span class='ident'>thing_else</span>),
+                            <span class='prelude-val'>None</span>               <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CONS]: Expected a list on the stack, found nothing.&quot;</span>)
+                        }
+                    },
+                    <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal][CONS]: Expected an item on the stack, found nothing&quot;</span>)
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>NULL</span>), <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> (<span class='ident'>target</span>, <span class='ident'>new_stack</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>stack</span>.<span class='ident'>pop</span>().<span class='ident'>unwrap</span>();
+                <span class='ident'>State</span> {
+                    <span class='ident'>stack</span>: <span class='ident'>new_stack</span>.<span class='ident'>push</span>(
+                        <span class='kw'>match</span> <span class='ident'>target</span> {
+                            <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>) <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(<span class='ident'>AtomCell</span>(<span class='ident'>SInt</span>(<span class='number'>1</span>)))),
+                            _                 <span class='op'>=&gt;</span> <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='ident'>Nil</span>)
+                        }
+                        ),
+                    <span class='ident'>env</span>: <span class='self'>self</span>.<span class='ident'>env</span>,
+                    <span class='ident'>control</span>: <span class='ident'>new_control</span>,
+                    <span class='ident'>dump</span>: <span class='self'>self</span>.<span class='ident'>dump</span>
+                }
+            },
+            <span class='prelude-val'>Some</span>((<span class='ident'>InstCell</span>(<span class='ident'>STOP</span>), _)) <span class='op'>=&gt;</span> {
+                <span class='comment'>// TODO: does a new control have to be bound</span>
+                <span class='comment'>// if it will basically just be discarded?</span>
+                <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal]: undefined behaviour\n[fatal]: evaluation of STOP word&quot;</span>)
+            },
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {<span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal]: expected an instruction on control stack&quot;</span>)}
+            <span class='prelude-val'>Some</span>((<span class='ident'>thing</span>, <span class='ident'>new_control</span>)) <span class='op'>=&gt;</span> {
+                <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;[fatal]: Tried to evaluate an unsupported cell type {:?}.\n[fatal]: State dump:\n[fatal]:\tstack: {:?}\n[fatal]: \tenv: {:?}\n[fatal]:\tcontrol: {:?}\n[fatal]:\tdump: {:?}&quot;</span>,
+             <span class='ident'>thing</span>, <span class='self'>self</span>.<span class='ident'>stack</span>, <span class='self'>self</span>.<span class='ident'>env</span>, <span class='ident'>new_control</span>.<span class='ident'>push</span>(<span class='ident'>thing</span>.<span class='ident'>clone</span>()), <span class='self'>self</span>.<span class='ident'>dump</span>) }
         }
     }
+}
 
 
-    <span class='doccomment'>/// Evaluates a program.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Evaluates a program (control stack) and returns the final state.</span>
-    <span class='doccomment'>/// TODO: add (optional?) parameters for stdin and stdout</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>eval_program</span>(<span class='ident'>program</span>: <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>machine</span> <span class='op'>=</span> <span class='ident'>State</span> {
-            <span class='ident'>stack</span>:      <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
-            <span class='ident'>env</span>:        <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
-            <span class='ident'>control</span>:    <span class='ident'>program</span>,
-            <span class='ident'>dump</span>:       <span class='ident'>Stack</span>::<span class='ident'>empty</span>()
-        };
-        <span class='comment'>// while there are more instructions,</span>
-        <span class='kw'>while</span> {
-            <span class='kw'>let</span> <span class='ident'>next</span> <span class='op'>=</span> <span class='ident'>machine</span>.<span class='ident'>control</span>.<span class='ident'>peek</span>();
-            <span class='ident'>next</span> <span class='op'>!=</span> <span class='prelude-val'>None</span> <span class='op'>&amp;&amp;</span> <span class='ident'>next</span> <span class='op'>!=</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>InstCell</span>(<span class='ident'>STOP</span>))
-        } {  <span class='comment'>//TODO: this is kinda heavyweight</span>
-            <span class='ident'>machine</span> <span class='op'>=</span> <span class='ident'>machine</span>.<span class='ident'>eval</span>() <span class='comment'>// continue evaling</span>
-        };
-        <span class='ident'>machine</span>.<span class='ident'>stack</span>
-    }
-
+<span class='doccomment'>/// Evaluates a program.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Evaluates a program (control stack) and returns the final state.</span>
+<span class='doccomment'>/// TODO: add (optional?) parameters for stdin and stdout</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>eval_program</span>(<span class='ident'>program</span>: <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span> {
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>machine</span> <span class='op'>=</span> <span class='ident'>State</span> {
+        <span class='ident'>stack</span>:      <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
+        <span class='ident'>env</span>:        <span class='ident'>Stack</span>::<span class='ident'>empty</span>(),
+        <span class='ident'>control</span>:    <span class='ident'>program</span>,
+        <span class='ident'>dump</span>:       <span class='ident'>Stack</span>::<span class='ident'>empty</span>()
+    };
+    <span class='comment'>// while there are more instructions,</span>
+    <span class='kw'>while</span> {
+        <span class='kw'>let</span> <span class='ident'>next</span> <span class='op'>=</span> <span class='ident'>machine</span>.<span class='ident'>control</span>.<span class='ident'>peek</span>();
+        <span class='ident'>next</span> <span class='op'>!=</span> <span class='prelude-val'>None</span> <span class='op'>&amp;&amp;</span> <span class='ident'>next</span> <span class='op'>!=</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>InstCell</span>(<span class='ident'>STOP</span>))
+    } {  <span class='comment'>//TODO: this is kinda heavyweight</span>
+        <span class='ident'>machine</span> <span class='op'>=</span> <span class='ident'>machine</span>.<span class='ident'>eval</span>() <span class='comment'>// continue evaling</span>
+    };
+    <span class='ident'>machine</span>.<span class='ident'>stack</span>
 }
 </pre>
 </section>

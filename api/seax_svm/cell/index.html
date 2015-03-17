@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `eval_program` fn in crate `seax_svm`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, eval_program">
+    <meta name="description" content="API documentation for the Rust `cell` mod in crate `seax_svm`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, cell">
 
-    <title>seax_svm::svm::eval_program - Rust</title>
+    <title>seax_svm::cell - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>seax_svm</a>::<wbr><a href='index.html'>svm</a></p><script>window.sidebarCurrent = {name: 'eval_program', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>seax_svm</a></p><script>window.sidebarCurrent = {name: 'cell', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -40,15 +40,38 @@
         </form>
     </nav>
 
-    <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>seax_svm</a>::<wbr><a href='index.html'>svm</a>::<wbr><a class='fn' href=''>eval_program</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>seax_svm</a>::<wbr><a class='mod' href=''>cell</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-8728' href='../../src/seax_svm/lib.rs.html#544-559'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn eval_program(program: <a class='enum' href='../../seax_svm/slist/enum.List.html' title='seax_svm::slist::List'>List</a>&lt;<a class='enum' href='../../seax_svm/svm/cell/enum.SVMCell.html' title='seax_svm::svm::cell::SVMCell'>SVMCell</a>&gt;) -&gt; <a class='enum' href='../../seax_svm/slist/enum.List.html' title='seax_svm::slist::List'>List</a>&lt;<a class='enum' href='../../seax_svm/svm/cell/enum.SVMCell.html' title='seax_svm::svm::cell::SVMCell'>SVMCell</a>&gt;</pre><div class='docblock'><p>Evaluates a program.</p>
+        </span><a id='src-1398' href='../../src/seax_svm/cell.rs.html#1-387'>[src]</a></span></h1>
+<div class='docblock'><p>SVM cell types.</p>
 
-<p>Evaluates a program (control stack) and returns the final state.
-TODO: add (optional?) parameters for stdin and stdout</p>
-</div></section>
+<p>A cell in the VM can be either an atom (single item, either unsigned
+int, signed int, float, or string), a pointer to a list cell, or an
+instruction.</p>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use self::<a class='enum' href='../../seax_svm/cell/enum.SVMCell.html' title='seax_svm::cell::SVMCell'>SVMCell</a>::*;</code></td></tr><tr><td><code>pub use self::<a class='enum' href='../../seax_svm/cell/enum.Atom.html' title='seax_svm::cell::Atom'>Atom</a>::*;</code></td></tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.Atom.html'
+                               title='seax_svm::cell::Atom'>Atom</a></td>
+                        <td class='docblock short'><p>SVM atom types.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.Inst.html'
+                               title='seax_svm::cell::Inst'>Inst</a></td>
+                        <td class='docblock short'><p>SVM instruction types</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.SVMCell.html'
+                               title='seax_svm::cell::SVMCell'>SVMCell</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                </table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

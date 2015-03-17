@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/docopt-0.6.51/src/dopt.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/docopt-0.6.52/src/dopt.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>dopt.rs.html -- source</title>
@@ -895,6 +895,10 @@
 <span id="853">853</span>
 <span id="854">854</span>
 <span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::<span class='ident'>IntoCow</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
@@ -1648,9 +1652,9 @@
     <span class='kw'>fn</span> <span class='ident'>read_enum_variant</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>names</span>: <span class='kw-2'>&amp;</span>[<span class='kw-2'>&amp;</span><span class='ident'>str</span>], <span class='kw-2'>mut</span> <span class='ident'>f</span>: <span class='ident'>F</span>)
                               <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>Error</span><span class='op'>&gt;</span>
             <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Decoder</span>, <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>pop_val</span>()).<span class='ident'>as_str</span>().<span class='ident'>to_lowercase</span>();
+        <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>to_lowercase</span>(<span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>pop_val</span>()).<span class='ident'>as_str</span>());
         <span class='kw'>let</span> <span class='ident'>i</span> <span class='op'>=</span>
-            <span class='kw'>match</span> <span class='ident'>names</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span>.<span class='ident'>to_lowercase</span>()).<span class='ident'>position</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='op'>==</span> <span class='ident'>v</span>) {
+            <span class='kw'>match</span> <span class='ident'>names</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>to_lowercase</span>(<span class='ident'>n</span>)).<span class='ident'>position</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='op'>==</span> <span class='ident'>v</span>) {
                 <span class='prelude-val'>Some</span>(<span class='ident'>i</span>) <span class='op'>=&gt;</span> <span class='ident'>i</span>,
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> {
                     <span class='macro'>derr</span><span class='macro'>!</span>(<span class='string'>&quot;Could not match &#39;{}&#39; with any of \
@@ -1743,6 +1747,10 @@
             <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnOnce</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Decoder</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='macro'>unimplemented</span><span class='macro'>!</span>()
     }
+}
+
+<span class='kw'>fn</span> <span class='ident'>to_lowercase</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>S</span>: <span class='ident'>IntoCow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>str</span><span class='op'>&gt;&gt;</span>(<span class='ident'>s</span>: <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
+    <span class='ident'>s</span>.<span class='ident'>into_cow</span>().<span class='ident'>chars</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span>.<span class='ident'>to_lowercase</span>().<span class='ident'>next</span>().<span class='ident'>unwrap</span>()).<span class='ident'>collect</span>()
 }
 
 <span class='comment'>// I&#39;ve been warned that this is wildly unsafe.</span>
