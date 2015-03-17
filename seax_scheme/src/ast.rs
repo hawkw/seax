@@ -1,5 +1,5 @@
-use seax_svm::svm::cell::SVMCell;
-use seax_svm::slist::List;
+use svm::svm::cell::SVMCell;
+use svm::slist::List;
 
 /// Trait for AST nodes.
 pub trait ASTNode {
