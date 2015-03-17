@@ -1,5 +1,5 @@
-use super::slist::Stack;
-use super::slist::List::{Cons,Nil};
+use ::slist::Stack;
+use ::slist::List::{Cons,Nil};
 use super::State;
 use super::cell::Atom::*;
 use super::cell::SVMCell::*;

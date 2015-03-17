@@ -2,24 +2,24 @@
 #![crate_type = "lib"]
 #![feature(box_syntax,box_patterns,core)]
 
+/// Singly-linked list and stack implementations.
+///
+/// `List<T>` is a singly-linked cons list with boxed items. `Stack<T>` is
+///  defined as a trait providing stack operations(`push()`, `pop()`, and
+///  `peek()`), and an implementation for `List`.
+#[macro_use]
+pub mod slist;
+
 /// Contains the Seax Virtual Machine (SVM) and miscellaneous
 /// support code.
 pub mod svm {
-    pub use self::slist::List;
-    pub use self::slist::List::{Cons,Nil};
-    pub use self::slist::Stack;
+    pub use ::slist::List;
+    pub use ::slist::List::{Cons,Nil};
+    pub use ::slist::Stack;
     pub use self::cell::{SVMCell,Atom,Inst};
     use self::cell::SVMCell::*;
     use self::cell::Atom::*;
     use self::cell::Inst::*;
-
-    /// Singly-linked list and stack implementations.
-    ///
-    /// `List<T>` is a singly-linked cons list with boxed items. `Stack<T>` is
-    ///  defined as a trait providing stack operations(`push()`, `pop()`, and
-    ///  `peek()`), and an implementation for `List`.
-    #[macro_use]
-    pub mod slist;
 
     /// SVM cell types.
     ///

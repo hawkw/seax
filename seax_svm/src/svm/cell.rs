@@ -1,7 +1,7 @@
 pub use self::SVMCell::*;
 pub use self::Atom::*;
 
-use super::slist::List;
+use ::slist::List;
 
 use std::fmt;
 use std::ops;
