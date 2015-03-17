@@ -4,7 +4,7 @@ use seax_svm::slist::List;
 /// Trait for AST nodes.
 pub trait ASTNode {
     /// Compile this node to a list of SVM expressions
-    fn compile(self)                        -> List<SVMCell>;
+    fn compile(self)                        -> Result<SVMCell, &'static str>;
 
     /// Pretty-print this node
     fn prettyprint(&self)                   -> String {
