@@ -27,7 +27,7 @@ pub trait ASTNode {
 ///  + Strings
 ///  TODO: implement the entire Scheme 'numeric tower'
 ///  TODO: macros should happen
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq,Debug)]
 pub enum ExprNode {
     Root(RootNode),
     SExpr(SExprNode),
@@ -42,48 +42,48 @@ pub enum ExprNode {
 }
 
 /// AST node for the root of a program's AST
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq,Debug)]
 pub struct RootNode { pub exprs: Vec<ExprNode> }
 
 /// AST node for an S-expression.
 ///
 /// This includes function application, assignment,
 /// function definition, et cetera...Scheme is not a complexl anguage.
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq,Debug)]
 pub struct SExprNode {
     pub operator: NameNode,
     pub operands: Vec<ExprNode>,
 }
 
 /// AST node for a list literal
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq,Debug)]
 pub struct ListNode { pub elements: Vec<ExprNode> }
 
 /// AST node for an identifier
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq,Debug)]
 pub struct NameNode { pub name: String }
 
 /// AST node for an integer constant
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq,Debug)]
 pub struct IntNode { pub value: isize }
 
 /// AST node for an unsigned integer constant
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq,Debug)]
 pub struct UIntNode { pub value: usize }
 
 /// AST node for a floating-point constant
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq,Debug)]
 pub struct FloatNode { pub value: f64 }
 
 /// AST node for a boolean constant
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq,Debug)]
 pub struct BoolNode { pub value: bool }
 
 /// AST node for a character constant
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq,Debug)]
 pub struct CharNode { pub value: char }
 
 /// AST node for a  string constant
-#[derive(Clone, PartialEq)]
-pub struct StringNode { pub value: &'static str }
+#[derive(Clone, PartialEq,Debug)]
+pub struct StringNode { pub value: String }
 
