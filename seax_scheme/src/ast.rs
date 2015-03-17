@@ -1,18 +1,16 @@
-use svm::svm::cell::SVMCell;
+use svm::cell::SVMCell;
 use svm::slist::List;
 
 /// Trait for AST nodes.
 pub trait ASTNode {
     /// Compile this node to a list of SVM expressions
-    fn compile(self)                        -> Result<SVMCell, &'static str>;
+    fn compile(self)                    -> Result<SVMCell, &'static str>;
 
     /// Pretty-print this node
-    fn prettyprint(&self)                   -> String {
-        prettyprint_level(&self, 0usize)
-    }
+    fn prettyprint(&self)               -> String { self.print_level(0usize) }
 
     /// Pretty-print this node at the desired indent level
-    fn print_level(&self, level: usize)     -> String;
+    fn print_level(&self, level: usize) -> String;
 }
 
 /// Expression
