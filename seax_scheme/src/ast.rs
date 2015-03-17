@@ -85,5 +85,5 @@ pub struct CharNode { pub value: char }
 
 /// AST node for a  string constant
 #[derive(Clone, PartialEq)]
-pub struct StringNode { pub value: String }
+pub struct StringNode { pub value: &'static str }
 
