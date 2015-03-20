@@ -33,12 +33,16 @@ pub enum ExprNode {
     SExpr(SExprNode),
     Name(NameNode),
     List(ListNode),
-    IntConst(IntNode),
-    UIntConst(UIntNode),
-    FloatConst(FloatNode),
+    NumConst(NumConst),
     BoolConst(BoolNode),
     StringConst(StringNode),
     CharConst(CharNode),
+}
+
+pub enum NumConst {
+    IntConst(IntNode),
+    UIntConst(UIntNode),
+    FloatConst(FloatNode)
 }
 
 /// AST node for the root of a program's AST
