@@ -6,7 +6,7 @@ use super::ast::ExprNode::*;
 
 pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
     where I: Stream<Item=char> {
-         let ident_start = satisfy(|c|
+         let initial = satisfy(|c|
             c.is_alphabetic()
                 || c == '='
                 || c == '*'
@@ -15,7 +15,7 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
                 || c == '!'
                 || c == '\\'
                 || c == '?');
-        let ident_body = satisfy(|c|
+        let subsequent = satisfy(|c|
             c.is_alphanumeric()
                 || c == '='
                 || c == '*'
@@ -24,8 +24,8 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
                 || c == '!'
                 || c == '\\'
                 || c == '?');
-        ident_start
-            .and(many::<Vec<_>, _>(ident_body).map(|it|
+        initial
+            .and(many::<Vec<_>, _>(subsequent).map(|it|
                 it.iter().fold(
                     String::new(),
                     |mut s: String, i| {
