@@ -3,6 +3,12 @@ use self::parser_combinators::{between, spaces, parser, many, satisfy, Parser, P
 use self::parser_combinators::primitives::{State, Stream};
 use super::ast::*;
 use super::ast::ExprNode::*;
+use super::ast::NumNode::*;
+
+pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
+    where I: Stream<Item=char> {
+        unimplemented!()
+}
 
 pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
     where I: Stream<Item=char> {
@@ -64,21 +70,21 @@ pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
 mod tests {
     use ::ast::*;
     use ::ast::ExprNode::*;
-    use super::expr;
-    use super::parser_combinators::Parser;
+    use super::{expr, number};
+    use super::parser_combinators::{Parser,parser};
 
     #[test]
     fn test_basic_ident() {
         assert_eq!(
-            (expr as fn (_) -> _).parse("ident").unwrap(),
+            parser(expr).parse("ident").unwrap(),
             (Name(NameNode { name: "ident".to_string() }), "")
             );
     }
 
-        #[test]
+    #[test]
     fn test_basic_sexpr() {
         assert_eq!(
-            (expr as fn (_) -> _).parse("(ident arg1 arg2)").unwrap(),
+            parser(expr).parse("(ident arg1 arg2)").unwrap(),
             (SExpr(SExprNode {
                 operator: NameNode { name: "ident".to_string() },
                 operands: vec![
@@ -86,6 +92,38 @@ mod tests {
                     Name(NameNode { name: "arg2".to_string() })
                 ]
             }), "")
+            );
+    }
+
+    #[test]
+    fn test_parse_number() {
+        assert_eq!(
+            parser(number).parse("1234").unwrap(),
+            (NumNode::IntConst(IntNode { value: 1234isize }), "")
+            );
+        assert_eq!(
+            parser(number).parse("-1234").unwrap(),
+            (NumNode::IntConst(IntNode { value: -1234isize }), "")
+            );
+        assert_eq!(
+            parser(number).parse("1234u").unwrap(),
+            (NumNode::UIntConst(UIntNode { value: 1234usize }), "")
+            );
+        assert_eq!(
+            parser(number).parse("1.0").unwrap(),
+            (NumNode::FloatConst(FloatNode { value: 1.0f64 }), "")
+            );
+        assert_eq!(
+            parser(number).parse("1f").unwrap(),
+            (NumNode::FloatConst(FloatNode { value: 1.0f64 }), "")
+            );
+        assert_eq!(
+            parser(number).parse("22.2222").unwrap(),
+            (NumNode::FloatConst(FloatNode { value: 22.2222f64 }), "")
+            );
+        assert_eq!(
+            parser(number).parse("22.2222f").unwrap(),
+            (NumNode::FloatConst(FloatNode { value: 22.2222f64 }), "")
             );
     }
 
