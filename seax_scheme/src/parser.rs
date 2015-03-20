@@ -113,7 +113,7 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_number() {
+    fn test_parse_sint() {
         assert_eq!(
             parser(number).parse("1234").unwrap(),
             (NumNode::IntConst(IntNode { value: 1234isize }), "")
@@ -122,10 +122,18 @@ mod tests {
             parser(number).parse("-1234").unwrap(),
             (NumNode::IntConst(IntNode { value: -1234isize }), "")
             );
+    }
+
+    #[test]
+    fn test_parse_uint() {
         assert_eq!(
             parser(number).parse("1234u").unwrap(),
             (NumNode::UIntConst(UIntNode { value: 1234usize }), "")
             );
+    }
+
+    #[test]
+    fn test_parse_float() {
         assert_eq!(
             parser(number).parse("1.0").unwrap(),
             (NumNode::FloatConst(FloatNode { value: 1.0f64 }), "")
