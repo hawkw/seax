@@ -1,5 +1,5 @@
 extern crate "parser-combinators" as parser_combinators;
-use self::parser_combinators::{between, spaces, many, satisfy, Parser, ParserExt, ParseResult};
+use self::parser_combinators::{between, spaces, digit, many, satisfy, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::{State, Stream};
 use super::ast::*;
 use super::ast::ExprNode::*;
@@ -8,22 +8,18 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
     where I: Stream<Item=char> {
          let initial = satisfy(|c|
             c.is_alphabetic()
-                || c == '='
-                || c == '*'
-                || c == '+'
-                || c == '/'
-                || c == '!'
-                || c == '\\'
+                // R6RS 'special initial' characters
+                || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
+                || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
                 || c == '?');
         let subsequent = satisfy(|c|
             c.is_alphanumeric()
-                || c == '='
-                || c == '*'
-                || c == '+'
-                || c == '/'
-                || c == '!'
-                || c == '\\'
-                || c == '?');
+                // R6RS 'special initial' characters
+                || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
+                || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
+                || c == '?'
+                // R6RS 'special subsequent' characters
+                || c == '+' || c == '-' || c == '.' || c == '@');
         initial
             .and(many::<Vec<_>, _>(subsequent).map(|it|
                 it.iter().fold(
