@@ -122,6 +122,14 @@ mod tests {
             parser(number).parse("-1234").unwrap(),
             (NumNode::IntConst(IntNode { value: -1234isize }), "")
             );
+        assert_eq!(
+            parser(number).parse("0x0ff").unwrap(),
+            (NumNode::IntConst(IntNode { value: 0x0ffisize }), "")
+            );
+        assert_eq!(
+            parser(number).parse("0X0FF").unwrap(),
+            (NumNode::IntConst(IntNode { value: 0x0ffisize }), "")
+            );
     }
 
     #[test]
