@@ -7,9 +7,9 @@ use super::ast::ExprNode::*;
 use std::str::FromStr;
 use std::num::FromStrRadix;
 
-pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
+fn sint<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
-        let signed_int = optional(satisfy(|c| c == '-'))
+        optional(satisfy(|c| c == '-'))
             .and(
                 (satisfy(|c| c == '0')
                     .and(satisfy(|c| c == 'x' || c == 'X')))
@@ -40,11 +40,14 @@ pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
                 } else {
                     x.1
                 }
-                });
-
-        signed_int
+                })
             .map(|x: isize| NumNode::IntConst(IntNode{value: x}))
             .parse_state(input)
+}
+
+pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
+    where I: Stream<Item=char> {
+        parser(sint).parse_state(input)
 }
 
 pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
@@ -107,7 +110,7 @@ pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
 mod tests {
     use ::ast::*;
     use ::ast::ExprNode::*;
-    use super::{expr, number};
+    use super::*;
     use super::parser_combinators::{Parser,parser};
 
     #[test]
@@ -149,19 +152,28 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_sint_hex_upper() {
+    fn test_parse_sint_hex() {
         assert_eq!(
             parser(number).parse("0x0ff"),
             Ok((NumNode::IntConst(IntNode { value: 0x0ffisize }), ""))
             );
-    }
-    #[test]
-    fn test_parse_sint_hex_neg() {
         assert_eq!(
             parser(number).parse("0X0FF"),
             Ok((NumNode::IntConst(IntNode { value: 0x0ffisize }), ""))
             );
     }
+    /*
+    #[test]
+    fn test_parse_sint_bin_upper() {
+        assert_eq!(
+            parser(number).parse("0B01"),
+            Ok((NumNode::IntConst(IntNode { value: 0b01isize }), ""))
+            );
+        assert_eq!(
+            parser(number).parse("0b01"),
+            Ok((NumNode::IntConst(IntNode { value: 0b01isize }), ""))
+            );
+    }*/
 
     #[test]
     fn test_parse_uint() {
