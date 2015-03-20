@@ -1,5 +1,5 @@
 extern crate "parser-combinators" as parser_combinators;
-use self::parser_combinators::{between, spaces,space, many, many1, sep_by, alpha_num, satisfy, string,Parser, ParserExt, ParseResult};
+use self::parser_combinators::{between, spaces, many, satisfy, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::{State, Stream};
 use super::ast::*;
 use super::ast::ExprNode::*;
@@ -70,7 +70,7 @@ mod tests {
     use ::ast::*;
     use ::ast::ExprNode::*;
     use super::expr;
-    use super::parser_combinators::{Parser, ParseResult};
+    use super::parser_combinators::Parser;
 
     #[test]
     fn test_basic_ident() {
