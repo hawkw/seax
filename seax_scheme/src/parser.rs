@@ -258,7 +258,7 @@ mod tests {
         assert_eq!(
             parser(number).parse("1f").unwrap(),
             (NumNode::FloatConst(FloatNode { value: 1.0f64 }), "")
-            );*/
+            );
         assert_eq!(
             parser(number).parse("22.2222").unwrap(),
             (NumNode::FloatConst(FloatNode { value: 22.2222f64 }), "")
@@ -266,7 +266,7 @@ mod tests {
         assert_eq!(
             parser(number).parse("22.2222f").unwrap(),
             (NumNode::FloatConst(FloatNode { value: 22.2222f64 }), "")
-            );
+            );*/
     }
 
 }
