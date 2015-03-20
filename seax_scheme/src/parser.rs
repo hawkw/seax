@@ -1,13 +1,13 @@
 extern crate "parser-combinators" as parser_combinators;
 
-use self::parser_combinators::{between, spaces, parser, many, many1, digit, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
+use self::parser_combinators::{try, between, spaces, parser, many, many1, digit, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::{State, Stream};
 use super::ast::*;
 use super::ast::ExprNode::*;
 use std::str::FromStr;
 use std::num::FromStrRadix;
 
-fn sint<I>(input: State<I>) -> ParseResult<NumNode, I>
+fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
         optional(satisfy(|c| c == '-'))
             .and(
@@ -41,13 +41,40 @@ fn sint<I>(input: State<I>) -> ParseResult<NumNode, I>
                     x.1
                 }
                 })
+            .skip(not_followed_by(satisfy(|c| c == 'u' || c == 'U' || c == '.')))
             .map(|x: isize| NumNode::IntConst(IntNode{value: x}))
             .parse_state(input)
 }
 
+fn uint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
+    where I: Stream<Item=char> {
+        (satisfy(|c| c == '0')
+            .and(satisfy(|c| c == 'x' || c == 'X')))
+            .with(many1::<Vec<_>, _>(hex_digit()))
+            .map(|x| usize::from_str_radix(
+                    x.iter()
+                     .fold(
+                        String::new(),
+                        |mut s: String, i| { s.push(*i); s })
+                     .as_slice(),
+                16).unwrap()
+            )
+        .or( many1::<Vec<_>, _>(digit())
+            .map(|x|usize::from_str(x.iter().fold(
+                String::new(), |mut s: String, i| { s.push(*i); s })
+                .as_slice()
+            ).unwrap())
+        )
+        .skip(satisfy(|c| c == 'u' || c == 'U'))
+        .map(|x: usize| NumNode::UIntConst(UIntNode{value: x}))
+        .parse_state(input)
+}
+
 pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
-        parser(sint).parse_state(input)
+        try(parser(sint_const))
+            .or(try(parser(uint_const)))
+            .parse_state(input)
 }
 
 pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
@@ -180,6 +207,10 @@ mod tests {
         assert_eq!(
             parser(number).parse("1234u"),
             Ok((NumNode::UIntConst(UIntNode { value: 1234usize }), ""))
+            );
+        assert_eq!(
+            parser(number).parse("4321U"),
+            Ok((NumNode::UIntConst(UIntNode { value: 4321usize }), ""))
             );
     }
 
