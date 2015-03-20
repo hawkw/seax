@@ -41,7 +41,6 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
                 s.push_str(&(x.0).1);
                 (NameNode{ name: s}, x.1)
             })
-
 }
 
 pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
