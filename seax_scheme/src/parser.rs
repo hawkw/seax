@@ -150,8 +150,9 @@ pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
                 })
             );
         spaces.clone().with(
-            sexpr
-                .or(parser(name).map(Name))
+            try(sexpr)
+                .or(try(parser(name).map(Name)))
+                .or(try(parser(number).map(NumConst)))
             ).parse_state(input)
 }
 
