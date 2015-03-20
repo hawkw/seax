@@ -41,7 +41,9 @@ fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
                     x.1
                 }
                 })
-            .skip(not_followed_by(satisfy(|c| c == 'u' || c == 'U' || c == '.')))
+            .skip(not_followed_by(satisfy(|c|
+                c == 'u' || c == 'U' || c == '.' || c == 'f' || c == 'F')
+            ))
             .map(|x: isize| NumNode::IntConst(IntNode{value: x}))
             .parse_state(input)
 }
@@ -72,7 +74,21 @@ fn uint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
 
 fn float_const<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
-        unimplemented!()
+        many1::<Vec<_>, _>(digit())
+            .and(satisfy(|c| c == '.'))
+            .and(many1::<Vec<_>, _>(digit()))
+            .map(|x| {
+                let mut s = String::new();
+                for i in (x.0).0.iter() { s.push(*i); } ;
+                s.push((x.0).1);
+
+                for i in x.1.iter() { s.push(*i); };
+                NumNode::FloatConst(FloatNode{
+                    value: f64::from_str(s.as_slice()).unwrap()
+                })
+            })
+            .skip(optional(satisfy(|c| c == 'f' || c == 'F')))
+            .parse_state(input)
 }
 
 pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
@@ -195,7 +211,7 @@ mod tests {
             Ok((NumNode::IntConst(IntNode { value: 0x0ffisize }), ""))
             );
     }
-    /*
+    /* // Currently unsupported
     #[test]
     fn test_parse_sint_bin_upper() {
         assert_eq!(
@@ -237,11 +253,11 @@ mod tests {
         assert_eq!(
             parser(number).parse("1.0").unwrap(),
             (NumNode::FloatConst(FloatNode { value: 1.0f64 }), "")
-            );
+            );/* // Unsupported
         assert_eq!(
             parser(number).parse("1f").unwrap(),
             (NumNode::FloatConst(FloatNode { value: 1.0f64 }), "")
-            );
+            );*/
         assert_eq!(
             parser(number).parse("22.2222").unwrap(),
             (NumNode::FloatConst(FloatNode { value: 22.2222f64 }), "")
