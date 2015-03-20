@@ -221,6 +221,18 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_uint_hex() {
+        assert_eq!(
+            parser(number).parse("0x0ffu"),
+            Ok((NumNode::UIntConst(UIntNode { value: 0x0ffusize }), ""))
+            );
+        assert_eq!(
+            parser(number).parse("0X0FFu"),
+            Ok((NumNode::UIntConst(UIntNode { value: 0x0ffusize }), ""))
+            );
+    }
+
+    #[test]
     fn test_parse_float() {
         assert_eq!(
             parser(number).parse("1.0").unwrap(),
