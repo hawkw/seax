@@ -1,5 +1,5 @@
 extern crate "parser-combinators" as parser_combinators;
-use self::parser_combinators::{between, spaces, digit, many, satisfy, Parser, ParserExt, ParseResult};
+use self::parser_combinators::{between, spaces, parser, many, satisfy, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::{State, Stream};
 use super::ast::*;
 use super::ast::ExprNode::*;
@@ -45,18 +45,18 @@ pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
         let sexpr = between(
             satisfy(|c| c == '('),
             satisfy(|c| c == ')'),
-            (name as fn(_) -> _)
-                .and(many(expr as fn(_) -> _))
+            parser(name)
+                .and(many(parser(expr)))
                 .map(|x| {
                     SExpr(SExprNode {
                         operator: x.0,
-                        operands: (x.1)
+                        operands: x.1
                     })
                 })
-                );
+            );
         spaces.clone().with(
             sexpr
-                .or((name as fn(_) -> _).map(Name))
+                .or(parser(name).map(Name))
             ).parse_state(input)
 }
 
