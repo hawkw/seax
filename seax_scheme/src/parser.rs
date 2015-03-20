@@ -4,6 +4,16 @@ use self::parser_combinators::primitives::{State, Stream};
 use super::ast::*;
 use super::ast::ExprNode::*;
 
+
+/// Parses valid Scheme identifiers.
+///
+/// A Scheme identifier should begin with a letter or the characters
+/// `=`, `*`, `+`, `/`,`!`,`\`,or `?`. That character may then be
+/// followed by any number of letters,numbers, or the above characters.
+/// I don't know why `_` isn't allowed, either.
+///
+/// Essentially, it should match the regex
+/// `[a-zA-Z=\*\+\/\!\/\?][a-zA-Z0-9=\*\+\/\!\/\?]*`/
 pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
     where I: Stream<Item=char> {
          let ident_start = satisfy(|c|
@@ -43,6 +53,9 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
             })
 }
 
+/// Parser for expressions.
+/// Basically this just strings together all the subparsers
+/// for expression types.
 pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
     where I: Stream<Item=char> {
         let spaces = spaces();
@@ -72,11 +85,23 @@ mod tests {
     use super::parser_combinators::Parser;
 
     #[test]
-    fn test_basic_ident() {
+    fn test_parse_ident() {
         assert_eq!(
             (expr as fn (_) -> _).parse("ident").unwrap(),
             (Name(NameNode { name: "ident".to_string() }), "")
             );
+        assert_eq!(
+            (expr as fn (_) -> _).parse("a").unwrap(),
+            (Name(NameNode { name: "a".to_string() }), "")
+            );
+        assert_eq!(
+            (expr as fn (_) -> _).parse("ident=With\\special!Chars").unwrap(),
+            (Name(NameNode { name: "ident=With\\special!Chars".to_string() }), "")
+            );/*
+        assert_eq!(
+            (expr as fn (_) -> _).parse("12thisIsWrong"),
+            (Err(_),"")
+            )*/
     }
 
         #[test]
