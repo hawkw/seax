@@ -70,10 +70,16 @@ fn uint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
         .parse_state(input)
 }
 
+fn float_const<I>(input: State<I>) -> ParseResult<NumNode, I>
+    where I: Stream<Item=char> {
+        unimplemented!()
+}
+
 pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
         try(parser(sint_const))
             .or(try(parser(uint_const)))
+            .or(try(parser(float_const)))
             .parse_state(input)
 }
 
