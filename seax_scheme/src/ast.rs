@@ -33,13 +33,15 @@ pub enum ExprNode {
     SExpr(SExprNode),
     Name(NameNode),
     List(ListNode),
-    NumConst(NumConst),
+    NumConst(NumNode),
     BoolConst(BoolNode),
     StringConst(StringNode),
     CharConst(CharNode),
 }
 
-pub enum NumConst {
+
+#[derive(Clone, PartialEq,Debug)]
+pub enum NumNode {
     IntConst(IntNode),
     UIntConst(UIntNode),
     FloatConst(FloatNode)
