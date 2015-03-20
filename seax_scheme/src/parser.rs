@@ -1,13 +1,30 @@
 extern crate "parser-combinators" as parser_combinators;
-use self::parser_combinators::{between, spaces, parser, many, satisfy, Parser, ParserExt, ParseResult};
+use self::parser_combinators::{between, spaces, parser, many, many1, digit, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::{State, Stream};
 use super::ast::*;
 use super::ast::ExprNode::*;
-use super::ast::NumNode::*;
 
 pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
-        unimplemented!()
+        let signed_int = optional(satisfy(|c| c == '-'))
+            .and(many1::<Vec<_>, _>(digit())
+                .or(satisfy(|c| c == '0')
+                    .with(satisfy(|c| c == 'x' || c == 'X'))
+                    .with(many1::<Vec<_>, _>(hex_digit()))
+                    )
+                )
+            .map(|x| {
+                let mut s = String::new();
+                if let Some(sign) = x.0 { s.push(sign) };
+                x.1.iter()
+                    .fold(s, |mut s: String, i| { s.push(*i); s })
+                    .parse::<isize>()
+                    .unwrap()
+                });
+
+        signed_int
+            .map(|x: isize| NumNode::IntConst(IntNode{value: x}))
+            .parse_state(input)
 }
 
 pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
