@@ -14,8 +14,20 @@ after_success:
     cargo doc
     .travis/publish.sh
     cargo login $CRATES_TOKEN
-    cargo package
-    cargo publish
+    if [[ "$TRAVIS_TAG" ~= "svm-*" ]]; then
+      cd seax_svm
+      cargo package
+      cargo publish
+      cd ..
+    elif [[ "$TRAVIS_TAG" ~= "scheme-*" ]]; then
+      cd seax_scheme
+      cargo package
+      cargo publish
+      cd ..
+    else
+      cargo package
+      cargo publish
+    fi
   else
     echo "Not on a new tag, skipping deploy step."
   fi
