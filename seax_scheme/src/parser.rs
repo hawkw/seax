@@ -1,25 +1,45 @@
 extern crate "parser-combinators" as parser_combinators;
+
 use self::parser_combinators::{between, spaces, parser, many, many1, digit, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::{State, Stream};
 use super::ast::*;
 use super::ast::ExprNode::*;
+use std::str::FromStr;
+use std::num::FromStrRadix;
 
 pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
         let signed_int = optional(satisfy(|c| c == '-'))
-            .and(many1::<Vec<_>, _>(digit())
-                .or(satisfy(|c| c == '0')
-                    .with(satisfy(|c| c == 'x' || c == 'X'))
+            .and(
+                (satisfy(|c| c == '0')
+                    .and(satisfy(|c| c == 'x' || c == 'X')))
                     .with(many1::<Vec<_>, _>(hex_digit()))
+                    .map(|x| {
+                        isize::from_str_radix(
+                            x.iter()
+                             .fold(
+                                String::new(),
+                                |mut s: String, i| { s.push(*i); s })
+                             .as_slice(),
+                        16).unwrap()
+                    })
+                .or( many1::<Vec<_>, _>(digit()).map(|x|
+                    isize::from_str(x.iter().fold(
+                        String::new(), |mut s: String, i| { s.push(*i); s })
+                        .as_slice()
+                    ).unwrap()
                     )
                 )
+                )
             .map(|x| {
-                let mut s = String::new();
-                if let Some(sign) = x.0 { s.push(sign) };
-                x.1.iter()
-                    .fold(s, |mut s: String, i| { s.push(*i); s })
-                    .parse::<isize>()
-                    .unwrap()
+                if let Some(sign) = x.0 {
+                    let mut s = String::new();
+                    s.push(sign);
+                    s.push('1');
+                    x.1 * isize::from_str(s.as_slice()).unwrap()
+                } else {
+                    x.1
+                }
                 });
 
         signed_int
@@ -113,30 +133,41 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_sint() {
+    fn test_parse_sint_pos() {
         assert_eq!(
-            parser(number).parse("1234").unwrap(),
-            (NumNode::IntConst(IntNode { value: 1234isize }), "")
+            parser(number).parse("1234"),
+            Ok((NumNode::IntConst(IntNode { value: 1234isize }), ""))
             );
+    }
+
+    #[test]
+    fn test_parse_sint_neg() {
         assert_eq!(
-            parser(number).parse("-1234").unwrap(),
-            (NumNode::IntConst(IntNode { value: -1234isize }), "")
+            parser(number).parse("-1234"),
+            Ok((NumNode::IntConst(IntNode { value: -1234isize }), ""))
             );
+    }
+
+    #[test]
+    fn test_parse_sint_hex_upper() {
         assert_eq!(
-            parser(number).parse("0x0ff").unwrap(),
-            (NumNode::IntConst(IntNode { value: 0x0ffisize }), "")
+            parser(number).parse("0x0ff"),
+            Ok((NumNode::IntConst(IntNode { value: 0x0ffisize }), ""))
             );
+    }
+    #[test]
+    fn test_parse_sint_hex_neg() {
         assert_eq!(
-            parser(number).parse("0X0FF").unwrap(),
-            (NumNode::IntConst(IntNode { value: 0x0ffisize }), "")
+            parser(number).parse("0X0FF"),
+            Ok((NumNode::IntConst(IntNode { value: 0x0ffisize }), ""))
             );
     }
 
     #[test]
     fn test_parse_uint() {
         assert_eq!(
-            parser(number).parse("1234u").unwrap(),
-            (NumNode::UIntConst(UIntNode { value: 1234usize }), "")
+            parser(number).parse("1234u"),
+            Ok((NumNode::UIntConst(UIntNode { value: 1234usize }), ""))
             );
     }
 
