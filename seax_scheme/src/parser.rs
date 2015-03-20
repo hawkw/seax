@@ -1,5 +1,5 @@
 extern crate "parser-combinators" as parser_combinators;
-use self::parser_combinators::{between, spaces, many, many1, sep_by, alpha_num, satisfy, string,Parser, ParserExt, ParseResult};
+use self::parser_combinators::{between, spaces,space, many, many1, sep_by, alpha_num, satisfy, string,Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::{State, Stream};
 use super::ast;
 use super::ast::ExprNode;
@@ -46,6 +46,7 @@ pub fn name<I>(input: State<I>) -> ParseResult<ast::NameNode, I>
 
 pub fn expr<I>(input: State<I>) -> ParseResult<ast::ExprNode, I>
     where I: Stream<Item=char> {
+        let spaces = spaces();
         let mut sexpr = between(
             satisfy(|c| c == '('),
             satisfy(|c| c == ')'),
@@ -58,9 +59,10 @@ pub fn expr<I>(input: State<I>) -> ParseResult<ast::ExprNode, I>
                     })
                 })
                 );
-        sexpr
-            .or((name as fn(_) -> _).map(|x| ast::ExprNode::Name(x)))
-            .parse_state(input)
+        spaces.clone().with(
+            sexpr
+                .or((name as fn(_) -> _).map(|x| ast::ExprNode::Name(x)))
+            ).parse_state(input)
 }
 
 #[cfg(test)]
@@ -74,6 +76,20 @@ mod tests {
         assert_eq!(
             (expr as fn (_) -> _).parse("ident").unwrap(),
             (ast::ExprNode::Name(ast::NameNode { name: "ident".to_string() }), "")
+            );
+    }
+
+        #[test]
+    fn test_basic_sexpr() {
+        assert_eq!(
+            (expr as fn (_) -> _).parse("(ident arg1 arg2)").unwrap(),
+            (ast::ExprNode::SExpr(ast::SExprNode {
+                operator: ast::NameNode { name: "ident".to_string() },
+                operands: vec![
+                    ast::ExprNode::Name(ast::NameNode { name: "arg1".to_string() }),
+                    ast::ExprNode::Name(ast::NameNode { name: "arg2".to_string() })
+                ]
+            }), "")
             );
     }
 
