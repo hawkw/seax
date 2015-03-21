@@ -6,22 +6,22 @@ use super::parser_combinators::{Parser,parser};
 #[test]
 fn test_basic_ident() {
     assert_eq!(
-        parser(expr).parse("ident").unwrap(),
-        (Name(NameNode { name: "ident".to_string() }), "")
+        parser(expr).parse("ident"),
+        Ok((Name(NameNode { name: "ident".to_string() }), ""))
         );
 }
 
 #[test]
 fn test_basic_sexpr() {
     assert_eq!(
-        parser(expr).parse("(ident arg1 arg2)").unwrap(),
-        (SExpr(SExprNode {
+        parser(expr).parse("(ident arg1 arg2)"),
+        Ok((SExpr(SExprNode {
             operator: NameNode { name: "ident".to_string() },
             operands: vec![
                 Name(NameNode { name: "arg1".to_string() }),
                 Name(NameNode { name: "arg2".to_string() })
             ]
-        }), "")
+        }), ""))
         );
 }
 
@@ -92,8 +92,8 @@ fn test_parse_uint_hex() {
 #[test]
 fn test_parse_float() {
     assert_eq!(
-        parser(number).parse("1.0").unwrap(),
-        (NumNode::FloatConst(FloatNode { value: 1.0f64 }), "")
+        parser(number).parse("1.0"),
+        Ok((NumNode::FloatConst(FloatNode { value: 1.0f64 }), ""))
         );/* // Unsupported
     assert_eq!(
         parser(number).parse("1f").unwrap(),
@@ -108,3 +108,4 @@ fn test_parse_float() {
         (NumNode::FloatConst(FloatNode { value: 22.2222f64 }), "")
         );*/
 }
+
