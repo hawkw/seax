@@ -14,12 +14,12 @@ after_success:
     cargo doc
     .travis/publish.sh
     cargo login $CRATES_TOKEN
-    if [[ "$TRAVIS_TAG" ~= "svm-*" ]]; then
+    if [[ "$TRAVIS_TAG" =~ "svm-*" ]]; then
       cd seax_svm
       cargo package
       cargo publish
       cd ..
-    elif [[ "$TRAVIS_TAG" ~= "scheme-*" ]]; then
+    elif [[ "$TRAVIS_TAG" =~ "scheme-*" ]]; then
       cd seax_scheme
       cargo package
       cargo publish
