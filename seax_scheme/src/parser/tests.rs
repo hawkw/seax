@@ -109,3 +109,31 @@ fn test_parse_float() {
         );*/
 }
 
+#[test]
+fn test_parse_bool() {
+    assert_eq!(
+        parser(bool_const).parse("#t"),
+        Ok((BoolNode { value: true}, ""))
+        );
+    assert_eq!(
+        parser(bool_const).parse("#T"),
+        Ok((BoolNode { value: true}, ""))
+        );
+    assert_eq!(
+        parser(bool_const).parse("true"),
+        Ok((BoolNode { value: true}, ""))
+        );
+    assert_eq!(
+        parser(bool_const).parse("#f"),
+        Ok((BoolNode { value: false}, ""))
+        );
+    assert_eq!(
+        parser(bool_const).parse("#F"),
+        Ok((BoolNode { value: false}, ""))
+        );
+    assert_eq!(
+        parser(bool_const).parse("false"),
+        Ok((BoolNode { value: false}, ""))
+        );
+}
+
