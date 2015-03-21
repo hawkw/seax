@@ -1,6 +1,6 @@
 extern crate "parser-combinators" as parser_combinators;
 
-use self::parser_combinators::{try, between, spaces, parser, many, many1, digit, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
+use self::parser_combinators::{try, between, spaces, string, parser, many, many1, digit, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::{State, Stream};
 use super::ast::*;
 use super::ast::ExprNode::*;
@@ -109,6 +109,32 @@ fn float_const<I>(input: State<I>) -> ParseResult<NumNode, I>
             .skip(optional(satisfy(|c| c == 'f' || c == 'F')))
             .parse_state(input)
 }
+
+/// Parses boolean constants.
+///
+/// Note that this parser recognizes the strings `"true"` and `"false"`
+/// as true and false. While this is not specified in R6RS, the use of
+/// these tokens is common enough in other programming languages that
+/// I've decided that Seax Scheme should support it as well. This may
+/// be removed in a future version if it causes unforseen compatibility
+/// issues.
+///
+/// `#t`, `#T`, or `true`  -> `true`
+/// `#f`, `#F`, or `false` -> `false`
+pub fn bool_const<I>(input: State<I>) -> ParseResult<BoolNode, I>
+    where I: Stream<Item=char> {
+        let t_const = try(string("#t"))
+            .or(try(string("#T")))
+            .or(try(string("true")))
+            .map(|_| BoolNode{ value: true });
+        let f_const = try(string("#f"))
+            .or(try(string("#F")))
+            .or(try(string("false")))
+            .map(|_| BoolNode{ value: false });
+        t_const
+            .or(f_const)
+            .parse_state(input)
+    }
 
 /// Parses a floating-point, signed integer, or unsigned integer constant.
 pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
