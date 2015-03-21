@@ -16,9 +16,10 @@ use std::num::FromStrRadix;
 /// TODO: add support for R6RS exponents
 fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
-        optional(satisfy(|c| c == '-'))
-            .and(
-                try((satisfy(|c| c == '#')
+
+        fn hex_string<I>(input: State<I>) -> ParseResult<isize, I>
+            where I: Stream<Item=char> {
+                (satisfy(|c| c == '#')
                     .and(satisfy(|c| c == 'x' || c == 'X')))
                     .with(many1::<Vec<_>, _>(hex_digit()))
                     .map(|x| {
@@ -29,17 +30,26 @@ fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
                                 |mut s: String, i| { s.push(*i); s })
                              .as_slice(),
                         16).unwrap()
-                    }))
-                .or(
-                    optional(satisfy(|c| c == '#')
-                        .and(satisfy(|c| c == 'd' || c == 'D')))
-                    .with(many1::<Vec<_>, _>(digit())
-                        .map(|x| isize::from_str(x.iter().fold(
-                            String::new(), |mut s: String, i| { s.push(*i); s })
-                            .as_slice()
-                        ).unwrap()
-                        ))
-                    )
+                    }).parse_state(input)
+        }
+
+
+        fn dec_string<I>(input: State<I>) -> ParseResult<isize, I>
+            where I: Stream<Item=char> {
+                optional(satisfy(|c| c == '#')
+                    .and(satisfy(|c| c == 'd' || c == 'D')))
+                .with(many1::<Vec<_>, _>(digit())
+                    .map(|x| isize::from_str(x.iter().fold(
+                        String::new(), |mut s: String, i| { s.push(*i); s })
+                        .as_slice()
+                    ).unwrap()
+                    )).parse_state(input)
+            }
+
+        optional(satisfy(|c| c == '-'))
+            .and(
+                try(parser(hex_string))
+                .or(parser(dec_string))
                 )
             .map(|x| {
                 if let Some(sign) = x.0 {
@@ -66,17 +76,24 @@ fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
 /// TODO: add support for R6RS exponents
 fn uint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
-        (satisfy(|c| c == '#')
-            .and(satisfy(|c| c == 'x' || c == 'X')))
-            .with(many1::<Vec<_>, _>(hex_digit()))
-            .map(|x| usize::from_str_radix(
-                    x.iter()
-                     .fold(
-                        String::new(),
-                        |mut s: String, i| { s.push(*i); s })
-                     .as_slice(),
-                16).unwrap()
-            )
+
+
+        fn hex_string<I>(input: State<I>) -> ParseResult<usize, I>
+            where I: Stream<Item=char> {
+            (satisfy(|c| c == '#')
+                .and(satisfy(|c| c == 'x' || c == 'X')))
+                .with(many1::<Vec<_>, _>(hex_digit()))
+                .map(|x| usize::from_str_radix(
+                        x.iter()
+                         .fold(
+                            String::new(),
+                            |mut s: String, i| { s.push(*i); s })
+                         .as_slice(),
+                    16).unwrap()
+                ).parse_state(input)
+        }
+
+        try(parser(hex_string))
         .or( many1::<Vec<_>, _>(digit())
             .map(|x|usize::from_str(x.iter().fold(
                 String::new(), |mut s: String, i| { s.push(*i); s })
@@ -164,22 +181,34 @@ pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
 /// [R6RS](http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-7.html).
 pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
     where I: Stream<Item=char> {
-         let initial = satisfy(|c|
-            c.is_alphabetic()
-                // R6RS 'special initial' characters
-                || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
-                || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
-                || c == '?');
-        let subsequent = satisfy(|c|
-            c.is_alphanumeric()
-                // R6RS 'special initial' characters
-                || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
-                || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
-                || c == '?'
-                // R6RS 'special subsequent' characters
-                || c == '+' || c == '-' || c == '.' || c == '@');
-        initial
-            .and(many::<Vec<_>, _>(subsequent).map(|it|
+
+        fn initial<I>(input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                satisfy(|c|
+                    c.is_alphabetic()
+                    // R6RS 'special initial' characters
+                    || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
+                    || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
+                    || c == '?'
+                ).parse_state(input)
+            }
+
+        fn subsequent<I>(input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+
+            satisfy(|c|
+                c.is_alphanumeric()
+                    // R6RS 'special initial' characters
+                    || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
+                    || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
+                    || c == '?'
+                    // R6RS 'special subsequent' characters
+                    || c == '+' || c == '-' || c == '.' || c == '@'
+                ).parse_state(input)
+            }
+
+        parser(initial)
+            .and(many::<Vec<_>, _>(parser(subsequent)).map(|it|
                 it.iter().fold(
                     String::new(),
                     |mut s: String, i| {
@@ -202,31 +231,40 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
 pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
     where I: Stream<Item=char> {
         let spaces = spaces();
-        let sexpr = between(
-            satisfy(|c| c == '('),
-            satisfy(|c| c == ')'),
-            parser(name)
-                .and(many(parser(expr)))
-                .map(|x| {
-                    SExpr(SExprNode {
-                        operator: x.0,
-                        operands: x.1
-                    })
-                })
-            );
-        let list = between(
-            satisfy(|c| c == '('),
-            satisfy(|c| c == ')'),
-            many(parser(expr))
-                .map(|x| {
-                    ListConst(ListNode {
-                        elements: x
-                    })
-                })
-            );
+
+        fn sexpr<I>(input: State<I>) -> ParseResult<ExprNode, I>
+            where I: Stream<Item=char> {
+                between(
+                    satisfy(|c| c == '('),
+                    satisfy(|c| c == ')'),
+                    parser(name)
+                        .and(many(parser(expr)))
+                        .map(|x| {
+                            SExpr(SExprNode {
+                                operator: x.0,
+                                operands: x.1
+                            })
+                        })
+                ).parse_state(input)
+            }
+
+        fn list<I>(input: State<I>) -> ParseResult<ExprNode, I>
+            where I: Stream<Item=char> {
+                between(
+                    satisfy(|c| c == '('),
+                    satisfy(|c| c == ')'),
+                    many(parser(expr))
+                        .map(|x| {
+                            ListConst(ListNode {
+                                elements: x
+                            })
+                        })
+                ).parse_state(input)
+            }
+
         spaces.clone().with(
-            try(sexpr)
-                .or(try(list))
+            try(parser(sexpr))
+                .or(try(parser(list)))
                 .or(try(parser(name).map(Name)))
                 .or(try(parser(number).map(NumConst)))
             ).parse_state(input)
