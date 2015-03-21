@@ -30,6 +30,7 @@ pub use self::cell::{SVMCell,Atom,Inst};
 use self::cell::SVMCell::*;
 use self::cell::Atom::*;
 use self::cell::Inst::*;
+use std::io;
 
 
 /// Represents a SVM machine state
@@ -58,7 +59,7 @@ impl State {
     /// Evaluates an instruction against a state, returning a new state.
     /// TODO: rewrite me to use the next instruction on the control stack,
     /// rather than a parameter.
-    pub fn eval(self) -> State {
+    pub fn eval(self, inp: &mut io::Read, outp: &mut io::Write) -> State {
         match self.control.pop() {
             // NIL: pop an empty list onto the stack
             Some((InstCell(NIL), new_control)) => {
@@ -524,6 +525,20 @@ impl State {
                     dump: self.dump
                 }
             },
+            Some((InstCell(WRITEC), new_control)) => {
+                match self.stack.pop() {
+                    Some((AtomCell(Char(ch)), new_stack)) => {
+                        outp.write(&[ch as u8,1]);
+                        State {
+                            stack: new_stack,
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        }
+                    },
+                    _ => panic!("[fatal][writec]: expected char")
+                }
+            },
             Some((InstCell(STOP), _)) => {
                 // TODO: does a new control have to be bound
                 // if it will basically just be discarded?
@@ -549,12 +564,14 @@ pub fn eval_program(program: List<SVMCell>) -> List<SVMCell> {
         control:    program,
         dump:       Stack::empty()
     };
+    let mut outp = io::stdout();
+    let mut inp  = io::stdin();
     // while there are more instructions,
     while {
         let next = machine.control.peek();
         next != None && next != Some(&InstCell(STOP))
     } {  //TODO: this is kinda heavyweight
-        machine = machine.eval() // continue evaling
+        machine = machine.eval(&mut inp, &mut outp) // continue evaling
     };
     machine.stack
 }

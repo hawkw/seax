@@ -352,7 +352,17 @@ pub enum Inst {
     ///
     /// Terminates program execution. The `eval_program()` function will return
     /// the last state of the VM.
-    STOP
+    STOP,
+    /// `readc`: `read` `c`haracter
+    ///
+    /// Reads a character from the machine's input stream and places it
+    /// on top of the stack
+    READC,
+    /// `writec`: `write` `c`haracter
+    ///
+    /// Writes a character from the top of the stack to the machine's
+    /// output stream.
+    WRITEC,
     // TODO: add some hardcoded I/O instructions here so that you can
     //  do I/O without farming everything out to `stdio`
 }
