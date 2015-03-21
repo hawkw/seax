@@ -207,16 +207,22 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
                 ).parse_state(input)
             }
 
+        fn rest<I>(input: State<I>) -> ParseResult<String, I>
+            where I: Stream<Item=char> {
+                many::<Vec<_>, _>(parser(subsequent))
+                    .map(|it|
+                        it.iter().fold(
+                            String::new(),
+                            |mut s: String, i| {
+                                s.push(*i);
+                                s
+                            })
+                        )
+                    .parse_state(input)
+            }
+
         parser(initial)
-            .and(many::<Vec<_>, _>(parser(subsequent)).map(|it|
-                it.iter().fold(
-                    String::new(),
-                    |mut s: String, i| {
-                        s.push(*i);
-                        s
-                    }
-                    )
-                ))
+            .and(parser(rest))
             .parse_state(input)
             .map(|x| {
                 let mut s = String::new();
