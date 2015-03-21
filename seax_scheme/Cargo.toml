@@ -11,7 +11,7 @@ readme = "../README.md"
 keywords = ["vm","lisp","languages"]
 
 [dependencies]
-parser-combinators = "~0.2.0"
+parser-combinators = "~0.2.2"
 
 [dependencies.seax_svm]
 path = "../seax_svm"
