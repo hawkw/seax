@@ -9,6 +9,14 @@ fn test_basic_ident() {
         parser(expr).parse("ident"),
         Ok((Name(NameNode { name: "ident".to_string() }), ""))
         );
+    assert_eq!(
+        parser(expr).parse("a"),
+        Ok((Name(NameNode { name: "a".to_string() }), ""))
+        );
+    assert_eq!(
+        parser(expr).parse("ident_With\\special!Chars:~-+"),
+        Ok((Name(NameNode { name: "ident_With\\special!Chars:~-+".to_string() }), ""))
+        );
 }
 
 #[test]
