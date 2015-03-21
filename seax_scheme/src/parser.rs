@@ -7,6 +7,12 @@ use super::ast::ExprNode::*;
 use std::str::FromStr;
 use std::num::FromStrRadix;
 
+/// Parser for signed integer constants.
+///
+/// This parses signed integer constants in decimal and hexadecimal.
+///
+/// TODO: add support for octal
+/// TODO: add support for binary
 fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
         optional(satisfy(|c| c == '-'))
@@ -47,7 +53,12 @@ fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
             .map(|x: isize| NumNode::IntConst(IntNode{value: x}))
             .parse_state(input)
 }
-
+/// Parser for unsigned integer constants.
+///
+/// This parses unssigned integer constants in decimal and hexadecimal.
+///
+/// TODO: add support for octal
+/// TODO: add support for binary
 fn uint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
         (satisfy(|c| c == '0')
@@ -72,6 +83,14 @@ fn uint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
         .parse_state(input)
 }
 
+/// Parser for floating-point constants.
+///
+/// This parses floating-point constants. Currently, this parser
+/// recognizes numbers with decimal points as floating point, followed
+/// by an optional `f` or `F`. Numbers with `f`s but no decimal points,
+/// i.e. `1F`, are currently not recognized. While this form of number
+/// is not specified by R6RS, I'd like to support it anyway as it's
+/// a common form for floating-point numbers. Priority: low.
 fn float_const<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
         many1::<Vec<_>, _>(digit())
@@ -91,6 +110,7 @@ fn float_const<I>(input: State<I>) -> ParseResult<NumNode, I>
             .parse_state(input)
 }
 
+/// Parses a floating-point, signed integer, or unsigned integer constant.
 pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
         try(parser(sint_const))
@@ -99,6 +119,18 @@ pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
             .parse_state(input)
 }
 
+/// Parser for valid R6RS identifiers.
+///
+/// An identifier may begin with an alphabetic character or
+/// one of the following special characters `!`, `$`, `&`, `:`, `^`,
+/// `<`, `>`, `_`,`~`,`\`, or `?`. Subsequent characters may also include
+/// numbers or the special characters `+`, `-`, `.`, and `@`.
+///
+/// Essentially, this parser recognizes the regular expression
+/// `[a-zA-Z!\$%:\^<>_~\\\?][a-zA-Z0-9!\$%:\^<>_~\\\?\+\-\.@]*`.
+///
+/// For more information, consult the
+/// [R6RS](http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-7.html).
 pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
     where I: Stream<Item=char> {
          let initial = satisfy(|c|
@@ -134,6 +166,7 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
             })
 }
 
+/// Parses Scheme expressions.
 pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
     where I: Stream<Item=char> {
         let spaces = spaces();
@@ -149,8 +182,19 @@ pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
                     })
                 })
             );
+        let list = between(
+            satisfy(|c| c == '('),
+            satisfy(|c| c == ')'),
+            many(parser(expr))
+                .map(|x| {
+                    ListConst(ListNode {
+                        elements: x
+                    })
+                })
+            );
         spaces.clone().with(
             try(sexpr)
+                .or(try(list))
                 .or(try(parser(name).map(Name)))
                 .or(try(parser(number).map(NumConst)))
             ).parse_state(input)

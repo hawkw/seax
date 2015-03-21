@@ -32,6 +32,7 @@ pub trait ASTNode {
 ///  + Strings
 ///  TODO: implement the entire Scheme 'numeric tower'
 ///  TODO: macros should happen
+///  TODO: figure out quasiquote somehow.
 #[derive(Clone, PartialEq,Debug)]
 pub enum ExprNode {
     Root(RootNode),
