@@ -13,11 +13,12 @@ use std::num::FromStrRadix;
 ///
 /// TODO: add support for octal
 /// TODO: add support for binary
+/// TODO: add support for R6RS exponents
 fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
         optional(satisfy(|c| c == '-'))
             .and(
-                (satisfy(|c| c == '0')
+                try((satisfy(|c| c == '#')
                     .and(satisfy(|c| c == 'x' || c == 'X')))
                     .with(many1::<Vec<_>, _>(hex_digit()))
                     .map(|x| {
@@ -28,14 +29,17 @@ fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
                                 |mut s: String, i| { s.push(*i); s })
                              .as_slice(),
                         16).unwrap()
-                    })
-                .or( many1::<Vec<_>, _>(digit()).map(|x|
-                    isize::from_str(x.iter().fold(
-                        String::new(), |mut s: String, i| { s.push(*i); s })
-                        .as_slice()
-                    ).unwrap()
+                    }))
+                .or(
+                    optional(satisfy(|c| c == '#')
+                        .and(satisfy(|c| c == 'd' || c == 'D')))
+                    .with(many1::<Vec<_>, _>(digit())
+                        .map(|x| isize::from_str(x.iter().fold(
+                            String::new(), |mut s: String, i| { s.push(*i); s })
+                            .as_slice()
+                        ).unwrap()
+                        ))
                     )
-                )
                 )
             .map(|x| {
                 if let Some(sign) = x.0 {
@@ -59,9 +63,10 @@ fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
 ///
 /// TODO: add support for octal
 /// TODO: add support for binary
+/// TODO: add support for R6RS exponents
 fn uint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
     where I: Stream<Item=char> {
-        (satisfy(|c| c == '0')
+        (satisfy(|c| c == '#')
             .and(satisfy(|c| c == 'x' || c == 'X')))
             .with(many1::<Vec<_>, _>(hex_digit()))
             .map(|x| usize::from_str_radix(
@@ -193,6 +198,7 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
 }
 
 /// Parses Scheme expressions.
+#[allow(unconditional_recursion)]
 pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
     where I: Stream<Item=char> {
         let spaces = spaces();

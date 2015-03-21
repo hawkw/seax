@@ -31,6 +31,14 @@ fn test_parse_sint_pos() {
         parser(number).parse("1234"),
         Ok((NumNode::IntConst(IntNode { value: 1234isize }), ""))
         );
+    assert_eq!(
+        parser(number).parse("#d1234"),
+        Ok((NumNode::IntConst(IntNode { value: 1234isize }), ""))
+        );
+    assert_eq!(
+        parser(number).parse("#D1234"),
+        Ok((NumNode::IntConst(IntNode { value: 1234isize }), ""))
+        );
 }
 
 #[test]
@@ -44,11 +52,11 @@ fn test_parse_sint_neg() {
 #[test]
 fn test_parse_sint_hex() {
     assert_eq!(
-        parser(number).parse("0x0ff"),
+        parser(number).parse("#x0ff"),
         Ok((NumNode::IntConst(IntNode { value: 0x0ffisize }), ""))
         );
     assert_eq!(
-        parser(number).parse("0X0FF"),
+        parser(number).parse("#X0FF"),
         Ok((NumNode::IntConst(IntNode { value: 0x0ffisize }), ""))
         );
 }
@@ -80,11 +88,11 @@ fn test_parse_uint() {
 #[test]
 fn test_parse_uint_hex() {
     assert_eq!(
-        parser(number).parse("0x0ffu"),
+        parser(number).parse("#x0ffu"),
         Ok((NumNode::UIntConst(UIntNode { value: 0x0ffusize }), ""))
         );
     assert_eq!(
-        parser(number).parse("0X0FFu"),
+        parser(number).parse("#X0FFu"),
         Ok((NumNode::UIntConst(UIntNode { value: 0x0ffusize }), ""))
         );
 }
