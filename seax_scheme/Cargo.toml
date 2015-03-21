@@ -2,4 +2,16 @@
 
 name = "seax_scheme"
 version = "0.0.1"
-authors = ["Hawk Weisman <hawk@meteorcodelabs.com>"]
+authors = ["Hawk Weisman <hi@hawkweisman.me>"]
+description = "Scheme compiler for the Seax VM."
+license = "MIT"
+homepage = "http://hawkweisman.me/seax"
+repository = "https://github.com/hawkw/seax"
+readme = "../README.md"
+keywords = ["vm","lisp","languages"]
+
+[dependencies]
+parser-combinators = "~0.2.2"
+
+[dependencies.seax_svm]
+path = "../seax_svm"
