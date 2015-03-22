@@ -328,6 +328,42 @@ pub fn character(input: State<&str>) -> ParseResult<CharNode, &str> {
 }
 
 
+
+pub fn string_const(input: State<&str>) -> ParseResult<StringNode, &str> {
+
+    fn escape_char(input: State<&str>) -> ParseResult<char, &str> {
+        satisfy(|c| c == '\\')
+            .with( satisfy(|c|
+                    c == 'a' || c == 'b' || c == 't' || c == 'n' ||
+                    c == 'v' || c == 'f' || c == 'r' || c == '\\' || c == '"')
+                    .map(|c| match c {
+                        '"'     => '"',
+                        '\\'    => '\\',
+                        '/'     => '/',
+                        'b'     => '\u{0008}',
+                        'f'     => '\u{000c}',
+                        'n'     => '\n',
+                        'r'     => '\r',
+                        't'     => '\t',
+                        _       => panic!("the impossible just happened!")
+                    }) )
+            .parse_state(input)
+    }
+
+    fn string_char(input: State<&str>) -> ParseResult<char, &str> {
+        satisfy(|c| c != '\\' && c!= '"')
+            .or(parser(escape_char))
+            .parse_state(input)
+    }
+
+    between(
+        satisfy(|c| c == '"'),
+        satisfy(|c| c == '"'),
+        many(parser(string_char)) )
+    .map(|x| StringNode { value: x })
+    .parse_state(input)
+}
+
 /// Parses Scheme expressions.
 #[allow(unconditional_recursion)]
 pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
@@ -367,6 +403,7 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
                 .or(try(parser(name).map(Name)))
                 .or(try(parser(number).map(NumConst)))
                 .or(try(parser(character).map(CharConst)))
+                .or(try(parser(string_const).map(StringConst)))
             ).parse_state(input)
 }
 
