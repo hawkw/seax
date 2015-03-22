@@ -327,6 +327,7 @@ pub fn character(input: State<&str>) -> ParseResult<CharNode, &str> {
 
 }
 
+
 /// Parses Scheme expressions.
 #[allow(unconditional_recursion)]
 pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
@@ -365,6 +366,7 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
                 .or(try(parser(list)))
                 .or(try(parser(name).map(Name)))
                 .or(try(parser(number).map(NumConst)))
+                .or(try(parser(character).map(CharConst)))
             ).parse_state(input)
 }
 
