@@ -2,6 +2,7 @@ use ::ast::*;
 use ::ast::ExprNode::*;
 use super::*;
 use super::parser_combinators::{Parser,parser};
+use std::char;
 
 #[test]
 fn test_basic_ident() {
@@ -170,6 +171,46 @@ fn test_parse_char() {
     assert_eq!(
         parser(character).parse("#\\newline"),
         Ok((CharNode { value: '\n'}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\nul"),
+        Ok((CharNode { value: char::from_u32(0x0000).unwrap()}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\backspace"),
+        Ok((CharNode { value: char::from_u32(0x0008).unwrap()}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\vtab"),
+        Ok((CharNode { value: char::from_u32(0x000B).unwrap()}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\page"),
+        Ok((CharNode { value: char::from_u32(0x000C).unwrap()}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\return"),
+        Ok((CharNode { value: char::from_u32(0x000D).unwrap()}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\esc"),
+        Ok((CharNode { value: char::from_u32(0x001B).unwrap()}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\delete"),
+        Ok((CharNode { value: char::from_u32(0x007F).unwrap()}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\alarm"),
+        Ok((CharNode { value: char::from_u32(0x0007).unwrap()}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\linefeed"),
+        Ok((CharNode { value: '\n'}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\space"),
+        Ok((CharNode { value: ' '}, ""))
         );
 }
 
