@@ -237,7 +237,7 @@ fn test_lex_string() {
         Ok((StringNode { value: "a string with an \"escaped\" quote".to_string() },""))
     );
     assert_eq!(
-        parser(string_const).parse("\"the\\worst string ever\\\"\""),
+        parser(string_const).parse("\"the\\\\worst string ever\\\"\""),
         Ok((StringNode { value: "the\\worst string ever\"".to_string() }, ""))
     );
 }
