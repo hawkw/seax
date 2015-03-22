@@ -242,55 +242,55 @@ pub fn character(input: State<&str>) -> ParseResult<CharNode, &str> {
 
     fn nul(input: State<&str>) -> ParseResult<char, &str> {
         try(string("nul"))
-            .map(|_| char::from_u32(0x0000).unwrap())
+            .map(|_| '\u{0000}')
             .parse_state(input)
     }
 
     fn backspace(input: State<&str>) -> ParseResult<char, &str> {
         try(string("backspace"))
-            .map(|_| char::from_u32(0x0008).unwrap())
+            .map(|_| '\u{0008}')
             .parse_state(input)
     }
 
     fn vtab(input: State<&str>) -> ParseResult<char, &str> {
         try(string("vtab"))
-            .map(|_| char::from_u32(0x000B).unwrap())
+            .map(|_| '\u{000B}')
             .parse_state(input)
     }
 
     fn page(input: State<&str>) -> ParseResult<char, &str> {
         try(string("page"))
-            .map(|_| char::from_u32(0x000C).unwrap())
+            .map(|_| '\u{000C}')
             .parse_state(input)
     }
 
     fn retn(input: State<&str>) -> ParseResult<char, &str> {
         try(string("return"))
-            .map(|_| char::from_u32(0x000D).unwrap())
+            .map(|_| '\u{000D}')
             .parse_state(input)
     }
 
     fn esc(input: State<&str>) -> ParseResult<char, &str> {
         try(string("esc"))
-            .map(|_| char::from_u32(0x001B).unwrap())
+            .map(|_| '\u{001B}')
             .parse_state(input)
     }
 
     fn delete(input: State<&str>) -> ParseResult<char, &str> {
         try(string("delete"))
-            .map(|_| char::from_u32(0x007F).unwrap())
+            .map(|_| '\u{007F}')
             .parse_state(input)
     }
 
     fn alarm(input: State<&str>) -> ParseResult<char, &str> {
         try(string("alarm"))
-            .map(|_| char::from_u32(0x0007).unwrap())
+            .map(|_| '\u{0007}')
             .parse_state(input)
     }
 
     fn space(input: State<&str>) -> ParseResult<char, &str> {
         try(string("space"))
-            .map(|_| char::from_u32(0x0020).unwrap())
+            .map(|_| '\u{0020}')
             .parse_state(input)
     }
 

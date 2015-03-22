@@ -2,7 +2,6 @@ use ::ast::*;
 use ::ast::ExprNode::*;
 use super::*;
 use super::parser_combinators::{Parser,parser};
-use std::char;
 
 #[test]
 fn test_basic_ident() {
@@ -174,35 +173,35 @@ fn test_lex_char() {
         );
     assert_eq!(
         parser(character).parse("#\\nul"),
-        Ok((CharNode { value: char::from_u32(0x0000).unwrap()}, ""))
+        Ok((CharNode { value: '\u{0000}' }, ""))
         );
     assert_eq!(
         parser(character).parse("#\\backspace"),
-        Ok((CharNode { value: char::from_u32(0x0008).unwrap()}, ""))
+        Ok((CharNode { value: '\u{0008}' }, ""))
         );
     assert_eq!(
         parser(character).parse("#\\vtab"),
-        Ok((CharNode { value: char::from_u32(0x000B).unwrap()}, ""))
+        Ok((CharNode { value: '\u{000B}' }, ""))
         );
     assert_eq!(
         parser(character).parse("#\\page"),
-        Ok((CharNode { value: char::from_u32(0x000C).unwrap()}, ""))
+        Ok((CharNode { value: '\u{000C}' }, ""))
         );
     assert_eq!(
         parser(character).parse("#\\return"),
-        Ok((CharNode { value: char::from_u32(0x000D).unwrap()}, ""))
+        Ok((CharNode { value: '\u{000D}' }, ""))
         );
     assert_eq!(
         parser(character).parse("#\\esc"),
-        Ok((CharNode { value: char::from_u32(0x001B).unwrap()}, ""))
+        Ok((CharNode { value: '\u{001B}' }, ""))
         );
     assert_eq!(
         parser(character).parse("#\\delete"),
-        Ok((CharNode { value: char::from_u32(0x007F).unwrap()}, ""))
+        Ok((CharNode { value: '\u{007F}' }, ""))
         );
     assert_eq!(
         parser(character).parse("#\\alarm"),
-        Ok((CharNode { value: char::from_u32(0x0007).unwrap()}, ""))
+        Ok((CharNode { value: '\u{0007}' }, ""))
         );
     assert_eq!(
         parser(character).parse("#\\linefeed"),
@@ -218,7 +217,7 @@ fn test_lex_char() {
         );
     assert_eq!(
         parser(character).parse("#\\x001B"),
-        Ok((CharNode { value: char::from_u32(0x001B).unwrap()}, ""))
+        Ok((CharNode { value: '\u{001B}' }, ""))
         );
 }
 
