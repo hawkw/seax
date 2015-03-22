@@ -1,7 +1,7 @@
 extern crate "parser-combinators" as parser_combinators;
 
 use self::parser_combinators::{try, between, spaces, string, parser, many, many1, digit, any_char, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
-use self::parser_combinators::primitives::{State, Stream};
+use self::parser_combinators::primitives::State;
 
 use super::ast::*;
 use super::ast::ExprNode::*;
@@ -17,11 +17,9 @@ use std::char;
 /// TODO: add support for octal
 /// TODO: add support for binary
 /// TODO: add support for R6RS exponents
-fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
-    where I: Stream<Item=char> {
+fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
-        fn hex_string<I>(input: State<I>) -> ParseResult<isize, I>
-            where I: Stream<Item=char> {
+        fn hex_string(input: State<&str>) -> ParseResult<isize, &str> {
                 (satisfy(|c| c == '#')
                     .and(satisfy(|c| c == 'x' || c == 'X')))
                     .with(many1::<Vec<_>, _>(hex_digit()))
@@ -37,8 +35,7 @@ fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
         }
 
 
-        fn dec_string<I>(input: State<I>) -> ParseResult<isize, I>
-            where I: Stream<Item=char> {
+        fn dec_string(input: State<&str>) -> ParseResult<isize, &str> {
                 optional(satisfy(|c| c == '#')
                     .and(satisfy(|c| c == 'd' || c == 'D')))
                 .with(many1::<Vec<_>, _>(digit())
@@ -77,12 +74,10 @@ fn sint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
 /// TODO: add support for octal
 /// TODO: add support for binary
 /// TODO: add support for R6RS exponents
-fn uint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
-    where I: Stream<Item=char> {
+fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
 
-        fn hex_string<I>(input: State<I>) -> ParseResult<usize, I>
-            where I: Stream<Item=char> {
+        fn hex_string(input: State<&str>) -> ParseResult<usize, &str> {
             (satisfy(|c| c == '#')
                 .and(satisfy(|c| c == 'x' || c == 'X')))
                 .with(many1::<Vec<_>, _>(hex_digit()))
@@ -116,8 +111,7 @@ fn uint_const<I>(input: State<I>) -> ParseResult<NumNode, I>
 /// i.e. `1F`, are currently not recognized. While this form of number
 /// is not specified by R6RS, I'd like to support it anyway as it's
 /// a common form for floating-point numbers. Priority: low.
-fn float_const<I>(input: State<I>) -> ParseResult<NumNode, I>
-    where I: Stream<Item=char> {
+fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
         many1::<Vec<_>, _>(digit())
             .and(satisfy(|c| c == '.'))
             .and(many1::<Vec<_>, _>(digit()))
@@ -146,8 +140,7 @@ fn float_const<I>(input: State<I>) -> ParseResult<NumNode, I>
 ///
 /// `#t`, `#T`, or `true`  -> `true`
 /// `#f`, `#F`, or `false` -> `false`
-pub fn bool_const<I>(input: State<I>) -> ParseResult<BoolNode, I>
-    where I: Stream<Item=char> {
+pub fn bool_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
         let t_const = try(string("#t"))
             .or(try(string("#T")))
             .or(try(string("true")))
@@ -162,8 +155,7 @@ pub fn bool_const<I>(input: State<I>) -> ParseResult<BoolNode, I>
     }
 
 /// Parses a floating-point, signed integer, or unsigned integer constant.
-pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
-    where I: Stream<Item=char> {
+pub fn number(input: State<&str>) -> ParseResult<NumNode, &str> {
         try(parser(sint_const))
             .or(try(parser(uint_const)))
             .or(try(parser(float_const)))
@@ -182,11 +174,9 @@ pub fn number<I>(input: State<I>) -> ParseResult<NumNode, I>
 ///
 /// For more information, consult the
 /// [R6RS](http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-7.html).
-pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
-    where I: Stream<Item=char> {
+pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
 
-        fn initial<I>(input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn initial(input: State<&str>) -> ParseResult<char, &str> {
                 satisfy(|c|
                     c.is_alphabetic()
                     // R6RS 'special initial' characters
@@ -196,8 +186,7 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
                 ).parse_state(input)
             }
 
-        fn subsequent<I>(input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn subsequent(input: State<&str>) -> ParseResult<char, &str> {
 
             satisfy(|c|
                 c.is_alphanumeric()
@@ -210,8 +199,7 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
                 ).parse_state(input)
             }
 
-        fn rest<I>(input: State<I>) -> ParseResult<String, I>
-            where I: Stream<Item=char> {
+        fn rest(input: State<&str>) -> ParseResult<String, &str> {
                 many::<Vec<_>, _>(parser(subsequent))
                     .map(|it|
                         it.iter().fold(
@@ -235,87 +223,74 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
             })
 }
 
-pub fn character<I> (input: State<I>) -> ParseResult<CharNode, I>
-    where I: Stream<Item=char> {
+pub fn character(input: State<&str>) -> ParseResult<CharNode, &str> {
 
-        fn newline<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn newline(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("newline"))
                     .or(try(string("linefeed")))
                     .map(|_| '\n')
                     .parse_state(input)
             }
 
-        fn tab<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn tab(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("tab")).map(|_| '\t').parse_state(input)
             }
 
-        fn nul<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn nul(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("nul"))
                     .map(|_| char::from_u32(0x0000).unwrap())
                     .parse_state(input)
             }
 
-        fn backspace<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn backspace(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("backspace"))
                     .map(|_| char::from_u32(0x0008).unwrap())
                     .parse_state(input)
             }
 
-        fn vtab<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn vtab(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("vtab"))
                     .map(|_| char::from_u32(0x000B).unwrap())
                     .parse_state(input)
             }
 
-        fn page<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn page(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("page"))
                     .map(|_| char::from_u32(0x000C).unwrap())
                     .parse_state(input)
             }
 
-        fn retn<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn retn(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("return"))
                     .map(|_| char::from_u32(0x000D).unwrap())
                     .parse_state(input)
             }
 
-        fn esc<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn esc(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("esc"))
                     .map(|_| char::from_u32(0x001B).unwrap())
                     .parse_state(input)
             }
 
-        fn delete<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn delete(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("delete"))
                     .map(|_| char::from_u32(0x007F).unwrap())
                     .parse_state(input)
             }
 
-        fn alarm<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn alarm(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("alarm"))
                     .map(|_| char::from_u32(0x0007).unwrap())
                     .parse_state(input)
             }
 
-        fn space<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn space(input: State<&str>) -> ParseResult<char, &str> {
                 try(string("space"))
                     .map(|_| char::from_u32(0x0020).unwrap())
                     .parse_state(input)
             }
 
-        fn char_name<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn char_name(input: State<&str>) -> ParseResult<char, &str> {
                 parser(newline)
                     .or(parser(tab))
                     .or(parser(vtab))
@@ -330,8 +305,7 @@ pub fn character<I> (input: State<I>) -> ParseResult<CharNode, I>
                     .parse_state(input)
             }
 
-        fn hex_char<I> (input: State<I>) -> ParseResult<char, I>
-            where I: Stream<Item=char> {
+        fn hex_char(input: State<&str>) -> ParseResult<char, &str> {
                 satisfy(|c| c == 'x')
                     .with(many1::<Vec<_>, _>(hex_digit()))
                     .map(|x| {
@@ -360,12 +334,10 @@ pub fn character<I> (input: State<I>) -> ParseResult<CharNode, I>
 
 /// Parses Scheme expressions.
 #[allow(unconditional_recursion)]
-pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
-    where I: Stream<Item=char> {
+pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
         let spaces = spaces();
 
-        fn sexpr<I>(input: State<I>) -> ParseResult<ExprNode, I>
-            where I: Stream<Item=char> {
+        fn sexpr(input: State<&str>) -> ParseResult<ExprNode, &str> {
                 between(
                     satisfy(|c| c == '('),
                     satisfy(|c| c == ')'),
@@ -380,8 +352,7 @@ pub fn expr<I>(input: State<I>) -> ParseResult<ExprNode, I>
                 ).parse_state(input)
             }
 
-        fn list<I>(input: State<I>) -> ParseResult<ExprNode, I>
-            where I: Stream<Item=char> {
+        fn list(input: State<&str>) -> ParseResult<ExprNode, &str>{
                 between(
                     satisfy(|c| c == '('),
                     satisfy(|c| c == ')'),
