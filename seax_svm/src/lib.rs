@@ -32,7 +32,6 @@ use self::cell::Atom::*;
 use self::cell::Inst::*;
 use std::io;
 
-
 /// Represents a SVM machine state
 #[derive(PartialEq,Clone,Debug)]
 pub struct State {
@@ -528,7 +527,9 @@ impl State {
             Some((InstCell(WRITEC), new_control)) => {
                 match self.stack.pop() {
                     Some((AtomCell(Char(ch)), new_stack)) => {
-                        outp.write(&[ch as u8,1]);
+                        if let Err(msg) = outp.write(&[ch as u8,1]) {
+                            panic!("[fatal][WRITEC]: writing failed: {:?}",msg)
+                        };
                         State {
                             stack: new_stack,
                             env: self.env,
@@ -536,9 +537,22 @@ impl State {
                             dump: self.dump
                         }
                     },
-                    _ => panic!("[fatal][writec]: expected char")
+                    Some((thing_else,_)) => panic!("[fatal][WRITEC]: expected char, found {:?}",thing_else),
+                    None => panic!("[fatal][WRITEC]: expected char, found nothing")
                 }
             },
+            Some((InstCell(READC), new_control)) => {
+                let mut buf: [u8;1] = [0;1];
+                match inp.read(&mut buf) {
+                    Ok(_) => State {
+                        stack: self.stack.push(AtomCell(Char(buf[0] as char))),
+                        env: self.env,
+                        control: new_control,
+                        dump: self.dump
+                    },
+                    Err(msg) => panic!("[fatal][READC]: could not read, {:?}",msg)
+                }
+            }
             Some((InstCell(STOP), _)) => {
                 // TODO: does a new control have to be bound
                 // if it will basically just be discarded?
