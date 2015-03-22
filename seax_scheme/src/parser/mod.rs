@@ -2,10 +2,13 @@ extern crate "parser-combinators" as parser_combinators;
 
 use self::parser_combinators::{try, between, spaces, string, parser, many, many1, digit, any_char, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::{State, Stream};
+
 use super::ast::*;
 use super::ast::ExprNode::*;
+
 use std::str::FromStr;
 use std::num::FromStrRadix;
+use std::char;
 
 /// Parser for signed integer constants.
 ///
@@ -235,10 +238,95 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
 pub fn character<I> (input: State<I>) -> ParseResult<CharNode, I>
     where I: Stream<Item=char> {
 
+        fn newline<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("newline"))
+                    .or(try(string("linefeed")))
+                    .map(|_| '\n')
+                    .parse_state(input)
+            }
+
+        fn tab<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("tab")).map(|_| '\t').parse_state(input)
+            }
+
+        fn nul<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("nul"))
+                    .map(|_| char::from_u32(0x0000).unwrap())
+                    .parse_state(input)
+            }
+
+        fn backspace<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("backspace"))
+                    .map(|_| char::from_u32(0x0008).unwrap())
+                    .parse_state(input)
+            }
+
+        fn vtab<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("vtab"))
+                    .map(|_| char::from_u32(0x000B).unwrap())
+                    .parse_state(input)
+            }
+
+        fn page<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("page"))
+                    .map(|_| char::from_u32(0x000C).unwrap())
+                    .parse_state(input)
+            }
+
+        fn retn<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("return"))
+                    .map(|_| char::from_u32(0x000D).unwrap())
+                    .parse_state(input)
+            }
+
+        fn esc<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("esc"))
+                    .map(|_| char::from_u32(0x001B).unwrap())
+                    .parse_state(input)
+            }
+
+        fn delete<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("delete"))
+                    .map(|_| char::from_u32(0x007F).unwrap())
+                    .parse_state(input)
+            }
+
+        fn alarm<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("alarm"))
+                    .map(|_| char::from_u32(0x0007).unwrap())
+                    .parse_state(input)
+            }
+
+        fn space<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("space"))
+                    .map(|_| char::from_u32(0x0020).unwrap())
+                    .parse_state(input)
+            }
+
         fn char_name<I> (input: State<I>) -> ParseResult<char, I>
             where I: Stream<Item=char> {
-                try(string("tab").map(|_| '\t'))
-                    .or(try(string("newline")).map(|_| '\n'))
+                parser(newline)
+                    .or(parser(tab))
+                    .or(parser(vtab))
+                    .or(parser(backspace))
+                    .or(parser(nul))
+                    .or(parser(page))
+                    .or(parser(retn))
+                    .or(parser(esc))
+                    .or(parser(delete))
+                    .or(parser(alarm))
+                    .or(parser(space))
                     .parse_state(input)
         }
 
