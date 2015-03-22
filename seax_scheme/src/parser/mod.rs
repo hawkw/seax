@@ -328,11 +328,30 @@ pub fn character<I> (input: State<I>) -> ParseResult<CharNode, I>
                     .or(parser(alarm))
                     .or(parser(space))
                     .parse_state(input)
-        }
+            }
+
+        fn hex_char<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                satisfy(|c| c == 'x')
+                    .with(many1::<Vec<_>, _>(hex_digit()))
+                    .map(|x| {
+                        char::from_u32(
+                            u32::from_str_radix(
+                                x.iter()
+                                 .fold(
+                                    String::new(),
+                                    |mut s: String, i| { s.push(*i); s })
+                                 .as_slice(),
+                            16).unwrap()
+                        ).unwrap()
+                    })
+                    .parse_state(input)
+            }
 
         string("#\\")
             .with(
                 parser(char_name)
+                .or(parser(hex_char))
                 .or(parser(any_char))
             ).map(|c| CharNode { value: c})
             .parse_state(input)
