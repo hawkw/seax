@@ -212,5 +212,13 @@ fn test_parse_char() {
         parser(character).parse("#\\space"),
         Ok((CharNode { value: ' '}, ""))
         );
+    assert_eq!(
+        parser(character).parse("#\\x0020"),
+        Ok((CharNode { value: ' '}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\x001B"),
+        Ok((CharNode { value: char::from_u32(0x001B).unwrap()}, ""))
+        );
 }
 
