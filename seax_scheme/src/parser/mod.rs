@@ -10,6 +10,15 @@ use std::str::FromStr;
 use std::num::FromStrRadix;
 use std::char;
 
+fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
+    satisfy(|c| c == 'x' || c == 'X')
+        .with( many1::<Vec<_>, _>(hex_digit()) )
+        .map(|x|
+            x.iter()
+             .fold( String::new(), |mut s: String, i| { s.push(*i); s }) )
+        .parse_state(input)
+}
+
 /// Parser for signed integer constants.
 ///
 /// This parses signed integer constants in decimal and hexadecimal.
@@ -19,19 +28,11 @@ use std::char;
 /// TODO: add support for R6RS exponents
 fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
-    fn hex_string(input: State<&str>) -> ParseResult<isize, &str> {
-        (satisfy(|c| c == '#')
-            .and(satisfy(|c| c == 'x' || c == 'X')))
-            .with(many1::<Vec<_>, _>(hex_digit()))
-            .map(|x| {
-                isize::from_str_radix(
-                    x.iter()
-                     .fold(
-                        String::new(),
-                        |mut s: String, i| { s.push(*i); s })
-                     .as_slice(),
-                16).unwrap()
-            }).parse_state(input)
+    fn hex_isize(input: State<&str>) -> ParseResult<isize, &str> {
+        satisfy(|c| c == '#')
+            .with(parser(hex_scalar)
+                    .map(|x| isize::from_str_radix(x.as_slice(), 16).unwrap()) )
+            .parse_state(input)
     }
 
 
@@ -48,7 +49,7 @@ fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
     optional(satisfy(|c| c == '-'))
         .and(
-            try(parser(hex_string))
+            try(parser(hex_isize))
             .or(parser(dec_string))
             )
         .map(|x| {
@@ -67,6 +68,7 @@ fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
         .map(|x: isize| NumNode::IntConst(IntNode{value: x}))
         .parse_state(input)
 }
+
 /// Parser for unsigned integer constants.
 ///
 /// This parses unssigned integer constants in decimal and hexadecimal.
@@ -76,21 +78,14 @@ fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 /// TODO: add support for R6RS exponents
 fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
-    fn hex_string(input: State<&str>) -> ParseResult<usize, &str> {
-        (satisfy(|c| c == '#')
-            .and(satisfy(|c| c == 'x' || c == 'X')))
-            .with(many1::<Vec<_>, _>(hex_digit()))
-            .map(|x| usize::from_str_radix(
-                    x.iter()
-                     .fold(
-                        String::new(),
-                        |mut s: String, i| { s.push(*i); s })
-                     .as_slice(),
-                16).unwrap())
+    fn hex_uint(input: State<&str>) -> ParseResult<usize, &str> {
+        satisfy(|c| c == '#')
+            .with(parser(hex_scalar)
+                    .map(|x| usize::from_str_radix(x.as_slice(), 16).unwrap()) )
             .parse_state(input)
     }
 
-    try(parser(hex_string))
+    try(parser(hex_uint))
         .or( many1::<Vec<_>, _>(digit())
             .map(|x|usize::from_str(x.iter().fold(
                 String::new(), |mut s: String, i| { s.push(*i); s })
@@ -315,19 +310,10 @@ pub fn character(input: State<&str>) -> ParseResult<CharNode, &str> {
     }
 
     fn hex_char(input: State<&str>) -> ParseResult<char, &str> {
-        satisfy(|c| c == 'x')
-            .with(many1::<Vec<_>, _>(hex_digit()))
-            .map(|x| {
-                char::from_u32(
-                    u32::from_str_radix(
-                        x.iter()
-                         .fold(
-                            String::new(),
-                            |mut s: String, i| { s.push(*i); s })
-                         .as_slice(),
-                    16).unwrap()
-                ).unwrap()
-            })
+        parser(hex_scalar)
+            .map(|x| char::from_u32(
+                    u32::from_str_radix(x.as_slice(),16).unwrap()
+                ).unwrap() )
             .parse_state(input)
     }
 
