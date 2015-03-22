@@ -1,6 +1,6 @@
 extern crate "parser-combinators" as parser_combinators;
 
-use self::parser_combinators::{try, between, spaces, string, parser, many, many1, digit, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
+use self::parser_combinators::{try, between, spaces, string, parser, many, many1, digit, any_char, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::{State, Stream};
 use super::ast::*;
 use super::ast::ExprNode::*;
@@ -230,6 +230,25 @@ pub fn name<I>(input: State<I>) -> ParseResult<NameNode, I>
                 s.push_str(&(x.0).1);
                 (NameNode{ name: s}, x.1)
             })
+}
+
+pub fn character<I> (input: State<I>) -> ParseResult<CharNode, I>
+    where I: Stream<Item=char> {
+
+        fn char_name<I> (input: State<I>) -> ParseResult<char, I>
+            where I: Stream<Item=char> {
+                try(string("tab").map(|_| '\t'))
+                    .or(try(string("newline")).map(|_| '\n'))
+                    .parse_state(input)
+        }
+
+        string("#\\")
+            .with(
+                parser(char_name)
+                .or(parser(any_char))
+            ).map(|c| CharNode { value: c})
+            .parse_state(input)
+
 }
 
 /// Parses Scheme expressions.
