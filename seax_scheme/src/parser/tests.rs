@@ -153,3 +153,23 @@ fn test_parse_bool() {
         );
 }
 
+#[test]
+fn test_parse_char() {
+    assert_eq!(
+        parser(character).parse("#\\c"),
+        Ok((CharNode { value: 'c'}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\A"),
+        Ok((CharNode { value: 'A'}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\tab"),
+        Ok((CharNode { value: '\t'}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\newline"),
+        Ok((CharNode { value: '\n'}, ""))
+        );
+}
+
