@@ -1,5 +1,4 @@
 use svm::cell::SVMCell;
-use svm::slist::List;
 
 use self::ExprNode::*;
 use self::NumNode::*;
