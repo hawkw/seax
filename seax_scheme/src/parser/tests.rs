@@ -222,3 +222,22 @@ fn test_lex_char() {
         );
 }
 
+#[test]
+fn test_lex_string() {
+    assert_eq!(
+        parser(string_const).parse("\"a string\""),
+        Ok((StringNode { value: "a string".to_string() }, ""))
+    );
+    assert_eq!(
+        parser(string_const).parse("\"a string with a\\ttab\""),
+        Ok((StringNode { value: "a string with a\ttab".to_string() },""))
+    );
+    assert_eq!(
+        parser(string_const).parse("\"a string with an \\\"escaped\\\" quote\""),
+        Ok((StringNode { value: "a string with an \"escaped\" quote".to_string() },""))
+    );
+    assert_eq!(
+        parser(string_const).parse("\"the\\worst string ever\\\"\""),
+        Ok((StringNode { value: "the\\worst string ever\"".to_string() }, ""))
+    );
+}
