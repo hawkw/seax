@@ -20,6 +20,7 @@ pub trait ASTNode {
 /// Expression
 ///
 /// All Seax Scheme expressions are one of the following
+///
 ///  + Nested S-Expressions
 ///  + Identifiers
 ///  + Lists
@@ -29,6 +30,7 @@ pub trait ASTNode {
 ///     - floating-point
 ///  + Characters
 ///  + Strings
+///
 ///  TODO: implement the entire Scheme 'numeric tower'
 ///  TODO: macros should happen
 ///  TODO: figure out quasiquote somehow.
