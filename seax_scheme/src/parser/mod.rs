@@ -26,7 +26,7 @@ fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
 /// TODO: add support for octal
 /// TODO: add support for binary
 /// TODO: add support for R6RS exponents
-fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
+pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
     fn hex_isize(input: State<&str>) -> ParseResult<isize, &str> {
         satisfy(|c| c == '#')
@@ -76,7 +76,7 @@ fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 /// TODO: add support for octal
 /// TODO: add support for binary
 /// TODO: add support for R6RS exponents
-fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
+pub fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
     fn hex_uint(input: State<&str>) -> ParseResult<usize, &str> {
         satisfy(|c| c == '#')
@@ -104,7 +104,7 @@ fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 /// i.e. `1F`, are currently not recognized. While this form of number
 /// is not specified by R6RS, I'd like to support it anyway as it's
 /// a common form for floating-point numbers. Priority: low.
-fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
+pub fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
     many1::<Vec<_>, _>(digit())
         .and(satisfy(|c| c == '.'))
         .and(many1::<Vec<_>, _>(digit()))
