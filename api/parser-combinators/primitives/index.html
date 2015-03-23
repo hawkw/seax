@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `primitives` mod in crate `parser-combinators`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, primitives">
+
+    <title>parser-combinators::primitives - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='../index.html'>parser-combinators</a></p><script>window.sidebarCurrent = {name: 'primitives', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>parser-combinators</a>::<wbr><a class='mod' href=''>primitives</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-41' href='../../src/parser-combinators/primitives.rs.html#1-332'>[src]</a></span></h1>
+<div class='docblock'><p>Module containing the primitive types which is used to create and compose more advanced parsers</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.ParseError.html'
+                               title='parser-combinators::primitives::ParseError'>ParseError</a></td>
+                        <td class='docblock short'><p>Struct which hold information about an error that occured at a specific position.
+Can hold multiple instances of <code>Error</code> if more that one error occured at the position.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.SourcePosition.html'
+                               title='parser-combinators::primitives::SourcePosition'>SourcePosition</a></td>
+                        <td class='docblock short'><p>Struct which containing the current position</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.State.html'
+                               title='parser-combinators::primitives::State'>State</a></td>
+                        <td class='docblock short'><p>The <code>State&lt;I&gt;</code> struct keeps track of the current position in the stream <code>I</code></p>
+</td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.Consumed.html'
+                               title='parser-combinators::primitives::Consumed'>Consumed</a></td>
+                        <td class='docblock short'><p>Enum used to indicate if a stream has had any elements consumed</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.Error.html'
+                               title='parser-combinators::primitives::Error'>Error</a></td>
+                        <td class='docblock short'><p>Enum used to store information about an error that has occured</p>
+</td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.Parser.html'
+                               title='parser-combinators::primitives::Parser'>Parser</a></td>
+                        <td class='docblock short'><p>By implementing the <code>Parser</code> trait a type says that it can be used to parse an input stream into
+the type <code>Output</code>.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.Stream.html'
+                               title='parser-combinators::primitives::Stream'>Stream</a></td>
+                        <td class='docblock short'><p>A stream is a sequence of items that can be extracted one by one</p>
+</td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.ParseResult.html'
+                               title='parser-combinators::primitives::ParseResult'>ParseResult</a></td>
+                        <td class='docblock short'><p>A type alias over the specific <code>Result</code> type used to indicated parser success/failure.
+<code>O</code> is the type that is output on success
+<code>I</code> is the specific stream type used in the parser</p>
+</td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "parser-combinators";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `parser-combinators` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, parser-combinators">
+
+    <title>parser-combinators - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'parser-combinators', ty: 'mod', relpath: '../'};</script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>parser-combinators</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-0' href='../src/parser-combinators/lib.rs.html#1-416'>[src]</a></span></h1>
+<div class='docblock'><p>This crate contains parser combinators, roughly based on the Haskell library <a href="http://hackage.haskell.org/package/parsec">parsec</a>.</p>
+
+<p>A parser in this library can be described as a function which takes some input and if it
+is succesful, returns a value together with the remaining input.
+A parser combinator is a function which takes one or more parsers and returns a new parser.
+For instance the <code>many</code> parser can be used to convert a parser for single digits into one that
+parses multiple digits.</p>
+
+<h1 id="examples:" class='section-header'><a
+                           href="#examples:">Examples:</a></h1><pre id='rust-example-rendered' class='rust '>
+ <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='string'>&quot;parser-combinators&quot;</span> <span class='kw'>as</span> <span class='ident'>parser_combinators</span>;
+ <span class='kw'>use</span> <span class='ident'>parser_combinators</span>::{<span class='ident'>spaces</span>, <span class='ident'>many1</span>, <span class='ident'>sep_by</span>, <span class='ident'>digit</span>, <span class='ident'>satisfy</span>, <span class='ident'>Parser</span>, <span class='ident'>ParserExt</span>, <span class='ident'>ParseError</span>};
+ 
+ <span class='kw'>fn</span> <span class='ident'>main</span>() {
+     <span class='kw'>let</span> <span class='ident'>input</span> <span class='op'>=</span> <span class='string'>&quot;1234, 45,78&quot;</span>;
+     <span class='kw'>let</span> <span class='ident'>spaces</span> <span class='op'>=</span> <span class='ident'>spaces</span>();
+     <span class='kw'>let</span> <span class='ident'>integer</span> <span class='op'>=</span> <span class='ident'>spaces</span>.<span class='ident'>clone</span>()<span class='comment'>//Parse spaces first and use the with method to only keep the result of the next parser</span>
+         .<span class='ident'>with</span>(<span class='ident'>many1</span>(<span class='ident'>digit</span>()).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>string</span>: <span class='ident'>String</span><span class='op'>|</span> <span class='ident'>string</span>.<span class='ident'>parse</span>::<span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span>().<span class='ident'>unwrap</span>()));<span class='comment'>//parse a string of digits into an i32</span>
+     <span class='comment'>//Parse integers separated by commas, skipping whitespace</span>
+     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>integer_list</span> <span class='op'>=</span> <span class='ident'>sep_by</span>(<span class='ident'>integer</span>, <span class='ident'>spaces</span>.<span class='ident'>skip</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;,&#39;</span>)));
+ 
+     <span class='comment'>//Call parse with the input to execute the parser</span>
+     <span class='kw'>let</span> <span class='ident'>result</span>: <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span>), <span class='ident'>ParseError</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>integer_list</span>.<span class='ident'>parse</span>(<span class='ident'>input</span>);
+     <span class='kw'>match</span> <span class='ident'>result</span> {
+         <span class='prelude-val'>Ok</span>((<span class='ident'>value</span>, <span class='ident'>_remaining_input</span>)) <span class='op'>=&gt;</span> <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{:?}&quot;</span>, <span class='ident'>value</span>),
+         <span class='prelude-val'>Err</span>(<span class='ident'>err</span>) <span class='op'>=&gt;</span> <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>err</span>)
+     }
+ }
+</pre>
+
+<p>If we need a parser that is mutually recursive we can define a free function which internally
+can in turn be used as a parser (Note that we need to explicitly cast the function, this should
+not be necessary once changes in rustc to make orphan checking less restrictive gets implemented)</p>
+
+<p><code>expr</code> is written fully general here which may not be necessary in a specific implementation
+The <code>Stream</code> trait is predefined to work with array slices, string slices and iterators
+meaning that in this case it could be defined as
+<code>fn expr(input: State&lt;&amp;str&gt;) -&gt; ParseResult&lt;Expr, &amp;str&gt;</code></p>
+<pre id='rust-example-rendered' class='rust '>
+ <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='string'>&quot;parser-combinators&quot;</span> <span class='kw'>as</span> <span class='ident'>parser_combinators</span>;
+ <span class='kw'>use</span> <span class='ident'>parser_combinators</span>::{<span class='ident'>between</span>, <span class='ident'>spaces</span>, <span class='ident'>many1</span>, <span class='ident'>parser</span>, <span class='ident'>sep_by</span>, <span class='ident'>satisfy</span>, <span class='ident'>Parser</span>, <span class='ident'>ParserExt</span>,
+ <span class='ident'>ParseResult</span>};
+ <span class='kw'>use</span> <span class='ident'>parser_combinators</span>::<span class='ident'>primitives</span>::{<span class='ident'>State</span>, <span class='ident'>Stream</span>};
+
+ <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>)]</span>
+ <span class='kw'>enum</span> <span class='ident'>Expr</span> {
+     <span class='ident'>Id</span>(<span class='ident'>String</span>),
+     <span class='ident'>Array</span>(<span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Expr</span><span class='op'>&gt;</span>),
+ }
+ <span class='kw'>fn</span> <span class='ident'>expr</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>Expr</span>, <span class='ident'>I</span><span class='op'>&gt;</span>
+     <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Stream</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>char</span><span class='op'>&gt;</span> {
+     <span class='kw'>let</span> <span class='ident'>word</span> <span class='op'>=</span> <span class='ident'>many1</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span>.<span class='ident'>is_alphabetic</span>()));
+     <span class='kw'>let</span> <span class='ident'>comma_list</span> <span class='op'>=</span> <span class='ident'>sep_by</span>(<span class='ident'>parser</span>(<span class='ident'>expr</span>), <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;,&#39;</span>));
+     <span class='kw'>let</span> <span class='ident'>array</span> <span class='op'>=</span> <span class='ident'>between</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;[&#39;</span>), <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;]&#39;</span>), <span class='ident'>comma_list</span>);
+     <span class='kw'>let</span> <span class='ident'>spaces</span> <span class='op'>=</span> <span class='ident'>spaces</span>();
+     <span class='ident'>spaces</span>.<span class='ident'>clone</span>().<span class='ident'>with</span>(
+             <span class='ident'>word</span>.<span class='ident'>map</span>(<span class='ident'>Expr</span>::<span class='ident'>Id</span>)
+             .<span class='ident'>or</span>(<span class='ident'>array</span>.<span class='ident'>map</span>(<span class='ident'>Expr</span>::<span class='ident'>Array</span>))
+         ).<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+ }
+ 
+ <span class='kw'>fn</span> <span class='ident'>main</span>() {
+     <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>parser</span>(<span class='ident'>expr</span>)
+         .<span class='ident'>parse</span>(<span class='string'>&quot;[[], hello, [world]]&quot;</span>);
+     <span class='kw'>let</span> <span class='ident'>expr</span> <span class='op'>=</span> <span class='ident'>Expr</span>::<span class='ident'>Array</span>(<span class='macro'>vec</span><span class='macro'>!</span>[
+           <span class='ident'>Expr</span>::<span class='ident'>Array</span>(<span class='ident'>Vec</span>::<span class='ident'>new</span>())
+         , <span class='ident'>Expr</span>::<span class='ident'>Id</span>(<span class='string'>&quot;hello&quot;</span>.<span class='ident'>to_string</span>())
+         , <span class='ident'>Expr</span>::<span class='ident'>Array</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>Expr</span>::<span class='ident'>Id</span>(<span class='string'>&quot;world&quot;</span>.<span class='ident'>to_string</span>())])
+     ]);
+     <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>, <span class='prelude-val'>Ok</span>((<span class='ident'>expr</span>, <span class='string'>&quot;&quot;</span>)));
+ }
+</pre>
+</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='char/index.html'
+                               title='parser-combinators::char'>char</a></td>
+                        <td class='docblock short'><p>Module containg parsers specialized on character streams</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='combinator/index.html'
+                               title='parser-combinators::combinator'>combinator</a></td>
+                        <td class='docblock short'><p>Module containing all specific parsers</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='primitives/index.html'
+                               title='parser-combinators::primitives'>primitives</a></td>
+                        <td class='docblock short'><p>Module containing the primitive types which is used to create and compose more advanced parsers</p>
+</td>
+                    </tr>
+                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.ParseError.html'
+                               title='parser-combinators::ParseError'>ParseError</a></td>
+                        <td class='docblock short'><p>Struct which hold information about an error that occured at a specific position.
+Can hold multiple instances of <code>Error</code> if more that one error occured at the position.</p>
+</td>
+                    </tr>
+                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.Parser.html'
+                               title='parser-combinators::Parser'>Parser</a></td>
+                        <td class='docblock short'><p>By implementing the <code>Parser</code> trait a type says that it can be used to parse an input stream into
+the type <code>Output</code>.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.ParserExt.html'
+                               title='parser-combinators::ParserExt'>ParserExt</a></td>
+                        <td class='docblock short'><p>Extension trait which provides functions that are more conveniently used through method calls</p>
+</td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.alpha_num.html'
+                               title='parser-combinators::alpha_num'>alpha_num</a></td>
+                        <td class='docblock short'><p>Parses either an alphabet letter or digit</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.any_char.html'
+                               title='parser-combinators::any_char'>any_char</a></td>
+                        <td class='docblock short'><p>Parses any character</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.between.html'
+                               title='parser-combinators::between'>between</a></td>
+                        <td class='docblock short'><p>Parses <code>open</code> followed by <code>parser</code> followed by <code>close</code>
+Returns the value of <code>parser</code></p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.chainl1.html'
+                               title='parser-combinators::chainl1'>chainl1</a></td>
+                        <td class='docblock short'><p>Parses <code>p</code> 1 or more times separated by <code>op</code>
+The value returned is the one produced by the left associative application of <code>op</code></p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.choice_slice.html'
+                               title='parser-combinators::choice_slice'>choice_slice</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.choice_vec.html'
+                               title='parser-combinators::choice_vec'>choice_vec</a></td>
+                        <td class='docblock short'></td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.crlf.html'
+                               title='parser-combinators::crlf'>crlf</a></td>
+                        <td class='docblock short'><p>Parses carriage return and newline, returning the newline character.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.digit.html'
+                               title='parser-combinators::digit'>digit</a></td>
+                        <td class='docblock short'><p>Parses a digit from a stream containing characters</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.hex_digit.html'
+                               title='parser-combinators::hex_digit'>hex_digit</a></td>
+                        <td class='docblock short'><p>Parses a hexdecimal digit with uppercase and lowercase</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.letter.html'
+                               title='parser-combinators::letter'>letter</a></td>
+                        <td class='docblock short'><p>Parses an alphabet letter</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.lower.html'
+                               title='parser-combinators::lower'>lower</a></td>
+                        <td class='docblock short'><p>Parses an uppercase letter</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.many.html'
+                               title='parser-combinators::many'>many</a></td>
+                        <td class='docblock short'><p>Parses <code>p</code> zero or more times returning a collection with the values from <code>p</code>.
+If the returned collection cannot be inferred type annotations must be supplied, either by
+annotating the resulting type binding <code>let collection: Vec&lt;_&gt; = ...</code> or by specializing when
+calling many, <code>many::&lt;Vec&lt;_&gt;, _&gt;(...)</code></p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.many1.html'
+                               title='parser-combinators::many1'>many1</a></td>
+                        <td class='docblock short'><p>Parses <code>p</code> one or more times returning a collection with the values from <code>p</code>.
+If the returned collection cannot be inferred type annotations must be supplied, either by
+annotating the resulting type binding <code>let collection: Vec&lt;_&gt; = ...</code> or by specializing when
+calling many1 <code>many1::&lt;Vec&lt;_&gt;, _&gt;(...)</code></p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.newline.html'
+                               title='parser-combinators::newline'>newline</a></td>
+                        <td class='docblock short'><p>Parses a newline character</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.not_followed_by.html'
+                               title='parser-combinators::not_followed_by'>not_followed_by</a></td>
+                        <td class='docblock short'><p>Succeeds only if <code>parser</code> fails.
+Never consumes any input.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.oct_digit.html'
+                               title='parser-combinators::oct_digit'>oct_digit</a></td>
+                        <td class='docblock short'><p>Parses an octal digit</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.optional.html'
+                               title='parser-combinators::optional'>optional</a></td>
+                        <td class='docblock short'><p>Returns <code>Some(value)</code> and <code>None</code> on parse failure (always succeeds)</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.parser.html'
+                               title='parser-combinators::parser'>parser</a></td>
+                        <td class='docblock short'><p>Wraps a function, turning it into a parser
+Mainly needed to turn closures into parsers as function types can be casted to function pointers
+to make them usable as a parser</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.satisfy.html'
+                               title='parser-combinators::satisfy'>satisfy</a></td>
+                        <td class='docblock short'><p>Parses a character and succeeds depending on the result of <code>pred</code></p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.sep_by.html'
+                               title='parser-combinators::sep_by'>sep_by</a></td>
+                        <td class='docblock short'><p>Parses <code>parser</code> zero or more time separated by <code>separator</code>, returning a collection with the values from <code>p</code>.
+If the returned collection cannot be inferred type annotations must be supplied, either by
+annotating the resulting type binding <code>let collection: Vec&lt;_&gt; = ...</code> or by specializing when
+calling sep_by, <code>sep_by::&lt;Vec&lt;_&gt;, _, _&gt;(...)</code></p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.skip_many.html'
+                               title='parser-combinators::skip_many'>skip_many</a></td>
+                        <td class='docblock short'><p>Parses <code>p</code> zero or more times ignoring the result</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.skip_many1.html'
+                               title='parser-combinators::skip_many1'>skip_many1</a></td>
+                        <td class='docblock short'><p>Parses <code>p</code> one or more times ignoring the result</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.space.html'
+                               title='parser-combinators::space'>space</a></td>
+                        <td class='docblock short'><p>Parses whitespace</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.spaces.html'
+                               title='parser-combinators::spaces'>spaces</a></td>
+                        <td class='docblock short'><p>Skips over zero or more spaces</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.string.html'
+                               title='parser-combinators::string'>string</a></td>
+                        <td class='docblock short'><p>Parses the string <code>s</code></p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.tab.html'
+                               title='parser-combinators::tab'>tab</a></td>
+                        <td class='docblock short'><p>Parses a tab character</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.try.html'
+                               title='parser-combinators::try'>try</a></td>
+                        <td class='docblock short'><p>Try acts as <code>p</code> except it acts as if the parser hadn&#39;t consumed any input
+if <code>p</code> returns an error after consuming input</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.unexpected.html'
+                               title='parser-combinators::unexpected'>unexpected</a></td>
+                        <td class='docblock short'><p>Always fails with <code>message</code> as the error.
+Never consumes any input.</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.upper.html'
+                               title='parser-combinators::upper'>upper</a></td>
+                        <td class='docblock short'><p>Parses an uppercase letter</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.value.html'
+                               title='parser-combinators::value'>value</a></td>
+                        <td class='docblock short'><p>Always returns the value <code>v</code> without consuming any input.</p>
+</td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unmarked' title='No stability level'></a><a class='type' href='type.ParseResult.html'
+                               title='parser-combinators::ParseResult'>ParseResult</a></td>
+                        <td class='docblock short'><p>A type alias over the specific <code>Result</code> type used to indicated parser success/failure.
+<code>O</code> is the type that is output on success
+<code>I</code> is the specific stream type used in the parser</p>
+</td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "parser-combinators";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>

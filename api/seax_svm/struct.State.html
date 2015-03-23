@@ -43,18 +43,30 @@
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>seax_svm</a>::<wbr><a class='struct' href=''>State</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-5334' href='../src/seax_svm/lib.rs.html#37-42'>[src]</a></span></h1>
+        </span><a id='src-5399' href='../src/seax_svm/lib.rs.html#36-41'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct State {
     // some fields omitted
 }</pre><div class='docblock'><p>Represents a SVM machine state</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../seax_svm/struct.State.html' title='seax_svm::State'>State</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../seax_svm/struct.State.html' title='seax_svm::State'>State</a></code></h4>
 <div class='docblock'><p>Creates a new empty state</p>
-</div><h4 id='method.eval' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.eval' class='fnname'>eval</a>(self) -&gt; <a class='struct' href='../seax_svm/struct.State.html' title='seax_svm::State'>State</a></code></h4>
+</div><h4 id='method.dump_state' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.dump_state' class='fnname'>dump_state</a>(&amp;self, tag: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a></code></h4>
+<div class='docblock'><p>Dump state to string</p>
+
+<p>This produces state dumps suitable for printing as part of
+an error report. This is different from fmt::Debug since it
+includes a tag for the error reporter.</p>
+</div><h4 id='method.eval' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.eval' class='fnname'>eval</a>(self, inp: &amp;mut <a class='trait' href='http://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>, outp: &amp;mut <a class='trait' href='http://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a>, debug: <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a class='struct' href='../seax_svm/struct.State.html' title='seax_svm::State'>State</a></code></h4>
 <div class='docblock'><p>Evaluates an instruction.</p>
 
-<p>Evaluates an instruction against a state, returning a new state.
-TODO: rewrite me to use the next instruction on the control stack,
-rather than a parameter.</p>
+<p>Evaluates an instruction against a state, returning a new state.</p>
+
+<h1 id="arguments:" class='section-header'><a
+                           href="#arguments:">Arguments:</a></h1>
+<ul>
+<li><code>inp</code>: an input stream implementing <code>io::Read</code></li>
+<li><code>outp</code>: an output stream implementing <code>io::Write</code></li>
+<li><code>debug</code>: whether or not to snapshot the state before evaluating. This provides more detailed debugging information on errors, but can have a significant impact on performance.</li>
+</ul>
 </div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../seax_svm/struct.State.html' title='seax_svm::State'>State</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 </div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../seax_svm/struct.State.html' title='seax_svm::State'>State</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../seax_svm/struct.State.html' title='seax_svm::State'>State</a></code></h4>
 <h4 id='method.clone_from' class='tymethod'><a class='stability Unstable' title='Unstable: this function is rarely used'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `ParserExt` trait in crate `parser-combinators`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, ParserExt">
+
+    <title>parser-combinators::ParserExt - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <section class="sidebar">
+        
+        <p class='location'><a href='index.html'>parser-combinators</a></p><script>window.sidebarCurrent = {name: 'ParserExt', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>parser-combinators</a>::<wbr><a class='trait' href=''>ParserExt</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-6732' href='../src/parser-combinators/combinator.rs.html#737-816'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait ParserExt: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> {
+    fn <a href='#method.with' class='fnname'>with</a>&lt;P2&gt;(self, p: P2) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.With.html' title='parser-combinators::combinator::With'>With</a>&lt;Self, P2&gt; <span class='where'>where P2: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&lt;Input=Self::Input&gt;</span> { ... }
+    fn <a href='#method.skip' class='fnname'>skip</a>&lt;P2&gt;(self, p: P2) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Skip.html' title='parser-combinators::combinator::Skip'>Skip</a>&lt;Self, P2&gt; <span class='where'>where P2: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&lt;Input=Self::Input&gt;</span> { ... }
+    fn <a href='#method.and' class='fnname'>and</a>&lt;P2&gt;(self, p: P2) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.And.html' title='parser-combinators::combinator::And'>And</a>&lt;Self, P2&gt; <span class='where'>where P2: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&lt;Input=Self::Input&gt;</span> { ... }
+    fn <a href='#method.or' class='fnname'>or</a>&lt;P2&gt;(self, p: P2) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Or.html' title='parser-combinators::combinator::Or'>Or</a>&lt;Self, P2&gt; <span class='where'>where P2: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&lt;Input=Self::Input&gt;</span> { ... }
+    fn <a href='#method.then' class='fnname'>then</a>&lt;N, F&gt;(self, f: F) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Then.html' title='parser-combinators::combinator::Then'>Then</a>&lt;Self, F&gt; <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(Self::Output) -&gt; N, N: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&lt;Input=Self::Input&gt;</span> { ... }
+    fn <a href='#method.map' class='fnname'>map</a>&lt;F, B&gt;(self, f: F) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Map.html' title='parser-combinators::combinator::Map'>Map</a>&lt;Self, F&gt; <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(Self::Output) -&gt; B</span> { ... }
+    fn <a href='#method.message' class='fnname'>message</a>&lt;S&gt;(self, msg: S) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Message.html' title='parser-combinators::combinator::Message'>Message</a>&lt;Self&gt; <span class='where'>where S: <a class='trait' href='http://doc.rust-lang.org/nightly/collections/borrow/trait.IntoCow.html' title='collections::borrow::IntoCow'>IntoCow</a>&lt;'static, <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</span> { ... }
+    fn <a href='#method.expected' class='fnname'>expected</a>&lt;S&gt;(self, msg: S) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Expected.html' title='parser-combinators::combinator::Expected'>Expected</a>&lt;Self&gt; <span class='where'>where S: <a class='trait' href='http://doc.rust-lang.org/nightly/collections/borrow/trait.IntoCow.html' title='collections::borrow::IntoCow'>IntoCow</a>&lt;'static, <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</span> { ... }
+}</pre><div class='docblock'><p>Extension trait which provides functions that are more conveniently used through method calls</p>
+</div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.with' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.with' class='fnname'>with</a>&lt;P2&gt;(self, p: P2) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.With.html' title='parser-combinators::combinator::With'>With</a>&lt;Self, P2&gt; <span class='where'>where P2: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&lt;Input=Self::Input&gt;</span></code></h3><div class='docblock'><p>Discards the value of the <code>self</code> parser and returns the value of <code>p</code>
+Fails if any of the parsers fails</p>
+</div><h3 id='method.skip' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.skip' class='fnname'>skip</a>&lt;P2&gt;(self, p: P2) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Skip.html' title='parser-combinators::combinator::Skip'>Skip</a>&lt;Self, P2&gt; <span class='where'>where P2: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&lt;Input=Self::Input&gt;</span></code></h3><div class='docblock'><p>Discards the value of the <code>p</code> parser and returns the value of <code>self</code>
+Fails if any of the parsers fails</p>
+</div><h3 id='method.and' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.and' class='fnname'>and</a>&lt;P2&gt;(self, p: P2) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.And.html' title='parser-combinators::combinator::And'>And</a>&lt;Self, P2&gt; <span class='where'>where P2: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&lt;Input=Self::Input&gt;</span></code></h3><div class='docblock'><p>Parses with <code>self</code> followed by <code>p</code>
+Succeds if both parsers succed, otherwise fails
+Returns a tuple with both values on success</p>
+<pre id='rust-example-rendered' class='rust '>
+ <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>digit</span>()
+     .<span class='ident'>and</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;i&#39;</span>))
+     .<span class='ident'>parse</span>(<span class='string'>&quot;9i&quot;</span>)
+     .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>0</span>);
+ <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>, <span class='prelude-val'>Ok</span>((<span class='string'>&#39;9&#39;</span>, <span class='string'>&#39;i&#39;</span>)));
+</pre>
+</div><h3 id='method.or' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.or' class='fnname'>or</a>&lt;P2&gt;(self, p: P2) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Or.html' title='parser-combinators::combinator::Or'>Or</a>&lt;Self, P2&gt; <span class='where'>where P2: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&lt;Input=Self::Input&gt;</span></code></h3><div class='docblock'><p>Tries to parse using <code>self</code> and if it fails returns the result of parsing <code>p</code></p>
+<pre id='rust-example-rendered' class='rust '>
+ <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>digit</span>().<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='string'>&quot;&quot;</span>)
+     .<span class='ident'>or</span>(<span class='ident'>string</span>(<span class='string'>&quot;let&quot;</span>))
+     .<span class='ident'>parse</span>(<span class='string'>&quot;let&quot;</span>)
+     .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>0</span>);
+ <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>, <span class='prelude-val'>Ok</span>(<span class='string'>&quot;let&quot;</span>));
+</pre>
+</div><h3 id='method.then' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.then' class='fnname'>then</a>&lt;N, F&gt;(self, f: F) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Then.html' title='parser-combinators::combinator::Then'>Then</a>&lt;Self, F&gt; <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(Self::Output) -&gt; N, N: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&lt;Input=Self::Input&gt;</span></code></h3><div class='docblock'><p>Parses using <code>self</code> and then passes the value to <code>f</code> which returns the parser used to parse
+the rest of the input</p>
+</div><h3 id='method.map' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.map' class='fnname'>map</a>&lt;F, B&gt;(self, f: F) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Map.html' title='parser-combinators::combinator::Map'>Map</a>&lt;Self, F&gt; <span class='where'>where F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(Self::Output) -&gt; B</span></code></h3><div class='docblock'><p>Uses <code>f</code> to map over the parsed value</p>
+</div><h3 id='method.message' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.message' class='fnname'>message</a>&lt;S&gt;(self, msg: S) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Message.html' title='parser-combinators::combinator::Message'>Message</a>&lt;Self&gt; <span class='where'>where S: <a class='trait' href='http://doc.rust-lang.org/nightly/collections/borrow/trait.IntoCow.html' title='collections::borrow::IntoCow'>IntoCow</a>&lt;'static, <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</span></code></h3><div class='docblock'><p>Parses with <code>self</code> and if it fails, adds the message <code>msg</code> to the error</p>
+</div><h3 id='method.expected' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.expected' class='fnname'>expected</a>&lt;S&gt;(self, msg: S) -&gt; <a class='struct' href='../parser-combinators/combinator/struct.Expected.html' title='parser-combinators::combinator::Expected'>Expected</a>&lt;Self&gt; <span class='where'>where S: <a class='trait' href='http://doc.rust-lang.org/nightly/collections/borrow/trait.IntoCow.html' title='collections::borrow::IntoCow'>IntoCow</a>&lt;'static, <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</span></code></h3><div class='docblock'><p>Parses with <code>self</code> and if it fails without consuming any input any expected errors are replaced by
+<code>msg</code>. <code>msg</code> is then used in error messages as &quot;Expected <code>msg</code>&quot;.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;P: <a class='trait' href='../parser-combinators/trait.Parser.html' title='parser-combinators::Parser'>Parser</a>&gt; <a class='trait' href='../parser-combinators/trait.ParserExt.html' title='parser-combinators::ParserExt'>ParserExt</a> for P</code></li>
+</ul><script type="text/javascript" async
+                              src="../implementors/parser-combinators/trait.ParserExt.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&larrb;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&rarrb;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code>, <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "parser-combinators";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>
