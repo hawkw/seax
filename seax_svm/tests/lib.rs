@@ -8,7 +8,6 @@ use svm::slist::List::{Cons,Nil};
 use svm::cell::Atom::*;
 use svm::cell::SVMCell::*;
 use svm::Inst::*;
-use std::io;
 
 /// SVM integration tests.
 ///
