@@ -6,7 +6,7 @@ dependencies = [
  "regex 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "seax_scheme 0.0.2",
- "seax_svm 0.2.0-rc.1",
+ "seax_svm 0.2.0-rc.2",
 ]
 
 [[package]]
@@ -44,10 +44,10 @@ name = "seax_scheme"
 version = "0.0.2"
 dependencies = [
  "parser-combinators 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "seax_svm 0.2.0-rc.1",
+ "seax_svm 0.2.0-rc.2",
 ]
 
 [[package]]
 name = "seax_svm"
-version = "0.2.0-rc.1"
+version = "0.2.0-rc.2"
 
