@@ -9,7 +9,7 @@ use std::io;
 #[test]
 #[should_panic(expected="[fatal]: expected an instruction on control stack")]
 fn test_empty_eval_fail() {
-    State::new().eval(&mut io::stdin(), &mut io::stdout());
+    State::new().eval(&mut io::stdin(), &mut io::stdout(),true);
 }
 
 #[test]
@@ -20,7 +20,7 @@ fn test_ld_empty_env_fail() {
         env:        Stack::empty(),
         control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(0))))),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -31,7 +31,7 @@ fn test_ld_unexpected_env_fail() {
         env:        list!(AtomCell(Char('w'))),
         control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(0))))),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -42,7 +42,7 @@ fn test_ld_arg_too_short_fail() {
         env:        Stack::empty(),
         control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0))))),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 #[test]
 #[should_panic(expected="[fatal][LD]: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Cons(AtomCell(SInt(1)), Cons(AtomCell(SInt(1)), Nil)))), Nil))")]
@@ -52,7 +52,7 @@ fn test_ld_arg_too_long_fail() {
         env:        Stack::empty(),
         control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(1)), AtomCell(SInt(1))))),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -63,7 +63,7 @@ fn test_add_unexpected_first_arg_fail () {
         env:        Stack::empty(),
         control:    list!(InstCell(ADD)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 
@@ -75,7 +75,7 @@ fn test_sub_unexpected_first_arg_fail () {
         env:        Stack::empty(),
         control:    list!(InstCell(SUB)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -86,7 +86,7 @@ fn test_div_unexpected_first_arg_fail () {
         env:        Stack::empty(),
         control:    list!(InstCell(DIV)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -97,7 +97,7 @@ fn test_fdiv_unexpected_first_arg_fail () {
         env:        Stack::empty(),
         control:    list!(InstCell(FDIV)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -108,7 +108,7 @@ fn test_mul_unexpected_first_arg_fail () {
         env:        Stack::empty(),
         control:    list!(InstCell(MUL)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -119,7 +119,7 @@ fn test_add_type_error () {
         env:        Stack::empty(),
         control:    list!(InstCell(ADD)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 #[test]
 #[should_panic(expected="[fatal][SUB]: TypeError: expected compatible operands, found (SUB SInt(1) ListCell(Nil))")]
@@ -129,7 +129,7 @@ fn test_sub_type_error () {
         env:        Stack::empty(),
         control:    list!(InstCell(SUB)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -140,7 +140,7 @@ fn test_div_type_error () {
         env:        Stack::empty(),
         control:    list!(InstCell(DIV)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -151,7 +151,7 @@ fn test_fdiv_type_error () {
         env:        Stack::empty(),
         control:    list!(InstCell(FDIV)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -162,7 +162,7 @@ fn test_mul_type_error () {
         env:        Stack::empty(),
         control:    list!(InstCell(MUL)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 
 #[test]
@@ -183,7 +183,7 @@ fn test_eval_nil () {
         dump: Stack::empty()
     };
     assert_eq!(state.stack.peek(), None);
-    state = state.eval(&mut io::stdin(), &mut io::stdout());
+    state = state.eval(&mut io::stdin(), &mut io::stdout(),true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 }
 
@@ -196,7 +196,7 @@ fn test_eval_ldc () {
         env: state.env,
         control: list!(InstCell(LDC),AtomCell(SInt(1))),
         dump: state.dump
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(1))));
 
     state = State {
@@ -204,7 +204,7 @@ fn test_eval_ldc () {
         env: state.env,
         control: list!(InstCell(LDC),AtomCell(Char('a'))),
         dump: state.dump
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Char('a'))));
 
     state = State {
@@ -212,7 +212,7 @@ fn test_eval_ldc () {
         env: state.env,
         control: list!(InstCell(LDC),AtomCell(Float(1.0f64))),
         dump: state.dump
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.0f64))));
 }
 
@@ -230,7 +230,7 @@ fn test_eval_ld () {
                 )
             ),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(388))));
 }
 
@@ -254,7 +254,7 @@ fn test_eval_ldf () {
             ),
         control: list!(InstCell(LDF), ListCell(box list!(AtomCell(SInt(133))))),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(
         state.stack.peek(),
         Some(&ListCell(
@@ -285,7 +285,7 @@ fn test_eval_join() {
                 AtomCell(SInt(1)),
                 AtomCell(SInt(2))
             )))
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.dump.peek(), None);
     assert_eq!(state.control[0usize], AtomCell(SInt(1)));
     assert_eq!(state.control[1usize], AtomCell(SInt(2)));
@@ -299,7 +299,7 @@ fn test_eval_add () {
         env: Stack::empty(),
         control: list!(InstCell(ADD)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(2))));
 
     // ---- Signed int addition ----
@@ -308,7 +308,7 @@ fn test_eval_add () {
         env: Stack::empty(),
         control: list!(InstCell(ADD)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-2))));
 
     // ---- Float-float addition ----
@@ -317,7 +317,7 @@ fn test_eval_add () {
         env: Stack::empty(),
         control: list!(InstCell(ADD)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0))));
 
     // ---- Float-int type lifting addition ----
@@ -326,14 +326,14 @@ fn test_eval_add () {
         env: Stack::empty(),
         control: list!(InstCell(ADD)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(2.5))));
     state = State {
         stack: list!(AtomCell(Float(3.5)), AtomCell(UInt(1))),
         env: Stack::empty(),
         control: list!(InstCell(ADD)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(4.5))));
 }
 
@@ -345,7 +345,7 @@ fn test_eval_sub () {
         env: Stack::empty(),
         control: list!(InstCell(SUB)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(0))));
 
     // ---- Signed int subtraction----
@@ -354,7 +354,7 @@ fn test_eval_sub () {
         env: Stack::empty(),
         control: list!(InstCell(SUB)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-6))));
 
     // ---- Float-float subtraction ----
@@ -363,7 +363,7 @@ fn test_eval_sub () {
         env: Stack::empty(),
         control: list!(InstCell(SUB)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(-0.5))));
 
     // ---- Float-int type lifting subtraction ----
@@ -372,7 +372,7 @@ fn test_eval_sub () {
         env: Stack::empty(),
         control: list!(InstCell(SUB)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(4.5))));
 
     state = State {
@@ -380,7 +380,7 @@ fn test_eval_sub () {
         env: Stack::empty(),
         control: list!(InstCell(SUB)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
 }
 
@@ -392,7 +392,7 @@ fn test_eval_mul () {
         env: Stack::empty(),
         control: list!(InstCell(MUL)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(6))));
 
     // ---- Signed int multiplication----
@@ -401,7 +401,7 @@ fn test_eval_mul () {
         env: Stack::empty(),
         control: list!(InstCell(MUL)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(6))));
 
     // ---- Float-float multiplication ----
@@ -410,7 +410,7 @@ fn test_eval_mul () {
         env: Stack::empty(),
         control: list!(InstCell(MUL)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0))));
 
     // ---- Float-int type lifting multiplication ----
@@ -419,7 +419,7 @@ fn test_eval_mul () {
         env: Stack::empty(),
         control: list!(InstCell(MUL)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0))));
 
     state = State {
@@ -427,7 +427,7 @@ fn test_eval_mul () {
         env: Stack::empty(),
         control: list!(InstCell(MUL)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(7.0))));
 }
 
@@ -439,7 +439,7 @@ fn test_eval_div () {
         env: Stack::empty(),
         control: list!(InstCell(DIV)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(3))));
 
     // ---- Signed int divison ----
@@ -448,7 +448,7 @@ fn test_eval_div () {
         env: Stack::empty(),
         control: list!(InstCell(DIV)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-3))));
 
     // ---- Float-float divison ----
@@ -457,7 +457,7 @@ fn test_eval_div () {
         env: Stack::empty(),
         control: list!(InstCell(DIV)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
 
     // ---- Float-int type lifting divison ----
@@ -466,7 +466,7 @@ fn test_eval_div () {
         env: Stack::empty(),
         control: list!(InstCell(DIV)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
 
     state = State {
@@ -474,7 +474,7 @@ fn test_eval_div () {
         env: Stack::empty(),
         control: list!(InstCell(DIV)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
 }
 
@@ -486,7 +486,7 @@ fn test_eval_fdiv () {
         env: Stack::empty(),
         control: list!(InstCell(FDIV)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
 
     // ---- Signed int divison ----
@@ -495,7 +495,7 @@ fn test_eval_fdiv () {
         env: Stack::empty(),
         control: list!(InstCell(FDIV)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(-1.5))));
 
     // ---- Float-float divison ---
@@ -504,7 +504,7 @@ fn test_eval_fdiv () {
         env: Stack::empty(),
         control: list!(InstCell(FDIV)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(1.5))));
 }
 
@@ -516,7 +516,7 @@ fn test_eval_mod () {
         env: Stack::empty(),
         control: list!(InstCell(MOD)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(UInt(3%2))));
 
     // ---- Signed int modulus ----
@@ -525,7 +525,7 @@ fn test_eval_mod () {
         env: Stack::empty(),
         control: list!(InstCell(MOD)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(-3%2))));
 
     // ---- Float-float modulus---
@@ -534,7 +534,7 @@ fn test_eval_mod () {
         env: Stack::empty(),
         control: list!(InstCell(MOD)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0%2.0))));
 
     // ---- Float-int type lifting modulus----
@@ -543,7 +543,7 @@ fn test_eval_mod () {
         env: Stack::empty(),
         control: list!(InstCell(MOD)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0%2.0))));
 
     state = State {
@@ -551,7 +551,7 @@ fn test_eval_mod () {
         env: Stack::empty(),
         control: list!(InstCell(MOD)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Float(3.0%2.0))));
 }
 
@@ -563,7 +563,7 @@ fn test_eval_eq () {
         env: Stack::empty(),
         control: list!(InstCell(EQ)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -574,7 +574,7 @@ fn test_eval_eq () {
         env: Stack::empty(),
         control: list!(InstCell(EQ)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     // ---- Signed int equality ----
@@ -583,7 +583,7 @@ fn test_eval_eq () {
         env: Stack::empty(),
         control: list!(InstCell(EQ)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -594,7 +594,7 @@ fn test_eval_eq () {
         env: Stack::empty(),
         control: list!(InstCell(EQ)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
 
@@ -604,7 +604,7 @@ fn test_eval_eq () {
         env: Stack::empty(),
         control: list!(InstCell(EQ)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -615,7 +615,7 @@ fn test_eval_eq () {
         env: Stack::empty(),
         control: list!(InstCell(EQ)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -623,7 +623,7 @@ fn test_eval_eq () {
         env: Stack::empty(),
         control: list!(InstCell(EQ)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
 }
@@ -636,7 +636,7 @@ fn test_eval_gt () {
         env: Stack::empty(),
         control: list!(InstCell(GT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -647,7 +647,7 @@ fn test_eval_gt () {
         env: Stack::empty(),
         control: list!(InstCell(GT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     // ---- Signed int greater-than ----
@@ -656,7 +656,7 @@ fn test_eval_gt () {
         env: Stack::empty(),
         control: list!(InstCell(GT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -667,7 +667,7 @@ fn test_eval_gt () {
         env: Stack::empty(),
         control: list!(InstCell(GT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
 
@@ -677,7 +677,7 @@ fn test_eval_gt () {
         env: Stack::empty(),
         control: list!(InstCell(GT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -688,7 +688,7 @@ fn test_eval_gt () {
         env: Stack::empty(),
         control: list!(InstCell(GT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -696,7 +696,7 @@ fn test_eval_gt () {
         env: Stack::empty(),
         control: list!(InstCell(GT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -708,7 +708,7 @@ fn test_eval_gt () {
         env: Stack::empty(),
         control: list!(InstCell(GT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -719,7 +719,7 @@ fn test_eval_gt () {
         env: Stack::empty(),
         control: list!(InstCell(GT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -730,7 +730,7 @@ fn test_eval_gt () {
         env: Stack::empty(),
         control: list!(InstCell(GT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
 }
@@ -743,7 +743,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -754,7 +754,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -765,7 +765,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
 
@@ -775,7 +775,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -786,7 +786,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -797,7 +797,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
 
@@ -807,7 +807,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -818,7 +818,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -829,7 +829,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     // ---- Mixed type greater-than-equal ---
@@ -838,7 +838,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -849,7 +849,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -860,7 +860,7 @@ fn test_eval_gte () {
         env: Stack::empty(),
         control: list!(InstCell(GTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 }
 
@@ -872,7 +872,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -880,7 +880,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -891,7 +891,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
 
@@ -901,7 +901,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -909,7 +909,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -920,7 +920,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
 
@@ -930,7 +930,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -938,7 +938,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -949,7 +949,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
        state = State {
@@ -957,7 +957,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     // ---- Mixed type greater-than ---
@@ -966,7 +966,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -974,7 +974,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -982,7 +982,7 @@ fn test_eval_lt () {
         env: Stack::empty(),
         control: list!(InstCell(LT)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -998,7 +998,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -1006,7 +1006,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1017,7 +1017,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1030,7 +1030,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -1038,7 +1038,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1049,7 +1049,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1062,7 +1062,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -1070,7 +1070,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1081,7 +1081,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1093,7 +1093,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -1101,7 +1101,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(
         box Nil // TODO: this expects wrong float behaviour, fix
         ))
@@ -1112,7 +1112,7 @@ fn test_eval_lte () {
         env: Stack::empty(),
         control: list!(InstCell(LTE)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1133,7 +1133,7 @@ fn test_eval_ret() {
                 )),
             ListCell(box list!(AtomCell(Char('C')), AtomCell(Char('L'))))
             )
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     // stack should have return arg + first elem on dump
     assert_eq!(state.stack.peek(), Some(&AtomCell(SInt(100)))); // test these using peek for now since indexing is borked
     assert_eq!(state.stack[0usize], AtomCell(SInt(100)));
@@ -1157,7 +1157,7 @@ fn test_eval_dum() {
         env: list!(ListCell(box list!(AtomCell(Char('a'))))),
         control: list!(InstCell(DUM)),
         dump: Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.env.peek(), Some(&ListCell(box Nil)));
 }
 
@@ -1183,7 +1183,7 @@ fn test_eval_ap() {
             )),
         control: list!(InstCell(AP), InstCell(DUM)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Char('Q'))));
     assert_eq!(state.control, list!(InstCell(RET), InstCell(ADD), AtomCell(SInt(1)), InstCell(LDC), ListCell(box list!(AtomCell(UInt(0)), AtomCell(UInt(0)))),InstCell(LD)));
     assert_eq!(state.env, list!(ListCell(box list!(AtomCell(SInt(1))))));
@@ -1198,7 +1198,7 @@ fn test_eval_atom() {
         env: Stack::empty(),
         control: list!(InstCell(ATOM)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1209,7 +1209,7 @@ fn test_eval_atom() {
         env: Stack::empty(),
         control: list!(InstCell(ATOM)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1220,7 +1220,7 @@ fn test_eval_atom() {
         env: Stack::empty(),
         control: list!(InstCell(ATOM)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1231,7 +1231,7 @@ fn test_eval_atom() {
         env: Stack::empty(),
         control: list!(InstCell(ATOM)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1242,7 +1242,7 @@ fn test_eval_atom() {
         env: Stack::empty(),
         control: list!(InstCell(ATOM)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert!(
         state.stack.peek() != Some(&ListCell(box Nil)) &&
         state.stack.peek() != None
@@ -1254,7 +1254,7 @@ fn test_eval_atom() {
         env: Stack::empty(),
         control: list!(InstCell(ATOM)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 
     state = State {
@@ -1262,7 +1262,7 @@ fn test_eval_atom() {
         env: Stack::empty(),
         control: list!(InstCell(ATOM)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box Nil)));
 }
 
@@ -1273,7 +1273,7 @@ fn test_eval_car() {
         env: Stack::empty(),
         control: list!(InstCell(CAR)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&AtomCell(Char('A'))));
 }
 
@@ -1284,7 +1284,7 @@ fn test_eval_cdr() {
         env: Stack::empty(),
         control: list!(InstCell(CDR)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box list!(AtomCell(Char('B'))))));
 }
 
@@ -1295,7 +1295,7 @@ fn test_eval_cons() {
         env: Stack::empty(),
         control: list!(InstCell(CONS)),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), Some(&ListCell(box list!(
         AtomCell(Char('A')), AtomCell(Char('B')), AtomCell(Char('C'))
         ))));
@@ -1314,7 +1314,7 @@ fn test_eval_sel_true() {
             InstCell(JOIN) // this is just here so that we can assert that it goes on the dump
             ),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), None); // stack should be empty
     assert_eq!(state.control.peek(), Some(&InstCell(NIL)));
     assert_eq!(state.dump.peek(), Some(&ListCell(box list!(InstCell(JOIN))))); // next instruction on dump
@@ -1333,7 +1333,7 @@ fn test_eval_sel_false() {
             InstCell(JOIN) // this is just here so that we can assert that it goes on the dump
             ),
         dump: Stack::empty()
-    }.eval(&mut io::stdin(), &mut io::stdout());
+    }.eval(&mut io::stdin(), &mut io::stdout(), true);
     assert_eq!(state.stack.peek(), None); // stack should be empty
     assert_eq!(state.control.peek(), Some(&InstCell(ATOM)));
     assert_eq!(state.dump.peek(), Some(&ListCell(box list!(InstCell(JOIN))))); // next instruction on dump
@@ -1348,7 +1348,7 @@ fn test_eval_null() {
             env: Stack::empty(),
             control: list!(InstCell(NULL)),
             dump: Stack::empty(),
-        }.eval(&mut io::stdin(), &mut io::stdout()).stack.peek(),
+        }.eval(&mut io::stdin(), &mut io::stdout(),true).stack.peek(),
         Some(&ListCell(box Nil))
         );
     // false case
@@ -1358,7 +1358,7 @@ fn test_eval_null() {
             env: Stack::empty(),
             control: list!(InstCell(NULL)),
             dump: Stack::empty(),
-        }.eval(&mut io::stdin(), &mut io::stdout()).stack.peek(),
+        }.eval(&mut io::stdin(), &mut io::stdout(),true).stack.peek(),
         Some(&ListCell(box list!(AtomCell(SInt(1)))))
         );
 }
