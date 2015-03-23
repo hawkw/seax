@@ -1,0 +1,13 @@
+sudo: false
+language: rust
+script:
+- cargo build
+- cargo test
+- cargo test -p seax_svm
+- cargo test -p seax_scheme
+after_success:
+- .travis/release.sh
+env:
+  global:
+  - secure: iEGoVGb3OeqSqP4UP7nbLtMEmGi9JgI0nxjrpRrSg22pCCa+lMIIiYp9gY2558pwAbcxaJpahmTt3lYqe2wdKfXlGWRB7Tz99FR8lX+vRXpgxDLg1Sz8BAnN7X9bu+AGL/INwYOe6tVncXcQgKn4uSTYa001CqhlwPzMmtGSw/w=
+  - secure: eKEXvvZrTIKGV7LouFW0EfjFPd09OgEI3Y6Z5QsWdEdv73zMvXzjz9xHu+9AmYirI8m/e0v2/RXefP/elcxjLKBa61b1MC/shQPjpbaqC4Y6UTQh5If1X/QN88cbc+VldD2dKgjP5gRX72TAfHoO466NLIxxigKkZJQsOawOVUs=
