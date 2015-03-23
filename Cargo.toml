@@ -17,6 +17,7 @@ rustc-serialize = "*"
 
 [dependencies.seax_svm]
 path = "seax_svm"
+version = "~0.2.0"
 
 [dependencies.seax_scheme]
 path = "seax_scheme"
