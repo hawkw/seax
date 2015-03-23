@@ -1,7 +1,7 @@
 [package]
 
 name = "seax"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Hawk Weisman <hi@hawkweisman.me>"]
 description = "SECD virtual machine for interpreting programs in FP languages and a Scheme compiler targeting that machine."
 license = "MIT"
