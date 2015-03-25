@@ -1,6 +1,6 @@
 extern crate "parser-combinators" as parser_combinators;
 
-use self::parser_combinators::{try, between, spaces, string, parser, many, many1, digit, any_char, optional, hex_digit, not_followed_by, satisfy, Parser, ParserExt, ParseResult};
+use self::parser_combinators::{try, between, spaces, string, parser, many, many1, digit, any_char, optional, hex_digit, not_followed_by, skip_many, satisfy, newline, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::State;
 
 use super::ast::*;
@@ -12,10 +12,7 @@ use std::char;
 
 fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
     satisfy(|c| c == 'x' || c == 'X')
-        .with( many1::<Vec<_>, _>(hex_digit()) )
-        .map(|x|
-            x.iter()
-             .fold( String::new(), |mut s: String, i| { s.push(*i); s }) )
+        .with( many1(hex_digit()) )
         .parse_state(input)
 }
 
@@ -26,7 +23,7 @@ fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
 /// TODO: add support for octal
 /// TODO: add support for binary
 /// TODO: add support for R6RS exponents
-fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
+pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
     fn hex_isize(input: State<&str>) -> ParseResult<isize, &str> {
         satisfy(|c| c == '#')
@@ -39,11 +36,8 @@ fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
     fn dec_string(input: State<&str>) -> ParseResult<isize, &str> {
         optional(satisfy(|c| c == '#')
             .and(satisfy(|c| c == 'd' || c == 'D')))
-            .with(many1::<Vec<_>, _>(digit())
-                .map(|x| isize::from_str(x.iter().fold(
-                    String::new(), |mut s: String, i| { s.push(*i); s })
-                    .as_slice()
-                ).unwrap() ))
+            .with(many1::<String, _>(digit())
+                .map(|x| isize::from_str(x.as_slice()).unwrap() ))
             .parse_state(input)
     }
 
@@ -76,7 +70,7 @@ fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 /// TODO: add support for octal
 /// TODO: add support for binary
 /// TODO: add support for R6RS exponents
-fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
+pub fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
     fn hex_uint(input: State<&str>) -> ParseResult<usize, &str> {
         satisfy(|c| c == '#')
@@ -86,11 +80,9 @@ fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
     }
 
     try(parser(hex_uint))
-        .or( many1::<Vec<_>, _>(digit())
-            .map(|x|usize::from_str(x.iter().fold(
-                String::new(), |mut s: String, i| { s.push(*i); s })
-                .as_slice()
-            ).unwrap()) )
+        .or( many1::<String, _>(digit())
+            .map(|x|usize::from_str(x.as_slice()).unwrap() )
+            )
         .skip(satisfy(|c| c == 'u' || c == 'U'))
         .map(|x: usize| NumNode::UIntConst(UIntNode{value: x}))
         .parse_state(input)
@@ -104,16 +96,15 @@ fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 /// i.e. `1F`, are currently not recognized. While this form of number
 /// is not specified by R6RS, I'd like to support it anyway as it's
 /// a common form for floating-point numbers. Priority: low.
-fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
-    many1::<Vec<_>, _>(digit())
+pub fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
+    many1::<String,_>(digit())
         .and(satisfy(|c| c == '.'))
-        .and(many1::<Vec<_>, _>(digit()))
+        .and(many1::<String, _>(digit()))
         .map(|x| {
             let mut s = String::new();
-            for i in (x.0).0.iter() { s.push(*i); } ;
-            s.push((x.0).1);
-
-            for i in x.1.iter() { s.push(*i); };
+            s.push_str( (x.0).0.as_slice() );
+            s.push( (x.0).1 );
+            s.push_str( x.1.as_slice() );
             NumNode::FloatConst(FloatNode{
                 value: f64::from_str(s.as_slice()).unwrap()
             })
@@ -134,6 +125,7 @@ fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 /// `#t`, `#T`, or `true`  -> `true`
 /// `#f`, `#F`, or `false` -> `false`
 pub fn bool_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
+
     let t_const = try(string("#t"))
         .or(try(string("#T")))
         .or(try(string("true")))
@@ -317,17 +309,20 @@ pub fn character(input: State<&str>) -> ParseResult<CharNode, &str> {
             .parse_state(input)
     }
 
-    string("#\\")
-        .with(
+    string("#\\").with(
             parser(char_name)
             .or(parser(hex_char))
             .or(parser(any_char))
         ).map(|c| CharNode { value: c})
         .parse_state(input)
-
 }
 
-
+/// Parses a R<sup>6</sup>RS single-line comment
+pub fn line_comment(input: State<&str>) -> ParseResult<(),&str> {
+    satisfy(|c| c == ';')
+        .with(skip_many(satisfy(|c| c != '\n')).skip(newline()))
+        .parse_state(input)
+}
 
 pub fn string_const(input: State<&str>) -> ParseResult<StringNode, &str> {
 
@@ -367,7 +362,6 @@ pub fn string_const(input: State<&str>) -> ParseResult<StringNode, &str> {
 /// Parses Scheme expressions.
 #[allow(unconditional_recursion)]
 pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
-        let spaces = spaces();
 
         fn sexpr(input: State<&str>) -> ParseResult<ExprNode, &str> {
                 between(
@@ -397,13 +391,15 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
                 ).parse_state(input)
             }
 
-        spaces.clone().with(
-            try(parser(sexpr))
-                .or(try(parser(list)))
-                .or(try(parser(name).map(Name)))
-                .or(try(parser(number).map(NumConst)))
-                .or(try(parser(character).map(CharConst)))
-                .or(try(parser(string_const).map(StringConst)))
+        spaces().with(
+            try(optional(parser(line_comment))).with(
+                try(parser(sexpr))
+                    .or(try(parser(list)))
+                    .or(try(parser(name).map(Name)))
+                    .or(try(parser(number).map(NumConst)))
+                    .or(try(parser(character).map(CharConst)))
+                    .or(try(parser(string_const).map(StringConst)))
+                )
             ).parse_state(input)
 }
 
