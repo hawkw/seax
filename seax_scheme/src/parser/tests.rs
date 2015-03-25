@@ -4,6 +4,21 @@ use super::*;
 use super::parser_combinators::{Parser,parser};
 
 #[test]
+fn test_line_comment() {
+    assert_eq!(parser(line_comment).parse(";this is a fake line comment\n"),
+        Ok(((),"")));
+}
+
+#[test]
+fn test_line_comment_ignore() {
+    assert_eq!(parser(expr).parse(
+r#";this is a fake line comment
+ident"#),
+        Ok((Name(NameNode { name: "ident" }), ""))
+        )
+}
+
+#[test]
 fn test_basic_ident() {
     assert_eq!(
         parser(expr).parse("ident"),
