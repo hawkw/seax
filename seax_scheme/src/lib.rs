@@ -16,3 +16,7 @@ pub mod ast;
 /// on the valid programs accepted by the parser, will be noted in the
 /// parser's RustDoc.
 pub mod parser;
+
+mod forktab;
+pub use self::forktab::ForkTable;
+

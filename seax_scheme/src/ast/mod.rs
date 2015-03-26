@@ -2,8 +2,12 @@ use svm::cell::SVMCell;
 
 use self::ExprNode::*;
 use self::NumNode::*;
+use super::ForkTable;
+
+type SymTable<'a> = ForkTable<'a, &'a str, (usize,usize)>;
 
 static INDENT: &'static str = "\t";
+
 
 /// Trait for AST nodes.
 pub trait ASTNode {

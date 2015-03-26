@@ -529,10 +529,10 @@ impl State {
                 // if it will basically just be discarded?
                 panic!("[fatal]: undefined behaviour\n[fatal]: evaluation of STOP word")
             },
-            None => {panic!("[fatal]: expected an instruction on control stack")}
-            Some((thing, new_control)) => {
+            None => panic!("[fatal]: expected an instruction on control stack"),
+            Some((thing, new_control)) => // this should never happen, barring force majeure
                 panic!("[fatal]: Tried to evaluate an unsupported cell type {:?}.\n[fatal]: State dump:\n[fatal]:\tstack: {:?}\n[fatal]: \tenv: {:?}\n[fatal]:\tcontrol: {:?}\n[fatal]:\tdump: {:?}",
-             thing, self.stack, self.env, new_control.push(thing.clone()), self.dump) }
+             thing, self.stack, self.env, new_control.push(thing.clone()), self.dump)
         }
     }
 }
