@@ -64,7 +64,7 @@ impl<'a,K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     pub fn chain_contains_key(&self, key: &K) -> bool {
         self.table.contains_key(key) ||
-        (self.whiteouts.contains(k) &&
+        (self.whiteouts.contains(key) &&
             self.parent
                 .map(|p| p.chain_contains_key(key))
                 .unwrap_or(false))
