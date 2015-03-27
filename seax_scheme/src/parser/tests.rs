@@ -14,7 +14,7 @@ fn test_line_comment_ignore() {
     assert_eq!(parser(expr).parse(
 r#";this is a fake line comment
 ident"#),
-        Ok((Name(NameNode { name: "ident" }), ""))
+        Ok((Name(NameNode { name: "ident".to_string() }), ""))
         )
 }
 
