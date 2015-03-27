@@ -264,8 +264,8 @@ impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
 impl<T> Index<usize> for List<T> {
     type Output = T;
 
-    fn index<'a>(&'a self, _index: &usize) -> &'a T {
-        match *_index {
+    fn index<'a>(&'a self, _index: usize) -> &'a T {
+        match _index {
             0usize => match *self {
                 Cons(ref car, _) => car,
                 Nil => panic!("List index {} out of range", _index)
@@ -304,8 +304,8 @@ impl<T> Index<usize> for List<T> {
 impl<T> Index<isize> for List<T> {
     type Output = T;
 
-    fn index<'a>(&'a self, _index: &isize) -> &'a T {
-        match *_index {
+    fn index<'a>(&'a self, _index: isize) -> &'a T {
+        match _index {
             0isize => match *self {
                 Cons(ref car, _) => car,
                 Nil => panic!("List index {} out of range", _index)
