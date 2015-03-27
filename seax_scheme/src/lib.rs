@@ -18,5 +18,12 @@ pub mod ast;
 pub mod parser;
 
 mod forktab;
+/// An associative map data structure for repreenting scopes.
+///
+/// This is an implementation of the ForkTable data structure for
+/// representing scopes. The ForkTable was initially described by
+/// Max Clive. This implemention is based primarily by the Scala
+/// reference implementation written by Hawk Weisman for the Decaf
+/// compiler, which is available [here](https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala).
 pub use self::forktab::ForkTable;
 

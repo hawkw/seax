@@ -1,17 +1,11 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 use std::borrow::Borrow;
-/// An associative map data structure for repreenting scopes.
-///
-/// This is an implementation of the ForkTable data structure for
-/// representing scopes. The ForkTable was initially described by
-/// Max Clive. This implemention is based primarily by the Scala
-/// reference implementation written by Hawk Weisman for the Decaf
-/// compiler, which is available [here](https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala).
+
 #[derive(Debug,Clone)]
 pub struct ForkTable<'a,K: 'a + Eq + Hash,V: 'a>  {
     table: HashMap<K, V>,
-    whiteouts: Vec<K>,
+    whiteouts: HashSet<K>,
     parent: Option<&'a ForkTable<'a,K,V>>
 }
 
@@ -57,8 +51,8 @@ impl<'a,K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
     ///
-    pub fn contains_key<Q: ?Sized>(&self, k: &Q) -> bool  {
-        unimplemented!()
+    pub fn contains_key(&self, key: &K) -> bool  {
+        self.table.contains_key(key)
     }
 
     /// Returns true if the key is defined in this level of the table, or
@@ -68,7 +62,11 @@ impl<'a,K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
     ///
-    pub fn chain_contains_key<Q: ?Sized>(&self, k: &Q) -> bool {
-        unimplemented!()
+    pub fn chain_contains_key(&self, key: &K) -> bool {
+        self.table.contains_key(key) ||
+        (self.whiteouts.contains(k) &&
+            self.parent
+                .map(|p| p.chain_contains_key(key))
+                .unwrap_or(false))
     }
 }
