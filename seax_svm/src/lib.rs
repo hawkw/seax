@@ -660,7 +660,7 @@ impl State {
                     "[fatal]: undefined behaviour\n[fatal]: evaluation of STOP word\n{}",
                     prev.map_or(String::new(), |x| x.dump_state("fatal") )
                     ),
-            None => panic!(
+            None => panic!( // this should never happen (barring force majeure)
                 "[fatal]: expected an instruction on control stack\n{}",
                 prev.map_or(String::new(), |x| x.dump_state("fatal") )),
             Some((thing, _)) => panic!(

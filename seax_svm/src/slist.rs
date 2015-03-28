@@ -222,6 +222,7 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
     /// # }
     /// ```
     /// ```
+    /// # #![feature(convert)]
     /// # #[macro_use] extern crate seax_svm;
     /// # use seax_svm::slist;
     /// # use seax_svm::slist::List;
@@ -230,9 +231,9 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
     /// let l: List<isize> = list!(1,2,3,4,5,6);
     /// let mut string = String::new();
     /// for item in l.iter() {
-    ///     string.push_str((item.to_string() + ", ").as_slice());
+    ///     string.push_str((item.to_string() + ", ").as_ref());
     /// }
-    /// assert_eq!(string.as_slice(), "1, 2, 3, 4, 5, 6, ")
+    /// assert_eq!(string, "1, 2, 3, 4, 5, 6, ".to_string())
     /// # }
     /// ```
     fn next(&mut self) -> Option<&'a T> {

@@ -2,8 +2,12 @@ use svm::cell::SVMCell;
 
 use self::ExprNode::*;
 use self::NumNode::*;
+use super::ForkTable;
+
+type SymTable<'a> = ForkTable<'a, &'a str, (usize,usize)>;
 
 static INDENT: &'static str = "\t";
+
 
 /// Trait for AST nodes.
 pub trait ASTNode {
@@ -20,6 +24,7 @@ pub trait ASTNode {
 /// Expression
 ///
 /// All Seax Scheme expressions are one of the following
+///
 ///  + Nested S-Expressions
 ///  + Identifiers
 ///  + Lists
@@ -29,6 +34,7 @@ pub trait ASTNode {
 ///     - floating-point
 ///  + Characters
 ///  + Strings
+///
 ///  TODO: implement the entire Scheme 'numeric tower'
 ///  TODO: macros should happen
 ///  TODO: figure out quasiquote somehow.

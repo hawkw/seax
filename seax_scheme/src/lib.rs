@@ -3,7 +3,7 @@
 #![feature(core)]
 
 #[macro_use]
-extern crate "seax_svm" as svm;
+extern crate seax_svm as svm;
 
 pub mod ast;
 
@@ -16,3 +16,14 @@ pub mod ast;
 /// on the valid programs accepted by the parser, will be noted in the
 /// parser's RustDoc.
 pub mod parser;
+
+mod forktab;
+/// An associative map data structure for repreenting scopes.
+///
+/// This is an implementation of the ForkTable data structure for
+/// representing scopes. The ForkTable was initially described by
+/// Max Clive. This implemention is based primarily by the Scala
+/// reference implementation written by Hawk Weisman for the Decaf
+/// compiler, which is available [here](https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala).
+pub use self::forktab::ForkTable;
+
