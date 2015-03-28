@@ -3,7 +3,7 @@
 #![feature(core)]
 
 #[macro_use]
-extern crate "seax_svm" as svm;
+extern crate seax_svm as svm;
 
 pub mod ast;
 

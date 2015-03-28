@@ -1,4 +1,4 @@
-extern crate "parser-combinators" as parser_combinators;
+extern crate parser_combinators;
 
 use self::parser_combinators::{try, between, spaces, string, parser, many, many1, digit, any_char, optional, hex_digit, not_followed_by, skip_many, satisfy, newline, Parser, ParserExt, ParseResult};
 use self::parser_combinators::primitives::State;
