@@ -100,7 +100,7 @@ impl ASTNode for RootNode {
             .fold(
                 String::new(),
                 |mut s, i| {
-                    s.push_str(i.print_level(level + 1).as_slice());
+                    s.push_str(i.print_level(level + 1).as_ref());
                     s
                 })
     }
@@ -132,15 +132,15 @@ impl ASTNode for SExprNode {
         tab.push_str(INDENT);
 
         // op
-        result.push_str(tab.as_slice());
+        result.push_str(tab.as_ref());
         result.push_str("Operator:\n");
-        result.push_str(self.operator.print_level(level + 1).as_slice());
+        result.push_str(self.operator.print_level(level + 1).as_ref());
         result.push('\n');
 
         for operand in self.operands.iter() {
-            result.push_str(tab.as_slice());
+            result.push_str(tab.as_ref());
             result.push_str("Operand: \n");
-            result.push_str(operand.print_level(level + 1).as_slice());
+            result.push_str(operand.print_level(level + 1).as_ref());
             result.push('\n');
         };
         result
@@ -165,8 +165,8 @@ impl ASTNode for ListNode {
         tab.push_str(INDENT);
 
         for elem in self.elements.iter() {
-            result.push_str(tab.as_slice());
-            result.push_str(elem.print_level(level + 1).as_slice());
+            result.push_str(tab.as_ref());
+            result.push_str(elem.print_level(level + 1).as_ref());
             result.push('\n');
         };
         result
@@ -187,9 +187,9 @@ impl ASTNode for NameNode {
         for _ in 0 .. level {tab.push_str(INDENT)};
 
         let mut result = String::new();
-        result.push_str(tab.as_slice());
+        result.push_str(tab.as_ref());
         result.push_str("Name: ");
-        result.push_str(self.name.as_slice());
+        result.push_str(self.name.as_ref());
         result.push_str("\n");
 
         result
@@ -211,20 +211,20 @@ impl ASTNode for NumNode {
 
         let mut result = String::new();
 
-        result.push_str(tab.as_slice());
+        result.push_str(tab.as_ref());
         result.push_str("Number: ");
 
         match *self {
             NumNode::UIntConst(ref node) => {
-                result.push_str(format!("{}u", node.value).as_slice());
+                result.push_str(format!("{}u", node.value).as_ref());
                 result.push_str("\n");
             },
             NumNode::IntConst(ref node) => {
-                result.push_str(format!("{}", node.value).as_slice());
+                result.push_str(format!("{}", node.value).as_ref());
                 result.push_str("\n");
             },
             NumNode::FloatConst(ref node) => {
-                result.push_str(format!("{}f", node.value).as_slice());
+                result.push_str(format!("{}f", node.value).as_ref());
                 result.push_str("\n");
             }
         }
@@ -256,9 +256,9 @@ impl ASTNode for BoolNode {
 
         let mut result = String::new();
 
-        result.push_str(tab.as_slice());
+        result.push_str(tab.as_ref());
         result.push_str("Boolean: ");
-        result.push_str(format!("{}", self.value).as_slice());
+        result.push_str(format!("{}", self.value).as_ref());
         result.push_str("\n");
         result
     }
@@ -302,7 +302,7 @@ impl ASTNode for StringNode {
         let mut result = String::new();
 
         result.push_str("String: \"");
-        result.push_str(self.value.as_slice());
+        result.push_str(self.value.as_ref());
         result.push_str("\"\n");
         result
     }
