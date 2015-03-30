@@ -3,13 +3,13 @@ use std::hash::Hash;
 use std::borrow::Borrow;
 
 #[derive(Debug,Clone)]
-pub struct ForkTable<'a,K: 'a + Eq + Hash,V: 'a>  {
+pub struct ForkTable<K: Eq + Hash,V>  {
     table: HashMap<K, V>,
     whiteouts: HashSet<K>,
-    parent: Option<&'a ForkTable<'a,K,V>>
+    parent: Option<Box<ForkTable<K,V>>>
 }
 
-impl<'a,K,V> ForkTable<'a, K, V> where K: Eq + Hash {
+impl<K,V> ForkTable<K, V> where K: Eq + Hash {
 
     /// Returns a reference to the value corresponding to the key.
     ///
@@ -65,8 +65,17 @@ impl<'a,K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     pub fn chain_contains_key(&self, key: &K) -> bool {
         self.table.contains_key(key) ||
         (self.whiteouts.contains(key) &&
-            self.parent
-                .map(|p| p.chain_contains_key(key))
-                .unwrap_or(false))
+            match self.parent {
+                Some(box ref p) => p.chain_contains_key(key),
+                None    => false
+            })
+    }
+
+    pub fn fork(self) -> ForkTable<K,V> {
+        ForkTable {
+            table: HashMap::new(),
+            whiteouts: HashSet::new(),
+            parent: Some(box self)
+        }
     }
 }

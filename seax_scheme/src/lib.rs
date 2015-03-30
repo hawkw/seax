@@ -1,6 +1,6 @@
 #![crate_name = "seax_scheme"]
 #![crate_type = "lib"]
-#![feature(convert,core)]
+#![feature(convert,core,box_syntax,box_patterns)]
 
 #[macro_use]
 extern crate seax_svm as svm;

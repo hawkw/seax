@@ -4,7 +4,7 @@ use self::ExprNode::*;
 use self::NumNode::*;
 use super::ForkTable;
 
-type SymTable<'a> = ForkTable<'a, &'a str, (usize,usize)>;
+type SymTable<'a> = ForkTable<&'a str, (usize,usize)>;
 
 static INDENT: &'static str = "\t";
 
