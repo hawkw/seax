@@ -42,7 +42,8 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
     }
 
     pub fn insert(&mut self, k: K, v: V) -> Option<V> {
-        unimplemented!()
+        if self.whiteouts.contains(&k) { self.whiteouts.remove(&k); };
+        self.table.insert(k, v)
     }
 
     /// Returns true if the map contains a value for the specified key.
