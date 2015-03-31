@@ -2,6 +2,22 @@ use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 use std::borrow::Borrow;
 
+/// An associative map data structure for representing scopes.
+///
+/// A `ForkTable` functions similarly to a standard associative map
+/// data structure (such as a `HashMap`), but with the ability to
+/// fork children off of each level of the map. If a key exists in any
+/// of a child's parents, the child will 'pass through' that key. If a
+/// new value is bound to a key in a child level, that child will overwrite
+/// the previous entry with the new one, but the previous `key` -> `value`
+/// mapping will remain in the level it is defined. This means that the parent
+/// level will still provide the previous value for that key.
+///
+/// This is an implementation of the ForkTable data structure for
+/// representing scopes. The ForkTable was initially described by
+/// Max Clive. This implemention is based primarily by the Scala
+/// reference implementation written by Hawk Weisman for the Decaf
+/// compiler, which is available [here](https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala).
 #[derive(Debug,Clone)]
 pub struct ForkTable<K: Eq + Hash,V>  {
     table: HashMap<K, V>,
@@ -68,23 +84,6 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
     ///  + `v`  - the value
     ///
     /// # Examples
-    /// ```
-    /// # use seax_scheme::ForkTable;
-    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
-    /// assert_eq!(table.get(&1isize), None);
-    /// assert_eq!(table.insert(1isize, "One"), None);
-    /// assert_eq!(table.get(&1isize), Some("One"));
-    /// ```
-    /// ```
-    /// # use seax_scheme::ForkTable;
-    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
-    /// assert_eq!(table.get(&1isize), None);
-    /// assert_eq!(table.insert(1isize, "two"), None);
-    /// assert_eq!(table.get(&1isize), Some("two"));
-    ///
-    /// assert_eq!(table.insert(2isize, "Two"), Some("two"));
-    /// ssert_eq!(table.get(&2isize), Some("Two"));
-    /// ```
     pub fn insert(&mut self, k: K, v: V) -> Option<V> {
         if self.whiteouts.contains(&k) { self.whiteouts.remove(&k); };
         self.table.insert(k, v)
