@@ -41,6 +41,50 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
             unimplemented!()
     }
 
+    /// Removes a key from the map, returning the value at the key if
+    /// the key was previously in the map.
+    ///
+    /// The key may be any borrowed form of the map's key type, but
+    /// `Hash` and `Eq` on the borrowed form *must* match those for
+    /// the key type.
+    ///
+    pub fn remove<Q: ?Sized>(&mut self, k: &Q) -> Option<V>
+        where K: Borrow<Q>, Q: Hash + Eq {
+            unimplemented!()
+    }
+
+    /// Inserts a key-value pair from the map.
+    ///
+    /// If the key already had a value present in the map, that
+    /// value is returned. Otherwise, `None` is returned.
+    ///
+    /// If the key is currently whited out (i.e. it was defined
+    /// in a lower level of the map and was removed) then it will
+    /// be un-whited out and added at this level.
+    ///
+    /// # Arguments
+    ///
+    ///  + `k`  - the key
+    ///  + `v`  - the value
+    ///
+    /// # Examples
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
+    /// assert_eq!(table.get(&1isize), None);
+    /// assert_eq!(table.insert(1isize, "One"), None);
+    /// assert_eq!(table.get(&1isize), Some("One"));
+    /// ```
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
+    /// assert_eq!(table.get(&1isize), None);
+    /// assert_eq!(table.insert(1isize, "two"), None);
+    /// assert_eq!(table.get(&1isize), Some("two"));
+    ///
+    /// assert_eq!(table.insert(2isize, "Two"), Some("two"));
+    /// ssert_eq!(table.get(&2isize), Some("Two"));
+    /// ```
     pub fn insert(&mut self, k: K, v: V) -> Option<V> {
         if self.whiteouts.contains(&k) { self.whiteouts.remove(&k); };
         self.table.insert(k, v)
@@ -107,6 +151,11 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
             })
     }
 
+    /// Forks this table, returning a new `ForkTable<K,V>`.
+    ///
+    /// This level of the table will be set as the child's
+    /// parent. The child will be created with an empty backing
+    /// `HashMap` and no keys whited out.
     pub fn fork(self) -> ForkTable<K,V> {
         ForkTable {
             table: HashMap::new(),
@@ -115,6 +164,7 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
         }
     }
 
+    /// Constructs a new `ForkTable<K,V>`
     pub fn new() -> ForkTable<K,V> {
         ForkTable {
             table: HashMap::new(),
