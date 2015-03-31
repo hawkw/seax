@@ -52,6 +52,23 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
     ///
+    /// # Examples
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
+    /// assert_eq!(table.contains_key(&1isize), false);
+    /// table.insert(1isize, "One");
+    /// assert_eq!(table.contains_key(&1isize), true);
+    /// ```
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut level_1: ForkTable<isize,&str> = ForkTable::new();
+    /// assert_eq!(table.contains_key(&1isize), false);
+    /// table.insert(1isize, "One");
+    /// assert_eq!(level_1.contains_key(&1isize), true);
+    ///
+    /// let mut level_2: ForkTable<isize,String> = level_1.fork();
+    /// assert_eq!(level_2.contains_key(&1isize), false);
     pub fn contains_key(&self, key: &K) -> bool  {
         self.table.contains_key(key)
     }
@@ -63,6 +80,24 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
     ///
+    /// # Examples
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
+    /// assert_eq!(table.chain_contains_key(&1isize), false);
+    /// table.insert(1isize, "One");
+    /// assert_eq!(table.chain_contains_key(&1isize), true);
+    /// ```
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut level_1: ForkTable<isize,&str> = ForkTable::new();
+    /// assert_eq!(table.chain_contains_key(&1isize), false);
+    /// table.insert(1isize, "One");
+    /// assert_eq!(level_1.chain_contains_key(&1isize), true);
+    ///
+    /// let mut level_2: ForkTable<isize,String> = level_1.fork();
+    /// assert_eq!(level_2.chain_contains_key(&1isize), true);
+    /// ```
     pub fn chain_contains_key(&self, key: &K) -> bool {
         self.table.contains_key(key) ||
         (self.whiteouts.contains(key) &&
@@ -77,6 +112,14 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
             table: HashMap::new(),
             whiteouts: HashSet::new(),
             parent: Some(box self)
+        }
+    }
+
+    pub fn new() -> ForkTable<K,V> {
+        ForkTable {
+            table: HashMap::new(),
+            whiteouts: HashSet::new(),
+            parent: None
         }
     }
 }
