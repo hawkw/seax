@@ -41,7 +41,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     ///  + `key`  - the key to search for
     ///
-    pub fn get<Q: ?Sized>(&'a self, key: &Q) -> Option<&'a V>
+    pub fn get<'b, Q: ?Sized>(&'b self, key: &Q) -> Option<&'b V>
         where K: Borrow<Q>, Q: Hash + Eq {
         if self.whiteouts.contains(key) {
             None
@@ -69,7 +69,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     ///  + `key`  - the key to search for
     ///
-   pub fn get_mut<Q: ?Sized>(&'a mut self, key: &Q) -> Option<&mut V>
+   pub fn get_mut<'b, Q: ?Sized>(&'b mut self, key: &Q) -> Option<&'b mut V>
         where K: Borrow<Q>, Q: Hash + Eq {
         if self.whiteouts.contains(key) {
             None
