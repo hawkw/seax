@@ -37,6 +37,10 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
     ///
+    /// # Arguments
+    ///
+    ///  + `key`  - the key to search for
+    ///
     pub fn get<Q: ?Sized>(&'a self, key: &Q) -> Option<&'a V>
         where K: Borrow<Q>, Q: Hash + Eq {
         if self.whiteouts.contains(key) {
@@ -45,8 +49,8 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
             self.table
                 .get(key)
                 .or(match self.parent {
-                        Some(ref parent) => parent.get(key),
-                        None => None
+                        Some(ref parent)    => parent.get(key),
+                        None                => None
                     })
         }
     }
@@ -61,6 +65,10 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
     ///
+    /// # Arguments
+    ///
+    ///  + `key`  - the key to search for
+    ///
    pub fn get_mut<Q: ?Sized>(&'a mut self, key: &Q) -> Option<&mut V>
         where K: Borrow<Q>, Q: Hash + Eq {
         if self.whiteouts.contains(key) {
@@ -69,8 +77,8 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
             self.table
                 .get_mut(key)
                 .or(match self.parent {
-                        Some(ref mut parent) => parent.get_mut(key),
-                        None => None
+                        Some(ref mut parent)    => parent.get_mut(key),
+                        None                    => None
                     })
         }
     }
@@ -116,7 +124,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// # use seax_scheme::ForkTable;
     /// let mut table: ForkTable<isize,&str> = ForkTable::new();
     /// assert_eq!(table.get(&1isize), None);
-    /// assert_eq!(table.insert(1isize, "One"), None);
+    /// table.insert(1isize, "One");
     /// assert_eq!(table.get(&1isize), Some(&"One"));
     /// ```
     ///
@@ -127,7 +135,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// let mut table: ForkTable<isize,&str> = ForkTable::new();
     /// assert_eq!(table.get(&1isize), None);
     /// assert_eq!(table.insert(1isize, "two"), None);
-    /// assert_eq!(table.get(&1isize), Some("two"));
+    /// assert_eq!(table.get(&1isize), Some(&"two"));
     ///
     /// assert_eq!(table.insert(2isize, "Two"), Some("two"));
     /// assert_eq!(table.get(&2isize), Some(&"Two"));
@@ -143,6 +151,10 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
     ///
+    /// # Arguments
+    ///
+    ///  + `k`  - the key to search for
+    ///
     /// # Examples
     /// ```
     /// # use seax_scheme::ForkTable;
@@ -154,11 +166,11 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// ```
     /// # use seax_scheme::ForkTable;
     /// let mut level_1: ForkTable<isize,&str> = ForkTable::new();
-    /// assert_eq!(table.contains_key(&1isize), false);
-    /// table.insert(1isize, "One");
+    /// assert_eq!(level_1.contains_key(&1isize), false);
+    /// level_1.insert(1isize, "One");
     /// assert_eq!(level_1.contains_key(&1isize), true);
     ///
-    /// let mut level_2: ForkTable<isize,String> = level_1.fork();
+    /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
     /// assert_eq!(level_2.contains_key(&1isize), false);
     pub fn contains_key(&self, key: &K) -> bool  {
         self.table.contains_key(key)
@@ -170,6 +182,10 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// The key may be any borrowed form of the map's key type, but
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
+    ///
+    /// # Arguments
+    ///
+    ///  + `k`  - the key to search for
     ///
     /// # Examples
     /// ```
@@ -183,10 +199,10 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// # use seax_scheme::ForkTable;
     /// let mut level_1: ForkTable<isize,&str> = ForkTable::new();
     /// assert_eq!(level_1.chain_contains_key(&1isize), false);
-    /// table.insert(1isize, "One");
+    /// level_1.insert(1isize, "One");
     /// assert_eq!(level_1.chain_contains_key(&1isize), true);
     ///
-    /// let mut level_2: ForkTable<isize,String> = level_1.fork();
+    /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
     /// assert_eq!(level_2.chain_contains_key(&1isize), true);
     /// ```
     pub fn chain_contains_key(&self, key: &K) -> bool {
@@ -194,7 +210,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
         (self.whiteouts.contains(key) &&
             match self.parent {
                 Some(ref p) => p.chain_contains_key(key),
-                None            => false
+                None        => false
             })
     }
 
