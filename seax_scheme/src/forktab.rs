@@ -18,14 +18,14 @@ use std::borrow::Borrow;
 /// Max Clive. This implemention is based primarily by the Scala
 /// reference implementation written by Hawk Weisman for the Decaf
 /// compiler, which is available [here](https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala).
-#[derive(Debug,Clone)]
-pub struct ForkTable<K: Eq + Hash,V>  {
+#[derive(Debug)]
+pub struct ForkTable<'a, K:'a +  Eq + Hash,V: 'a>  {
     table: HashMap<K, V>,
     whiteouts: HashSet<K>,
-    parent: Option<Box<ForkTable<K,V>>>
+    parent: Option<&'a mut ForkTable<'a, K,V>>
 }
 
-impl<K,V> ForkTable<K, V> where K: Eq + Hash {
+impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
 
     /// Returns a reference to the value corresponding to the key.
     ///
@@ -37,9 +37,18 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
     ///
-    pub fn get<Q: ?Sized>(&self, key: &Q) -> Option<&V>
+    pub fn get<Q: ?Sized>(&'a self, key: &Q) -> Option<&'a V>
         where K: Borrow<Q>, Q: Hash + Eq {
-            unimplemented!()
+        if self.whiteouts.contains(key) {
+            None
+        } else {
+            self.table
+                .get(key)
+                .or(match self.parent {
+                        Some(ref parent) => parent.get(key),
+                        None => None
+                    })
+        }
     }
 
     /// Returns a mutable reference to the value corresponding to the key.
@@ -52,13 +61,29 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
     ///
-    pub fn get_mut<Q: ?Sized>(&mut self, key: &Q) -> Option<&mut V>
+   pub fn get_mut<Q: ?Sized>(&'a mut self, key: &Q) -> Option<&mut V>
         where K: Borrow<Q>, Q: Hash + Eq {
-            unimplemented!()
+        if self.whiteouts.contains(key) {
+            None
+        } else {
+            self.table
+                .get_mut(key)
+                .or(match self.parent {
+                        Some(ref mut parent) => parent.get_mut(key),
+                        None => None
+                    })
+        }
     }
+
 
     /// Removes a key from the map, returning the value at the key if
     /// the key was previously in the map.
+    ///
+    /// If the removed value exists in a lower level of the table,
+    /// it will be whited out at this level. This means that the entry
+    /// will be 'removed' at this level and this table will not provide
+    /// access to it, but the mapping will still exist in the level where
+    /// it was defined.
     ///
     /// The key may be any borrowed form of the map's key type, but
     /// `Hash` and `Eq` on the borrowed form *must* match those for
@@ -84,12 +109,35 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
     ///  + `v`  - the value
     ///
     /// # Examples
+    ///
+    /// Simply inserting an entry:
+    ///
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
+    /// assert_eq!(table.get(&1isize), None);
+    /// assert_eq!(table.insert(1isize, "One"), None);
+    /// assert_eq!(table.get(&1isize), Some("One"));
+    /// ```
+    ///
+    /// Overwriting the value associated with a key:
+    ///
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
+    /// assert_eq!(table.get(&1isize), None);
+    /// assert_eq!(table.insert(1isize, "two"), None);
+    /// assert_eq!(table.get(&1isize), Some("two"));
+    ///
+    /// assert_eq!(table.insert(2isize, "Two"), Some("two"));
+    /// ssert_eq!(table.get(&2isize), Some("Two"));
+    /// ```
     pub fn insert(&mut self, k: K, v: V) -> Option<V> {
         if self.whiteouts.contains(&k) { self.whiteouts.remove(&k); };
         self.table.insert(k, v)
     }
 
-    /// Returns true if the map contains a value for the specified key.
+    /// Returns true if this level contains a value for the specified key.
     ///
     /// The key may be any borrowed form of the map's key type, but
     /// `Hash` and `Eq` on the borrowed form *must* match those for
@@ -145,8 +193,8 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
         self.table.contains_key(key) ||
         (self.whiteouts.contains(key) &&
             match self.parent {
-                Some(box ref p) => p.chain_contains_key(key),
-                None    => false
+                Some(ref p) => p.chain_contains_key(key),
+                None            => false
             })
     }
 
@@ -155,16 +203,16 @@ impl<K,V> ForkTable<K, V> where K: Eq + Hash {
     /// This level of the table will be set as the child's
     /// parent. The child will be created with an empty backing
     /// `HashMap` and no keys whited out.
-    pub fn fork(self) -> ForkTable<K,V> {
+    pub fn fork(&'a mut self) -> ForkTable<'a, K,V> {
         ForkTable {
             table: HashMap::new(),
             whiteouts: HashSet::new(),
-            parent: Some(box self)
+            parent: Some(self)
         }
     }
 
     /// Constructs a new `ForkTable<K,V>`
-    pub fn new() -> ForkTable<K,V> {
+    pub fn new() -> ForkTable<'a, K,V> {
         ForkTable {
             table: HashMap::new(),
             whiteouts: HashSet::new(),
