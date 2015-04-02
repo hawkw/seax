@@ -130,7 +130,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     /// Overwriting the value associated with a key:
     ///
-    /// ```
+    /// ```ignore
     /// # use seax_scheme::ForkTable;
     /// let mut table: ForkTable<isize,&str> = ForkTable::new();
     /// assert_eq!(table.get(&1isize), None);
@@ -163,7 +163,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// table.insert(1isize, "One");
     /// assert_eq!(table.contains_key(&1isize), true);
     /// ```
-    /// ```
+    /// ```ignore
     /// # use seax_scheme::ForkTable;
     /// let mut level_1: ForkTable<isize,&str> = ForkTable::new();
     /// assert_eq!(level_1.contains_key(&1isize), false);
