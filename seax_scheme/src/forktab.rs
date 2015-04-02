@@ -117,7 +117,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// let mut table: ForkTable<isize,&str> = ForkTable::new();
     /// assert_eq!(table.get(&1isize), None);
     /// assert_eq!(table.insert(1isize, "One"), None);
-    /// assert_eq!(table.get(&1isize), Some("One"));
+    /// assert_eq!(table.get(&1isize), Some(&"One"));
     /// ```
     ///
     /// Overwriting the value associated with a key:
@@ -130,7 +130,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// assert_eq!(table.get(&1isize), Some("two"));
     ///
     /// assert_eq!(table.insert(2isize, "Two"), Some("two"));
-    /// ssert_eq!(table.get(&2isize), Some("Two"));
+    /// assert_eq!(table.get(&2isize), Some(&"Two"));
     /// ```
     pub fn insert(&mut self, k: K, v: V) -> Option<V> {
         if self.whiteouts.contains(&k) { self.whiteouts.remove(&k); };
@@ -182,7 +182,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// ```
     /// # use seax_scheme::ForkTable;
     /// let mut level_1: ForkTable<isize,&str> = ForkTable::new();
-    /// assert_eq!(table.chain_contains_key(&1isize), false);
+    /// assert_eq!(level_1.chain_contains_key(&1isize), false);
     /// table.insert(1isize, "One");
     /// assert_eq!(level_1.chain_contains_key(&1isize), true);
     ///
