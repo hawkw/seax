@@ -1,7 +1,7 @@
 
 #![feature(box_syntax,box_patterns)]
 #[macro_use]
-extern crate "seax_svm" as svm;
+extern crate seax_svm as svm;
 
 use svm::slist::Stack;
 use svm::slist::List::{Cons,Nil};
