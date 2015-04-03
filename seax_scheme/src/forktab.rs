@@ -41,6 +41,11 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     ///  + `key`  - the key to search for
     ///
+    /// # Return Value
+    ///
+    ///  + `Some(&V)` if an entry for the given key exists in the
+    ///     table, or `None` if there is no entry for that key.
+    ///
     pub fn get<'b, Q: ?Sized>(&'b self, key: &Q) -> Option<&'b V>
         where K: Borrow<Q>, Q: Hash + Eq {
         if self.whiteouts.contains(key) {
@@ -69,6 +74,10 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     ///  + `key`  - the key to search for
     ///
+    /// # Return Value
+    ///
+    ///  + `Some(&V)` if an entry for the given key exists in the
+    ///     table, or `None` if there is no entry for that key.
    pub fn get_mut<'b, Q: ?Sized>(&'b mut self, key: &Q) -> Option<&'b mut V>
         where K: Borrow<Q>, Q: Hash + Eq {
         if self.whiteouts.contains(key) {
@@ -97,7 +106,15 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// `Hash` and `Eq` on the borrowed form *must* match those for
     /// the key type.
     ///
-    pub fn remove<Q: ?Sized>(&mut self, k: &Q) -> Option<V>
+    /// # Arguments
+    ///
+    ///  + `key`  - the key to remove
+    ///
+    /// # Return Value
+    ///
+    ///  + `Some(V)` if an entry for the given key exists in the
+    ///     table, or `None` if there is no entry for that key.
+    pub fn remove<Q: ?Sized>(&mut self, key: &Q) -> Option<V>
         where K: Borrow<Q>, Q: Hash + Eq {
             unimplemented!()
     }
@@ -113,8 +130,13 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     /// # Arguments
     ///
-    ///  + `k`  - the key
-    ///  + `v`  - the value
+    ///  + `k`  - the key to add
+    ///  + `v`  - the value to associate with that key
+    ///
+    /// # Return Value
+    ///
+    ///  + `Some(V)` if a previous entry for the given key exists in the
+    ///     table, or `None` if there is no entry for that key.
     ///
     /// # Examples
     ///
@@ -155,6 +177,11 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     ///  + `k`  - the key to search for
     ///
+    /// # Return Value
+    ///
+    ///  + `true` if the given key is defined in this level of the
+    ///    table, `false` if it does not.
+    ///
     /// # Examples
     /// ```
     /// # use seax_scheme::ForkTable;
@@ -186,6 +213,11 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// # Arguments
     ///
     ///  + `k`  - the key to search for
+    ///
+    /// # Return Value
+    ///
+    ///  + `true` if the given key is defined in the table,
+    ///    `false` if it does not.
     ///
     /// # Examples
     /// ```
@@ -219,6 +251,10 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// This level of the table will be set as the child's
     /// parent. The child will be created with an empty backing
     /// `HashMap` and no keys whited out.
+    ///
+    /// Note that the new `ForkTable<K,V>` has a lifetime
+    /// bound ensuring that it will live at least as long as the
+    /// parent `ForkTable`.
     pub fn fork(&'a mut self) -> ForkTable<'a, K,V> {
         ForkTable {
             table: HashMap::new(),

@@ -2,9 +2,27 @@
 #![crate_type = "lib"]
 #![feature(convert,core,box_syntax,box_patterns)]
 
+//! Library for compiling Scheme programs to Seax SVM bytecode.
+//!
+//! This Scheme implementation is based on the Scheme programming
+//! language described in the
+//! [Revised<sup>6</sup> Report on Scheme](http://www.r6rs.org/)
+//! (R<sup>6</sup>RS). Any cases in which Seax Scheme differs from
+//! R<sup>6</sup>RS Scheme are documented in the RustDoc for the
+//! Seax Scheme library and in the Seax Scheme language manual.
+//! Do note, however, that some inconsistencies between Seax Scheme
+//! and R<sup>6</sup>RS may be the result of unimplemented features in
+//! Seax Scheme.
+
 #[macro_use]
 extern crate seax_svm as svm;
 
+/// Contains the Scheme abstract syntax tree (AST).
+///
+/// The AST stores the semantic structure of a parsed Scheme
+/// program, and is responsible for compiling those programs
+/// to SVM bytecode instructions, performing semantic analysis
+/// (as necessary), and (eventually) for optimizing programs.
 pub mod ast;
 
 /// Contains the Scheme parser.
