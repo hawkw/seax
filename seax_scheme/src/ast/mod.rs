@@ -125,7 +125,11 @@ pub struct SExprNode {
 impl ASTNode for SExprNode {
 
     fn compile(self,state: SymTable)    -> CompileResult {
-        Err("UNINPLEMENTED")
+        match self.operator.as_ref() {
+            "let" => unimplemented!(),
+            name if state.chain_contains_key(&name) => unimplemented!(),
+            name => Err(format!("[error] Unknown identifier `{}`", name).as_ref())
+        }
     }
 
     fn print_level(&self, level: usize) -> String {
