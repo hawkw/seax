@@ -3,9 +3,13 @@ use svm::cell::SVMCell;
 use self::ExprNode::*;
 use self::NumNode::*;
 use super::ForkTable;
-
-type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
-type CompileResult  = Result<SVMCell, &'static str>;
+/// The symbol table for bound names is represented as a
+/// `ForkTable` mapping `&str` (names) to `(uint,uint)` tuples,
+/// representing the location in the `$e` stack storing the value
+/// bound to that name.
+pub type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
+/// A `CompileResult` is either `Ok(SVMCell)` or `Err(&str)`.
+pub type CompileResult  = Result<SVMCell, &'static str>;
 
 static INDENT: &'static str = "\t";
 
@@ -54,14 +58,15 @@ pub enum ExprNode {
 impl ASTNode for ExprNode {
     fn compile(self, state: SymTable)   -> CompileResult {
         match self {
-            Root(node)          => node.compile(),
-            SExpr(node)         => node.compile(),
-            Name(node)          => node.compile(),
-            ListConst(node)     => node.compile(),
-            NumConst(node)      => node.compile(),
-            BoolConst(node)     => node.compile(),
-            CharConst(node)     => node.compile(),
-            StringConst(node)   => node.compile()
+            //  TODO: should some of these nodes cause a state fork?
+            Root(node)          => node.compile(state),
+            SExpr(node)         => node.compile(state),
+            Name(node)          => node.compile(state),
+            ListConst(node)     => node.compile(state),
+            NumConst(node)      => node.compile(state),
+            BoolConst(node)     => node.compile(state),
+            CharConst(node)     => node.compile(state),
+            StringConst(node)   => node.compile(state)
         }
     }
 
