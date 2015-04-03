@@ -4,7 +4,8 @@ use self::ExprNode::*;
 use self::NumNode::*;
 use super::ForkTable;
 
-type SymTable<'a> = ForkTable<'a, &'a str, (usize,usize)>;
+type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
+type CompileResult  = Result<SVMCell, &'static str>;
 
 static INDENT: &'static str = "\t";
 
@@ -12,7 +13,7 @@ static INDENT: &'static str = "\t";
 /// Trait for AST nodes.
 pub trait ASTNode {
     /// Compile this node to a list of SVM expressions
-    fn compile(self)                    -> Result<SVMCell, &'static str>;
+    fn compile(self, state: SymTable)   -> CompileResult;
 
     /// Pretty-print this node
     fn prettyprint(&self)               -> String { self.print_level(0usize) }
@@ -51,7 +52,7 @@ pub enum ExprNode {
 }
 
 impl ASTNode for ExprNode {
-    fn compile(self) -> Result<SVMCell, &'static str> {
+    fn compile(self,state)              -> CompileResult {
         match self {
             Root(node)          => node.compile(),
             SExpr(node)         => node.compile(),
@@ -91,7 +92,7 @@ pub enum NumNode {
 pub struct RootNode { pub exprs: Vec<ExprNode> }
 
 impl ASTNode for RootNode {
-    fn compile(self) -> Result<SVMCell, &'static str> {
+    fn compile(self,state: SymTable)    -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -119,7 +120,7 @@ pub struct SExprNode {
 
 impl ASTNode for SExprNode {
 
-    fn compile(self) -> Result<SVMCell, &'static str> {
+    fn compile(self,state: SymTable)    -> CompileResult {
         Err("UNINPLEMENTED")
     }
 
@@ -153,7 +154,7 @@ impl ASTNode for SExprNode {
 pub struct ListNode { pub elements: Vec<ExprNode> }
 
 impl ASTNode for ListNode {
-    fn compile(self) -> Result<SVMCell, &'static str> {
+    fn compile(self,state: SymTable)    -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -179,7 +180,7 @@ impl ASTNode for ListNode {
 pub struct NameNode { pub name: String }
 
 impl ASTNode for NameNode {
-    fn compile(self) -> Result<SVMCell, &'static str> {
+    fn compile(self,state: SymTable)    -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -202,7 +203,7 @@ impl ASTNode for NameNode {
 pub struct IntNode { pub value: isize }
 
 impl ASTNode for NumNode {
-    fn compile(self) -> Result<SVMCell, &'static str> {
+    fn compile(self,state: SymTable)    -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -246,7 +247,7 @@ pub struct BoolNode { pub value: bool }
 
 impl ASTNode for BoolNode {
 
-    fn compile(self) -> Result<SVMCell, &'static str> {
+    fn compile(self,state: SymTable)    -> CompileResult {
         Err("UNINPLEMENTED")
     }
 
@@ -270,7 +271,7 @@ impl ASTNode for BoolNode {
 pub struct CharNode { pub value: char }
 
 impl ASTNode for CharNode {
-    fn compile(self) -> Result<SVMCell, &'static str> {
+    fn compile(self,state: SymTable)    -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -292,7 +293,7 @@ impl ASTNode for CharNode {
 pub struct StringNode { pub value: String }
 
 impl ASTNode for StringNode {
-    fn compile(self) -> Result<SVMCell, &'static str> {
+    fn compile(self,state: SymTable)    -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
