@@ -13,7 +13,6 @@ pub type CompileResult  = Result<SVMCell, &'static str>;
 
 static INDENT: &'static str = "\t";
 
-
 /// Trait for AST nodes.
 pub trait ASTNode {
     /// Compile this node to a list of SVM expressions
@@ -183,6 +182,22 @@ impl ASTNode for ListNode {
 /// AST node for an identifier
 #[derive(Clone, PartialEq,Debug)]
 pub struct NameNode { pub name: String }
+
+
+impl AsRef<str> for NameNode {
+
+    /// Converts the `String` value of this node to a `&str` reference.
+    ///
+    /// # Examples:
+    /// ```
+    /// # use seax_scheme::ast::NameNode;
+    /// let node = NameNode { name: "a string".to_string() };
+    /// assert_eq!(node.as_ref(), "a string")
+    /// ```
+    fn as_ref(&self) -> &str {
+        self.name.as_ref()
+    }
+}
 
 impl ASTNode for NameNode {
     fn compile(self, state: SymTable)   -> CompileResult {
