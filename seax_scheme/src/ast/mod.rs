@@ -52,7 +52,7 @@ pub enum ExprNode {
 }
 
 impl ASTNode for ExprNode {
-    fn compile(self,state)              -> CompileResult {
+    fn compile(self, state: SymTable)   -> CompileResult {
         match self {
             Root(node)          => node.compile(),
             SExpr(node)         => node.compile(),
@@ -92,7 +92,7 @@ pub enum NumNode {
 pub struct RootNode { pub exprs: Vec<ExprNode> }
 
 impl ASTNode for RootNode {
-    fn compile(self,state: SymTable)    -> CompileResult {
+    fn compile(self, state: SymTable)   -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -154,7 +154,7 @@ impl ASTNode for SExprNode {
 pub struct ListNode { pub elements: Vec<ExprNode> }
 
 impl ASTNode for ListNode {
-    fn compile(self,state: SymTable)    -> CompileResult {
+    fn compile(self, state: SymTable)   -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -180,7 +180,7 @@ impl ASTNode for ListNode {
 pub struct NameNode { pub name: String }
 
 impl ASTNode for NameNode {
-    fn compile(self,state: SymTable)    -> CompileResult {
+    fn compile(self, state: SymTable)   -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -203,7 +203,7 @@ impl ASTNode for NameNode {
 pub struct IntNode { pub value: isize }
 
 impl ASTNode for NumNode {
-    fn compile(self,state: SymTable)    -> CompileResult {
+    fn compile(self, state: SymTable)   -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -271,7 +271,7 @@ impl ASTNode for BoolNode {
 pub struct CharNode { pub value: char }
 
 impl ASTNode for CharNode {
-    fn compile(self,state: SymTable)    -> CompileResult {
+    fn compile(self, state: SymTable)   -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -293,7 +293,7 @@ impl ASTNode for CharNode {
 pub struct StringNode { pub value: String }
 
 impl ASTNode for StringNode {
-    fn compile(self,state: SymTable)    -> CompileResult {
+    fn compile(self, state: SymTable)   -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
