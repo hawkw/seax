@@ -1,9 +1,7 @@
 use super::*;
 use super::NumNode::*;
 use super::ExprNode::*;
-use super::SymTable::*;
 
-use svm::cell::SVMCell;
 use svm::cell::Atom::*;
 use svm::cell::Inst::*;
 use svm::cell::SVMCell::*;
