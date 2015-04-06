@@ -1,6 +1,6 @@
 #![crate_name = "seax_scheme"]
 #![crate_type = "lib"]
-#![feature(convert,core,box_syntax,box_patterns)]
+#![feature(convert,core,box_syntax,box_patterns,slice_patterns,collections)]
 
 //! Library for compiling Scheme programs to Seax SVM bytecode.
 //!

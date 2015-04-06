@@ -1,28 +1,40 @@
 use svm::cell::SVMCell;
+use svm::cell::Atom::*;
+use svm::cell::Inst::*;
+use svm::cell::SVMCell::*;
+
+use svm::slist::List;
+use svm::slist::List::{Cons,Nil};
 
 use self::ExprNode::*;
 use self::NumNode::*;
 use super::ForkTable;
+
+#[cfg(test)]
+mod tests;
+
 /// The symbol table for bound names is represented as a
 /// `ForkTable` mapping `&str` (names) to `(uint,uint)` tuples,
 /// representing the location in the `$e` stack storing the value
 /// bound to that name.
 pub type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
 /// A `CompileResult` is either `Ok(SVMCell)` or `Err(&str)`.
-pub type CompileResult  = Result<SVMCell, &'static str>;
+pub type CompileResult  = Result<Vec<SVMCell>, &'static str>;
 
 static INDENT: &'static str = "\t";
 
 /// Trait for AST nodes.
 pub trait ASTNode {
     /// Compile this node to a list of SVM expressions
-    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult;
+    fn compile<'a>(&'a self,
+                   state: &'a SymTable<'a>
+                   )                    -> CompileResult;
 
     /// Pretty-print this node
-    fn prettyprint(&self)                         -> String { self.print_level(0usize) }
+    fn prettyprint(&self)               -> String { self.print_level(0usize) }
 
     /// Pretty-print this node at the desired indent level
-    fn print_level(&self, level: usize)           -> String;
+    fn print_level(&self, level: usize) -> String;
 }
 
 /// Expression
@@ -55,7 +67,7 @@ pub enum ExprNode {
 }
 
 impl ASTNode for ExprNode {
-    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
+    fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         match *self {
             //  TODO: should some of these nodes cause a state fork?
             Root(ref node)          => node.compile(state),
@@ -96,7 +108,7 @@ pub enum NumNode {
 pub struct RootNode { pub exprs: Vec<ExprNode> }
 
 impl ASTNode for RootNode {
-    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
+    fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -124,13 +136,48 @@ pub struct SExprNode {
 
 impl ASTNode for SExprNode {
 
-    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
+    fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         match self.operator {
-            ref op if op.is_arith() => unimplemented!(),
-            ref op if op.is_cmp()   => unimplemented!(),
+            ref op if op.is_arith() || op.is_cmp() => {
+                let instruction = match op.name.as_ref() {
+                    "+"  => ADD,
+                    "-"  => SUB,
+                    "*"  => MUL,
+                    "/"  => DIV,
+                    "%"  => MOD,
+                    "="  => EQ,
+                    ">"  => GT,
+                    ">=" => GTE,
+                    "<"  => LT,
+                    "<=" => LTE,
+                    // TODO:  floating-point
+                    // TODO: figure out how to handle "!=" -> "EQ + Invert"
+                    _   => panic!( "Something impossible happened!")
+                        // this never happens, barring force majeure
+                };
+                // TODO: optimize if constants
+                let mut result = Vec::new();
+                let mut it = self.operands.iter().rev();
+                // TODO: can thsi be represented with a reduce/fold?
+                result.push_all(try!(
+                    it.next().unwrap().compile(state)).as_slice());
+                for ref operand in it {
+                    result.push_all(try!(operand.compile(state)).as_slice());
+                    result.push(InstCell(instruction));
+                }
+                Ok(result)
+            },
             ref op if op.is_kw()    => unimplemented!(),
             ref op                  => match state.get(&op.name.as_ref()) {
-                Some(&(x,y)) => unimplemented!(),
+                Some(&(x,y)) => Ok(vec!(
+                    // TODO: finish
+                    InstCell(LD),
+                    ListCell(box list!(
+                        AtomCell(UInt(x)),
+                        AtomCell(UInt(y))
+                        )),
+                    InstCell(LDF)
+                    )),
                 None         => Err("[error] Unknown identifier!")
             }
         }
@@ -156,7 +203,7 @@ impl ASTNode for SExprNode {
         result.push_str(self.operator.print_level(level + 1).as_ref());
         result.push('\n');
 
-        for operand in self.operands.iter() {
+        for ref operand in self.operands.iter() {
             result.push_str(tab.as_ref());
             result.push_str("Operand: \n");
             result.push_str(operand.print_level(level + 1).as_ref());
@@ -172,7 +219,7 @@ impl ASTNode for SExprNode {
 pub struct ListNode { pub elements: Vec<ExprNode> }
 
 impl ASTNode for ListNode {
-    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
+    fn compile<'a>(&'a self, state: &SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -229,7 +276,7 @@ impl NameNode {
 }
 
 impl ASTNode for NameNode {
-    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
+    fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -252,8 +299,18 @@ impl ASTNode for NameNode {
 pub struct IntNode { pub value: isize }
 
 impl ASTNode for NumNode {
-    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED")
+    fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
+       match *self {
+            NumNode::UIntConst(ref node)    => Ok(
+                    vec![InstCell(LDC),AtomCell(UInt(node.value))]
+                ),
+            NumNode::IntConst(ref node)     => Ok(
+                    vec![InstCell(LDC),AtomCell(SInt(node.value))]
+                ),
+            NumNode::FloatConst(ref node)   => Ok(
+                    vec![InstCell(LDC),AtomCell(Float(node.value))]
+                )
+       }
     }
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
@@ -296,7 +353,7 @@ pub struct BoolNode { pub value: bool }
 
 impl ASTNode for BoolNode {
 
-    fn compile(&self,state: SymTable)    -> CompileResult {
+    fn compile<'a>(&'a self,state:  &'a SymTable)    -> CompileResult {
         Err("UNINPLEMENTED")
     }
 
@@ -320,7 +377,7 @@ impl ASTNode for BoolNode {
 pub struct CharNode { pub value: char }
 
 impl ASTNode for CharNode {
-    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
+    fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -342,7 +399,7 @@ impl ASTNode for CharNode {
 pub struct StringNode { pub value: String }
 
 impl ASTNode for StringNode {
-    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
+    fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
