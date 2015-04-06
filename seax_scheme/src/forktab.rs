@@ -46,8 +46,25 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///  + `Some(&V)` if an entry for the given key exists in the
     ///     table, or `None` if there is no entry for that key.
     ///
-    pub fn get<'b, Q: ?Sized>(&'b self, key: &Q) -> Option<&'b V>
-        where K: Borrow<Q>, Q: Hash + Eq {
+    /// # Examples
+    ///
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
+    /// assert_eq!(table.get(&1isize), None);
+    /// table.insert(1isize, "One");
+    /// assert_eq!(table.get(&1isize), Some(&"One"));
+    /// assert_eq!(table.get(&2isize), None);
+    /// ```
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut level_1: ForkTable<isize,&str> = ForkTable::new();
+    /// level_1.insert(1isize, "One");
+    ///
+    /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
+    /// assert_eq!(level_2.get(&1isize), Some(&"One"));
+    /// ```
+    pub fn get<'b>(&'b self, key: &K) -> Option<&'b V> {
         if self.whiteouts.contains(key) {
             None
         } else {
@@ -76,10 +93,28 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     /// # Return Value
     ///
-    ///  + `Some(&V)` if an entry for the given key exists in the
+    ///  + `Some(&mut V)` if an entry for the given key exists in the
     ///     table, or `None` if there is no entry for that key.
-   pub fn get_mut<'b, Q: ?Sized>(&'b mut self, key: &Q) -> Option<&'b mut V>
-        where K: Borrow<Q>, Q: Hash + Eq {
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
+    /// assert_eq!(table.get_mut(&1isize), None);
+    /// table.insert(1isize, "One");
+    /// assert_eq!(table.get_mut(&1isize), Some(&mut "One"));
+    /// assert_eq!(table.get_mut(&2isize), None);
+    /// ```
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut level_1: ForkTable<isize,&str> = ForkTable::new();
+    /// level_1.insert(1isize, "One");
+    ///
+    /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
+    /// assert_eq!(level_2.get_mut(&1isize), Some(&mut "One"));
+    /// ```
+   pub fn get_mut<'b>(&'b mut self, key: &K) -> Option<&'b mut V> {
         if self.whiteouts.contains(key) {
             None
         } else {
@@ -199,6 +234,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
     /// assert_eq!(level_2.contains_key(&1isize), false);
+    /// ```
     pub fn contains_key(&self, key: &K) -> bool  {
         self.table.contains_key(key)
     }
