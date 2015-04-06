@@ -135,7 +135,8 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// it will be whited out at this level. This means that the entry
     /// will be 'removed' at this level and this table will not provide
     /// access to it, but the mapping will still exist in the level where
-    /// it was defined.
+    /// it was defined. Note that the key will not be returned if it is
+    /// defined in a lower level of the table.
     ///
     /// The key may be any borrowed form of the map's key type, but
     /// `Hash` and `Eq` on the borrowed form *must* match those for
@@ -149,9 +150,37 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     ///  + `Some(V)` if an entry for the given key exists in the
     ///     table, or `None` if there is no entry for that key.
-    pub fn remove<Q: ?Sized>(&mut self, key: &Q) -> Option<V>
-        where K: Borrow<Q>, Q: Hash + Eq {
-            unimplemented!()
+    ///
+    /// # Examples
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut table: ForkTable<isize,&str> = ForkTable::new();
+    /// table.insert(1isize, "One");
+    ///
+    /// assert_eq!(table.remove(&1isize), Some("One"));
+    /// assert_eq!(table.contains_key(&1isize), false);
+    /// ```
+    /// # use seax_scheme::ForkTable;
+    /// let mut level_1: ForkTable<isize,&str> = ForkTable::new();
+    /// level_1.insert(1isize, "One");
+    /// assert_eq!(level_1.contains_key(&1isize), true);
+    ///
+    /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
+    /// assert_eq!(level_2.chain_contains_key(&1isize), true);
+    /// assert_eq!(level_2.remove(&1isize), None);
+    /// assert_eq!(level_2.chain_contains_key(&1isize), false);
+    /// assert_eq!(level_1.chain_contains_key(&1isize), true);
+    /// ```
+    ///
+    pub fn remove(&mut self, key: &K) -> Option<V> where K: Clone {
+            if self.table.contains_key(key) {
+                self.table.remove(key)
+            } else if self.chain_contains_key(key) {
+                self.whiteouts.insert(key.clone()); // TODO: could just white out specific hashes?
+                None
+            } else {
+                None
+            }
     }
 
     /// Inserts a key-value pair from the map.
@@ -291,6 +320,8 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// Note that the new `ForkTable<K,V>` has a lifetime
     /// bound ensuring that it will live at least as long as the
     /// parent `ForkTable`.
+    ///
+    /// TODO: make sure it does the thing.
     pub fn fork(&'a mut self) -> ForkTable<'a, K,V> {
         ForkTable {
             table: HashMap::new(),
