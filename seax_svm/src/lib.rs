@@ -1,6 +1,6 @@
 #![crate_name = "seax_svm"]
 #![crate_type = "lib"]
-#![feature(box_syntax,box_patterns,core)]
+#![feature(box_syntax,box_patterns)]
 
 /// Singly-linked list and stack implementations.
 ///
