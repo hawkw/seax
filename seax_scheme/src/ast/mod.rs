@@ -16,13 +16,13 @@ static INDENT: &'static str = "\t";
 /// Trait for AST nodes.
 pub trait ASTNode {
     /// Compile this node to a list of SVM expressions
-    fn compile(self, state: SymTable)   -> CompileResult;
+    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult;
 
     /// Pretty-print this node
-    fn prettyprint(&self)               -> String { self.print_level(0usize) }
+    fn prettyprint(&self)                         -> String { self.print_level(0usize) }
 
     /// Pretty-print this node at the desired indent level
-    fn print_level(&self, level: usize) -> String;
+    fn print_level(&self, level: usize)           -> String;
 }
 
 /// Expression
@@ -55,17 +55,17 @@ pub enum ExprNode {
 }
 
 impl ASTNode for ExprNode {
-    fn compile(self, state: SymTable)   -> CompileResult {
-        match self {
+    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
+        match *self {
             //  TODO: should some of these nodes cause a state fork?
-            Root(node)          => node.compile(state),
-            SExpr(node)         => node.compile(state),
-            Name(node)          => node.compile(state),
-            ListConst(node)     => node.compile(state),
-            NumConst(node)      => node.compile(state),
-            BoolConst(node)     => node.compile(state),
-            CharConst(node)     => node.compile(state),
-            StringConst(node)   => node.compile(state)
+            Root(ref node)          => node.compile(state),
+            SExpr(ref node)         => node.compile(state),
+            Name(ref node)          => node.compile(state),
+            ListConst(ref node)     => node.compile(state),
+            NumConst(ref node)      => node.compile(state),
+            BoolConst(ref node)     => node.compile(state),
+            CharConst(ref node)     => node.compile(state),
+            StringConst(ref node)   => node.compile(state)
         }
     }
 
@@ -96,7 +96,7 @@ pub enum NumNode {
 pub struct RootNode { pub exprs: Vec<ExprNode> }
 
 impl ASTNode for RootNode {
-    fn compile(self, state: SymTable)   -> CompileResult {
+    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -124,11 +124,12 @@ pub struct SExprNode {
 
 impl ASTNode for SExprNode {
 
-    fn compile(self,state: SymTable)    -> CompileResult {
-        match self.operator.as_ref() {
+    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
+        let ref token = self.operator.name;
+        match token.as_ref() {
             "let" => unimplemented!(),
-            name if state.chain_contains_key(&name) => unimplemented!(),
-            name => Err(format!("[error] Unknown identifier `{}`", name).as_ref())
+            ref name if state.chain_contains_key(name) => unimplemented!(),
+            name => Err("[error] Unknown identifier")
         }
     }
 
@@ -162,7 +163,7 @@ impl ASTNode for SExprNode {
 pub struct ListNode { pub elements: Vec<ExprNode> }
 
 impl ASTNode for ListNode {
-    fn compile(self, state: SymTable)   -> CompileResult {
+    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -187,24 +188,39 @@ impl ASTNode for ListNode {
 #[derive(Clone, PartialEq,Debug)]
 pub struct NameNode { pub name: String }
 
-
-impl AsRef<str> for NameNode {
-
-    /// Converts the `String` value of this node to a `&str` reference.
-    ///
-    /// # Examples:
-    /// ```
-    /// # use seax_scheme::ast::NameNode;
-    /// let node = NameNode { name: "a string".to_string() };
-    /// assert_eq!(node.as_ref(), "a string")
-    /// ```
-    fn as_ref(&self) -> &str {
-        self.name.as_ref()
+impl NameNode {
+    /// Returns true if this is a keyword
+    fn is_kw(&self) -> bool {
+        match self.name.as_ref() {
+            "access" | "define-syntax" | "macro"  | "and"  | "delay"
+            | "make-environment" | "begin"  | "do"| "named-lambda"
+            | "bkpt" | "fluid-let" | "or" | "case" | "if" | "quasiquote"
+            | "cond" | "in-package" | "quote" | "cons-stream" | "lambda"
+            | "scode-quote" | "declare" | "let" | "sequence" | "default-object?"
+            | "let*" | "set!" | "define" | "let-syntax" | "the-environment"
+            | "define-integrable" | "letrec" | "unassigned?" | "define-macro"
+            | "local-declare" | "using-syntax" | "define-structure" => true,
+            _ => false
+        }
     }
+    /// Returns true if this is an arithmetic operator
+    fn is_arith(&self) -> bool {
+      match self.name.as_ref() {
+         "+" | "-" | "*" | "/" | "%" => true,
+         _ => false
+      }
+   }
+    /// Returns true if this is a comparison operator
+    fn is_cmp(&self) -> bool {
+      match self.name.as_ref() {
+         "=" | "!=" | ">" | "<" | ">=" | "<=" => true,
+         _ => false
+      }
+   }
 }
 
 impl ASTNode for NameNode {
-    fn compile(self, state: SymTable)   -> CompileResult {
+    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -227,7 +243,7 @@ impl ASTNode for NameNode {
 pub struct IntNode { pub value: isize }
 
 impl ASTNode for NumNode {
-    fn compile(self, state: SymTable)   -> CompileResult {
+    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -271,7 +287,7 @@ pub struct BoolNode { pub value: bool }
 
 impl ASTNode for BoolNode {
 
-    fn compile(self,state: SymTable)    -> CompileResult {
+    fn compile(&self,state: SymTable)    -> CompileResult {
         Err("UNINPLEMENTED")
     }
 
@@ -295,7 +311,7 @@ impl ASTNode for BoolNode {
 pub struct CharNode { pub value: char }
 
 impl ASTNode for CharNode {
-    fn compile(self, state: SymTable)   -> CompileResult {
+    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
@@ -317,7 +333,7 @@ impl ASTNode for CharNode {
 pub struct StringNode { pub value: String }
 
 impl ASTNode for StringNode {
-    fn compile(self, state: SymTable)   -> CompileResult {
+    fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED")
     }
     fn print_level(&self, level: usize) -> String {
