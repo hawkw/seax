@@ -422,9 +422,10 @@ mod tests {
         let l: List<isize> = list!(1,2,3,4,5,6);
         let mut string = String::new();
         for item in l.iter() {
-            string.push_str((item.to_string() + ", ").as_slice());
+            string.push_str((item.to_string() + ", ").as_ref());
         }
-        assert_eq!(string.as_slice(), "1, 2, 3, 4, 5, 6, ")
+        let slice: &str = string.as_ref(); // this is necessary because assert_eq! is weird
+        assert_eq!(slice, "1, 2, 3, 4, 5, 6, ")
     }
 
 }
