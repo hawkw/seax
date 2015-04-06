@@ -1,6 +1,5 @@
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
-use std::borrow::Borrow;
 
 /// An associative map data structure for representing scopes.
 ///
@@ -321,7 +320,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// bound ensuring that it will live at least as long as the
     /// parent `ForkTable`.
     ///
-    /// TODO: make sure it does the thing.
+    /// TODO: should whiteouts be carried over? look into this.
     pub fn fork(&'a mut self) -> ForkTable<'a, K,V> {
         ForkTable {
             table: HashMap::new(),
