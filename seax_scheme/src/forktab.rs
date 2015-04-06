@@ -159,6 +159,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// assert_eq!(table.remove(&1isize), Some("One"));
     /// assert_eq!(table.contains_key(&1isize), false);
     /// ```
+    /// ```
     /// # use seax_scheme::ForkTable;
     /// let mut level_1: ForkTable<isize,&str> = ForkTable::new();
     /// level_1.insert(1isize, "One");
