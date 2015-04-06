@@ -125,12 +125,21 @@ pub struct SExprNode {
 impl ASTNode for SExprNode {
 
     fn compile<'a>(&'a self, state: SymTable<'a>) -> CompileResult {
-        let ref token = self.operator.name;
+        match self.operator {
+            ref op if op.is_arith() => unimplemented!(),
+            ref op if op.is_cmp()   => unimplemented!(),
+            ref op if op.is_kw()    => unimplemented!(),
+            ref op                  => match state.get(&op.name.as_ref()) {
+                Some(&(x,y)) => unimplemented!(),
+                None         => Err("[error] Unknown identifier!")
+            }
+        }
+        /*let ref token = self.operator.name;
         match token.as_ref() {
             "let" => unimplemented!(),
             ref name if state.chain_contains_key(name) => unimplemented!(),
             name => Err("[error] Unknown identifier")
-        }
+        }*/
     }
 
     fn print_level(&self, level: usize) -> String {
