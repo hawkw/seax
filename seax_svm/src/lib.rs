@@ -687,8 +687,8 @@ pub fn eval_program(program: List<SVMCell>) -> List<SVMCell> {
     let mut inp  = io::stdin();
     // while there are more instructions,
     while {
-        let next = machine.control.peek();
-        next != None && next != Some(&InstCell(STOP))
+        machine.control.length() > 0usize &&
+        machine.control.peek()!= Some(&InstCell(STOP))
     } {  //TODO: this is kinda heavyweight
         machine = machine.eval(&mut inp, &mut outp, false) // continue evaling
     };
