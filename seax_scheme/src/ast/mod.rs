@@ -2,6 +2,7 @@ use svm::cell::SVMCell;
 use svm::cell::Atom::*;
 use svm::cell::Inst::*;
 use svm::cell::SVMCell::*;
+use svm::slist::List::{Cons,Nil};
 
 use self::ExprNode::*;
 use self::NumNode::*;
