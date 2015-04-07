@@ -14,19 +14,19 @@
     font-family: 'Fira Sans';
     font-style: normal;
     font-weight: 400;
-    src: local('Fira Sans'), url("/api/FiraSans-Regular.woff") format('woff');
+    src: local('Fira Sans'), url("api/FiraSans-Regular.woff") format('woff');
 }
 @font-face {
     font-family: 'Fira Sans';
     font-style: normal;
     font-weight: 500;
-    src: local('Fira Sans Medium'), url("/api/FiraSans-Medium.woff") format('woff');
+    src: local('Fira Sans Medium'), url("api/FiraSans-Medium.woff") format('woff');
 }
 @font-face {
     font-family: 'Source Serif Pro';
     font-style: normal;
     font-weight: 400;
-    src: local('Source Serif Pro'), url("/api/SourceSerifPro-Regular.woff") format('woff');
+    src: local('Source Serif Pro'), url("api/SourceSerifPro-Regular.woff") format('woff');
 }
 @font-face {
     font-family: 'Source Serif Pro';
@@ -38,13 +38,13 @@
     font-family: 'Source Serif Pro';
     font-style: normal;
     font-weight: 700;
-    src: local('Source Serif Pro Bold'), url("/api/SourceSerifPro-Bold.woff") format('woff');
+    src: local('Source Serif Pro Bold'), url("api/SourceSerifPro-Bold.woff") format('woff');
 }
 @font-face {
     font-family: 'Source Code Pro';
     font-style: normal;
     font-weight: 400;
-    src: local('Source Code Pro'), url("/api/SourceCodePro-Regular.woff") format('woff');
+    src: local('Source Code Pro'), url("api/SourceCodePro-Regular.woff") format('woff');
 }
 
 *:not(body) {
