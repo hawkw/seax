@@ -18,6 +18,7 @@ use std::hash::Hash;
 /// reference implementation written by Hawk Weisman for the Decaf
 /// compiler, which is available [here](https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala).
 #[derive(Debug)]
+#[unstable(feature = "forktable", since = "0.0.3")]
 pub struct ForkTable<'a, K:'a +  Eq + Hash,V: 'a>  {
     table: HashMap<K, V>,
     whiteouts: HashSet<K>,
@@ -63,7 +64,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
     /// assert_eq!(level_2.get(&1isize), Some(&"One"));
     /// ```
-    #[stable]
+    #[stable(feature = "forktable", since = "0.0.3")]
     pub fn get<'b>(&'b self, key: &K) -> Option<&'b V> {
         if self.whiteouts.contains(key) {
             None
@@ -118,6 +119,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///       level, to remove the need to keep a mutable borrow
     ///       on the parent level. We could allow an overwrite here
     ///       instead.
+   #[unstable(feature = "forktable", since = "0.0.3")]
    pub fn get_mut<'b>(&'b mut self, key: &K) -> Option<&'b mut V> {
         if self.whiteouts.contains(key) {
             None
@@ -176,6 +178,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// assert_eq!(level_2.chain_contains_key(&1isize), false);
     /// ```
     ///
+    #[unstable(feature = "forktable", since = "0.0.3")]
     pub fn remove(&mut self, key: &K) -> Option<V> where K: Clone {
             if self.table.contains_key(key) {
                 self.table.remove(key)
@@ -230,6 +233,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// assert_eq!(table.insert(2isize, "Two"), Some("two"));
     /// assert_eq!(table.get(&2isize), Some(&"Two"));
     /// ```
+    #[stable(feature = "forktable", since = "0.0.3")]
     pub fn insert(&mut self, k: K, v: V) -> Option<V> {
         if self.whiteouts.contains(&k) { self.whiteouts.remove(&k); };
         self.table.insert(k, v)
@@ -268,7 +272,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
     /// assert_eq!(level_2.contains_key(&1isize), false);
     /// ```
-    #[stable]
+    #[stable(feature = "forktable", since = "0.0.3")]
     pub fn contains_key(&self, key: &K) -> bool  {
         !self.whiteouts.contains(key)  &&
         self.table.contains_key(key)
@@ -308,7 +312,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
     /// assert_eq!(level_2.chain_contains_key(&1isize), true);
     /// ```
-    #[stable]
+    #[stable(feature = "forktable", since = "0.0.3")]
     pub fn chain_contains_key(&self, key: &K) -> bool {
         self.table.contains_key(key) ||
         (!self.whiteouts.contains(key) &&
@@ -329,6 +333,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// parent `ForkTable`.
     ///
     /// TODO: should whiteouts be carried over? look into this.
+    #[unstable(feature = "forktable", since = "0.0.3")]
     pub fn fork(&'a mut self) -> ForkTable<'a, K,V> {
         ForkTable {
             table: HashMap::new(),
@@ -338,6 +343,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     }
 
     /// Constructs a new `ForkTable<K,V>`
+    #[stable(feature = "forktable", since = "0.0.3")]
     pub fn new() -> ForkTable<'a, K,V> {
         ForkTable {
             table: HashMap::new(),
