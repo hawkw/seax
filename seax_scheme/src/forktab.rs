@@ -63,6 +63,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
     /// assert_eq!(level_2.get(&1isize), Some(&"One"));
     /// ```
+    #[stable]
     pub fn get<'b>(&'b self, key: &K) -> Option<&'b V> {
         if self.whiteouts.contains(key) {
             None
@@ -267,7 +268,9 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
     /// assert_eq!(level_2.contains_key(&1isize), false);
     /// ```
+    #[stable]
     pub fn contains_key(&self, key: &K) -> bool  {
+        !self.whiteouts.contains(key)  &&
         self.table.contains_key(key)
     }
 
@@ -305,9 +308,10 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
     /// assert_eq!(level_2.chain_contains_key(&1isize), true);
     /// ```
+    #[stable]
     pub fn chain_contains_key(&self, key: &K) -> bool {
         self.table.contains_key(key) ||
-        (self.whiteouts.contains(key) &&
+        (!self.whiteouts.contains(key) &&
             match self.parent {
                 Some(ref p) => p.chain_contains_key(key),
                 None        => false
