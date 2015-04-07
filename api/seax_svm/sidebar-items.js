@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["cell","SVM cell types."],["slist","Singly-linked list and stack implementations."]],"macro":[["list!","Convenience macro for making lists."]],"struct":[["State","Represents a SVM machine state"]],"fn":[["eval_program","Evaluates a program."]]});
+initSidebarItems({"fn":[["eval_program","Evaluates a program."]],"macro":[["list!","Convenience macro for making lists."]],"struct":[["State","Represents a SVM machine state"]],"mod":[["cell","SVM cell types."],["slist","Singly-linked list and stack implementations."]]});

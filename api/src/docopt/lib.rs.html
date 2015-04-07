@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/docopt-0.6.52/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/docopt-0.6.59/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -280,10 +280,6 @@
 <span id="238">238</span>
 <span id="239">239</span>
 <span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Docopt for Rust. This implementation conforms to the</span>
 <span class='doccomment'>//! [official description of Docopt](http://docopt.org/) and</span>
@@ -334,7 +330,7 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
 <span class='doccomment'>//! # extern crate docopt;</span>
-<span class='doccomment'>//! # extern crate &quot;rustc-serialize&quot; as rustc_serialize;</span>
+<span class='doccomment'>//! # extern crate rustc_serialize;</span>
 <span class='doccomment'>//! # fn main() {</span>
 <span class='doccomment'>//! use docopt::Docopt;</span>
 <span class='doccomment'>//!</span>
@@ -376,7 +372,7 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
 <span class='doccomment'>//! # extern crate docopt;</span>
-<span class='doccomment'>//! # extern crate &quot;rustc-serialize&quot; as rustc_serialize;</span>
+<span class='doccomment'>//! # extern crate rustc_serialize;</span>
 <span class='doccomment'>//! # fn main() {</span>
 <span class='doccomment'>//! # #![allow(non_snake_case)]</span>
 <span class='doccomment'>//! use docopt::Docopt;</span>
@@ -468,7 +464,7 @@
 <span class='doccomment'>//! #![feature(plugin)]</span>
 <span class='doccomment'>//! #![plugin(docopt_macros)]</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! extern crate &quot;rustc-serialize&quot; as rustc_serialize;</span>
+<span class='doccomment'>//! extern crate rustc_serialize;</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! extern crate docopt;</span>
 <span class='doccomment'>//!</span>
@@ -502,12 +498,8 @@
 
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>deny</span>(<span class='ident'>missing_docs</span>)]</span>
 
-<span class='comment'>// These MUST be removed for Rust 1.0 stable.</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>core</span>, <span class='ident'>std_misc</span>)]</span>
-
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>regex</span>;
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='string'>&quot;rustc-serialize&quot;</span> <span class='kw'>as</span> <span class='ident'>rustc_serialize</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rustc_serialize</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>dopt</span>::{<span class='ident'>ArgvMap</span>, <span class='ident'>Decoder</span>, <span class='ident'>Docopt</span>, <span class='ident'>Error</span>, <span class='ident'>Value</span>};
 

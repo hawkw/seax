@@ -43,7 +43,7 @@
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>docopt</a>::<wbr><a class='struct' href=''>Docopt</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-545' href='../src/docopt/dopt.rs.html#163-169'>[src]</a></span></h1>
+        </span><a id='src-519' href='../src/docopt/dopt.rs.html#159-165'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Docopt {
     // some fields omitted
 }</pre><div class='docblock'><p>The main Docopt type, which is constructed with a Docopt usage string.</p>
@@ -57,7 +57,7 @@ line arguments with a default configuration.</p>
 
 <p>If there was a problem parsing the usage string, a <code>Usage</code> error
 is returned.</p>
-</div><h4 id='method.decode' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.decode' class='fnname'>decode</a>&lt;D&gt;(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;D, <a class='enum' href='../docopt/enum.Error.html' title='docopt::Error'>Error</a>&gt; <span class='where'>where D: <a class='trait' href='../rustc-serialize/serialize/trait.Decodable.html' title='rustc-serialize::serialize::Decodable'>Decodable</a></span></code></h4>
+</div><h4 id='method.decode' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.decode' class='fnname'>decode</a>&lt;D&gt;(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;D, <a class='enum' href='../docopt/enum.Error.html' title='docopt::Error'>Error</a>&gt; <span class='where'>where D: <a class='trait' href='../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a></span></code></h4>
 <div class='docblock'><p>Parse and decode the given argv.</p>
 
 <p>This is a convenience method for
@@ -80,7 +80,7 @@ error is returned. Both of these errors are always returned inside a
 <p>If special handling of <code>help</code> or <code>version</code> is enabled (the former is
 enabled by default), then <code>Help</code> or <code>Version</code> errors are returned
 if <code>--help</code> or <code>--version</code> is present.</p>
-</div><h4 id='method.argv' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.argv' class='fnname'>argv</a>&lt;'a, I, S&gt;(self, argv: I) -&gt; <a class='struct' href='../docopt/struct.Docopt.html' title='docopt::Docopt'>Docopt</a> <span class='where'>where I: <a class='trait' href='http://doc.rust-lang.org/nightly/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a>&lt;Item=S&gt;, S: <a class='trait' href='http://doc.rust-lang.org/nightly/collections/borrow/trait.IntoCow.html' title='collections::borrow::IntoCow'>IntoCow</a>&lt;'a, <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</span></code></h4>
+</div><h4 id='method.argv' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.argv' class='fnname'>argv</a>&lt;I, S&gt;(self, argv: I) -&gt; <a class='struct' href='../docopt/struct.Docopt.html' title='docopt::Docopt'>Docopt</a> <span class='where'>where I: <a class='trait' href='http://doc.rust-lang.org/nightly/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a>&lt;Item=S&gt;, S: <a class='trait' href='http://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span></code></h4>
 <div class='docblock'><p>Set the argv to be used for Docopt parsing.</p>
 
 <p>By default, when no argv is set, and it is automatically taken from

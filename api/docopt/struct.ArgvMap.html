@@ -43,7 +43,7 @@
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>docopt</a>::<wbr><a class='struct' href=''>ArgvMap</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-1006' href='../src/docopt/dopt.rs.html#324-327'>[src]</a></span></h1>
+        </span><a id='src-977' href='../src/docopt/dopt.rs.html#320-323'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct ArgvMap {
     // some fields omitted
 }</pre><div class='docblock'><p>A map containing matched values from command line arguments.</p>
@@ -52,7 +52,7 @@
 <code>-f</code> for a short flag. (If <code>-f</code> is a synonym for <code>--flag</code>, then either
 key will work.) <code>ARG</code> or <code>&lt;arg&gt;</code> specify a positional argument and <code>cmd</code>
 specifies a command.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../docopt/struct.ArgvMap.html' title='docopt::ArgvMap'>ArgvMap</a></code></h3><div class='impl-items'><h4 id='method.decode' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.decode' class='fnname'>decode</a>&lt;T: <a class='trait' href='../rustc-serialize/serialize/trait.Decodable.html' title='rustc-serialize::serialize::Decodable'>Decodable</a>&gt;(self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;T, <a class='enum' href='../docopt/enum.Error.html' title='docopt::Error'>Error</a>&gt;</code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='struct' href='../docopt/struct.ArgvMap.html' title='docopt::ArgvMap'>ArgvMap</a></code></h3><div class='impl-items'><h4 id='method.decode' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.decode' class='fnname'>decode</a>&lt;T: <a class='trait' href='../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a>&gt;(self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;T, <a class='enum' href='../docopt/enum.Error.html' title='docopt::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Tries to decode the map of values into a struct.</p>
 
 <p>This method should always be called to decode a <code>ArgvMap</code> into
@@ -100,7 +100,7 @@ the <code>Decodable</code> trait is valid.</p>
 </div><h4 id='method.get_bool' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_bool' class='fnname'>get_bool</a>(&amp;self, key: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Finds the value corresponding to <code>key</code> and calls <code>as_bool()</code> on it.
 If the key does not exist, <code>false</code> is returned.</p>
-</div><h4 id='method.get_count' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_count' class='fnname'>get_count</a>(&amp;self, key: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
+</div><h4 id='method.get_count' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_count' class='fnname'>get_count</a>(&amp;self, key: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></h4>
 <div class='docblock'><p>Finds the value corresponding to <code>key</code> and calls <code>as_count()</code> on it.
 If the key does not exist, <code>0</code> is returned.</p>
 </div><h4 id='method.get_str' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_str' class='fnname'>get_str</a>&lt;'a&gt;(&amp;'a self, key: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;'a <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>

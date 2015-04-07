@@ -43,7 +43,7 @@
     <section id='main' class="content macro">
 <h1 class='fqn'><span class='in-band'><a href='index.html'>seax_svm</a>::<wbr><a class='macro' href=''>list!</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-10505' href='../src/seax_svm/slist.rs.html#21-25'>[src]</a></span></h1>
+        </span><a id='src-10490' href='../src/seax_svm/slist.rs.html#21-25'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>list</span>(
     ( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>e</span>:<span class='ident'>expr</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rest</span>:<span class='ident'>expr</span>),<span class='op'>+</span> ) <span class='op'>=&gt;</span> ( <span class='ident'>Cons</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>e</span>, <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='macro'>list</span><span class='macro'>!</span>( $( <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rest</span> ),<span class='op'>+</span> )) ));

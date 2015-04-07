@@ -58,13 +58,24 @@
 <span id="16">16</span>
 <span id="17">17</span>
 <span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;seax_scheme&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_type</span> <span class='op'>=</span> <span class='string'>&quot;lib&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>core</span>)]</span>
 
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='string'>&quot;seax_svm&quot;</span> <span class='kw'>as</span> <span class='ident'>svm</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>seax_svm</span> <span class='kw'>as</span> <span class='ident'>svm</span>;
 
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>ast</span>;
 
@@ -77,6 +88,17 @@
 <span class='doccomment'>/// on the valid programs accepted by the parser, will be noted in the</span>
 <span class='doccomment'>/// parser&#39;s RustDoc.</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>parser</span>;
+
+<span class='kw'>mod</span> <span class='ident'>forktab</span>;
+<span class='doccomment'>/// An associative map data structure for repreenting scopes.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// This is an implementation of the ForkTable data structure for</span>
+<span class='doccomment'>/// representing scopes. The ForkTable was initially described by</span>
+<span class='doccomment'>/// Max Clive. This implemention is based primarily by the Scala</span>
+<span class='doccomment'>/// reference implementation written by Hawk Weisman for the Decaf</span>
+<span class='doccomment'>/// compiler, which is available [here](https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala).</span>
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>forktab</span>::<span class='ident'>ForkTable</span>;
+
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

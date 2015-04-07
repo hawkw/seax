@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/docopt-0.6.52/src/dopt.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/docopt-0.6.59/src/dopt.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>dopt.rs.html -- source</title>
@@ -899,14 +899,12 @@
 <span id="857">857</span>
 <span id="858">858</span>
 <span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
 </pre><pre class='rust '>
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::<span class='ident'>IntoCow</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>::<span class='ident'>Error</span> <span class='kw'>as</span> <span class='ident'>StdError</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>FromStr</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>NumCast</span>;
 
 <span class='kw'>use</span> <span class='ident'>rustc_serialize</span>::<span class='ident'>Decodable</span>;
 
@@ -1009,10 +1007,10 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>exit</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='op'>!</span> {
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>fatal</span>() {
             <span class='macro'>werr</span><span class='macro'>!</span>(<span class='string'>&quot;{}\n&quot;</span>, <span class='self'>self</span>);
-            <span class='ident'>exit</span>(<span class='number'>1</span>)
+            ::<span class='ident'>std</span>::<span class='ident'>process</span>::<span class='ident'>exit</span>(<span class='number'>1</span>)
         } <span class='kw'>else</span> {
             <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>);
-            <span class='ident'>exit</span>(<span class='number'>0</span>)
+            ::<span class='ident'>std</span>::<span class='ident'>process</span>::<span class='ident'>exit</span>(<span class='number'>0</span>)
         }
     }
 }
@@ -1052,7 +1050,7 @@
 
     <span class='kw'>fn</span> <span class='ident'>cause</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>StdError</span><span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>WithProgramUsage</span>(<span class='kw-2'>ref</span> <span class='ident'>cause</span>, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='op'>*</span><span class='op'>*</span><span class='ident'>cause</span> <span class='kw'>as</span> <span class='kw-2'>&amp;</span><span class='ident'>StdError</span>),
+            <span class='ident'>WithProgramUsage</span>(<span class='kw-2'>ref</span> <span class='ident'>cause</span>, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='op'>*</span><span class='op'>*</span><span class='ident'>cause</span>),
             _ <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
         }
     }
@@ -1146,10 +1144,10 @@
     <span class='doccomment'>/// The `argv` given *must* be the full set of `argv` passed to the</span>
     <span class='doccomment'>/// program. e.g., `[&quot;cp&quot;, &quot;src&quot;, &quot;dest&quot;]` is right while `[&quot;src&quot;, &quot;dest&quot;]`</span>
     <span class='doccomment'>/// is wrong.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>argv</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>I</span>, <span class='ident'>S</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>argv</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>Docopt</span>
-               <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>S</span><span class='op'>&gt;</span>, <span class='ident'>S</span>: <span class='ident'>IntoCow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>str</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>argv</span><span class='op'>&lt;</span><span class='ident'>I</span>, <span class='ident'>S</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>argv</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>Docopt</span>
+               <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>S</span><span class='op'>&gt;</span>, <span class='ident'>S</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>argv</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(
-            <span class='ident'>argv</span>.<span class='ident'>skip</span>(<span class='number'>1</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>s</span><span class='op'>|</span> <span class='ident'>s</span>.<span class='ident'>into_cow</span>().<span class='ident'>into_owned</span>()).<span class='ident'>collect</span>()
+            <span class='ident'>argv</span>.<span class='ident'>skip</span>(<span class='number'>1</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>s</span><span class='op'>|</span> <span class='ident'>s</span>.<span class='ident'>into</span>()).<span class='ident'>collect</span>()
         );
         <span class='self'>self</span>
     }
@@ -1244,7 +1242,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```rust</span>
     <span class='doccomment'>/// # extern crate docopt;</span>
-    <span class='doccomment'>/// # extern crate &quot;rustc-serialize&quot; as rustc_serialize;</span>
+    <span class='doccomment'>/// # extern crate rustc_serialize;</span>
     <span class='doccomment'>/// # fn main() {</span>
     <span class='doccomment'>/// use docopt::Docopt;</span>
     <span class='doccomment'>///</span>
@@ -1290,7 +1288,7 @@
 
     <span class='doccomment'>/// Finds the value corresponding to `key` and calls `as_count()` on it.</span>
     <span class='doccomment'>/// If the key does not exist, `0` is returned.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_count</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>key</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_count</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>key</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>u64</span> {
         <span class='self'>self</span>.<span class='ident'>find</span>(<span class='ident'>key</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span> <span class='ident'>v</span>.<span class='ident'>as_count</span>()).<span class='ident'>unwrap_or</span>(<span class='number'>0</span>)
     }
 
@@ -1433,7 +1431,7 @@
     <span class='ident'>Switch</span>(<span class='ident'>bool</span>),
 
     <span class='doccomment'>/// The number of occurrences of a repeated flag.</span>
-    <span class='ident'>Counted</span>(<span class='ident'>usize</span>),
+    <span class='ident'>Counted</span>(<span class='ident'>u64</span>),
 
     <span class='doccomment'>/// A positional or flag argument.</span>
     <span class='doccomment'>///</span>
@@ -1469,13 +1467,13 @@
     <span class='doccomment'>/// Booleans are `1` if `true` and `0` otherwise.</span>
     <span class='doccomment'>/// Plain strings are `1` if present and `0` otherwise.</span>
     <span class='doccomment'>/// Lists correspond to its length.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>as_count</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>as_count</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>u64</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>Switch</span>(<span class='ident'>b</span>) <span class='op'>=&gt;</span> <span class='kw'>if</span> <span class='ident'>b</span> { <span class='number'>1</span> } <span class='kw'>else</span> { <span class='number'>0</span> },
             <span class='ident'>Counted</span>(<span class='ident'>n</span>) <span class='op'>=&gt;</span> <span class='ident'>n</span>,
             <span class='ident'>Plain</span>(<span class='prelude-val'>None</span>) <span class='op'>=&gt;</span> <span class='number'>0</span>,
             <span class='ident'>Plain</span>(<span class='prelude-val'>Some</span>(_)) <span class='op'>=&gt;</span> <span class='number'>1</span>,
-            <span class='ident'>List</span>(<span class='kw-2'>ref</span> <span class='ident'>vs</span>) <span class='op'>=&gt;</span> <span class='ident'>vs</span>.<span class='ident'>len</span>(),
+            <span class='ident'>List</span>(<span class='kw-2'>ref</span> <span class='ident'>vs</span>) <span class='op'>=&gt;</span> <span class='ident'>vs</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>u64</span>,
         }
     }
 
@@ -1511,7 +1509,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```rust</span>
 <span class='doccomment'>/// # extern crate docopt;</span>
-<span class='doccomment'>/// # extern crate &quot;rustc-serialize&quot; as rustc_serialize;</span>
+<span class='doccomment'>/// # extern crate rustc_serialize;</span>
 <span class='doccomment'>/// # fn main() {</span>
 <span class='doccomment'>/// use docopt::Docopt;</span>
 <span class='doccomment'>/// use rustc_serialize::Decodable;</span>
@@ -1519,7 +1517,7 @@
 <span class='doccomment'>/// fn decode&lt;D: Decodable&gt;(usage: &amp;str, argv: &amp;[&amp;str])</span>
 <span class='doccomment'>///                         -&gt; Result&lt;D, docopt::Error&gt; {</span>
 <span class='doccomment'>///     Docopt::new(usage)</span>
-<span class='doccomment'>///            .and_then(|d| d.argv(argv.iter().map(|&amp;v|v)).decode())</span>
+<span class='doccomment'>///            .and_then(|d| d.argv(argv.iter().cloned()).decode())</span>
 <span class='doccomment'>/// }</span>
 <span class='doccomment'>/// # }</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Decoder</span> {
@@ -1569,11 +1567,24 @@
         <span class='prelude-val'>Ok</span>(<span class='ident'>v</span>)
     }
 
-    <span class='kw'>fn</span> <span class='ident'>to_number</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>FromStr</span> <span class='op'>+</span> <span class='ident'>NumCast</span><span class='op'>&gt;</span>
-                (<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>expect</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>to_number</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>expect</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> (<span class='ident'>k</span>, <span class='ident'>v</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>pop_key_val</span>());
         <span class='kw'>match</span> <span class='ident'>v</span> {
-            <span class='ident'>Counted</span>(<span class='ident'>n</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>num</span>::<span class='ident'>cast</span>(<span class='ident'>n</span>).<span class='ident'>unwrap</span>()),
+            <span class='ident'>Counted</span>(<span class='ident'>n</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>n</span>),
+            _ <span class='op'>=&gt;</span> {
+                <span class='kw'>match</span> <span class='ident'>v</span>.<span class='ident'>as_str</span>().<span class='ident'>parse</span>() {
+                    <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='macro'>derr</span><span class='macro'>!</span>(<span class='string'>&quot;Could not decode &#39;{}&#39; to {} for &#39;{}&#39;.&quot;</span>,
+                                  <span class='ident'>v</span>.<span class='ident'>as_str</span>(), <span class='ident'>expect</span>, <span class='ident'>k</span>),
+                    <span class='prelude-val'>Ok</span>(<span class='ident'>v</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>v</span>),
+                }
+            }
+        }
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>to_float</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>expect</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>f64</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> (<span class='ident'>k</span>, <span class='ident'>v</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>pop_key_val</span>());
+        <span class='kw'>match</span> <span class='ident'>v</span> {
+            <span class='ident'>Counted</span>(<span class='ident'>n</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>f64</span>),
             _ <span class='op'>=&gt;</span> {
                 <span class='kw'>match</span> <span class='ident'>v</span>.<span class='ident'>as_str</span>().<span class='ident'>parse</span>() {
                     <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='macro'>derr</span><span class='macro'>!</span>(<span class='string'>&quot;Could not decode &#39;{}&#39; to {} for &#39;{}&#39;.&quot;</span>,
@@ -1596,43 +1607,43 @@
         <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;I don&#39;t know how to read into a nil value.&quot;</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_usize</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>usize</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;usize&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;usize&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>usize</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_u64</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;u64&quot;</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_u32</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u32</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;u32&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;u32&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>u32</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_u16</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u16</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;u16&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;u16&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>u16</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_u8</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u8</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;u8&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;u8&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>u8</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_isize</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>isize</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;isize&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;isize&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>isize</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_i64</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>i64</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;i64&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;i64&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>i64</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_i32</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>i32</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;i32&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;i32&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>i32</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_i16</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>i16</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;i16&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;i16&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>i16</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_i8</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>i8</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;i8&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;i8&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>i8</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_bool</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>bool</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>pop_val</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>v</span><span class='op'>|</span> <span class='ident'>v</span>.<span class='ident'>as_bool</span>())
     }
     <span class='kw'>fn</span> <span class='ident'>read_f64</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>f64</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;f64&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_float</span>(<span class='string'>&quot;f64&quot;</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_f32</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>f32</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>to_number</span>(<span class='string'>&quot;f32&quot;</span>)
+        <span class='self'>self</span>.<span class='ident'>to_float</span>(<span class='string'>&quot;f32&quot;</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='ident'>n</span> <span class='kw'>as</span> <span class='ident'>f32</span>)
     }
     <span class='kw'>fn</span> <span class='ident'>read_char</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>char</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> (<span class='ident'>k</span>, <span class='ident'>v</span>) <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>pop_key_val</span>());
@@ -1749,15 +1760,8 @@
     }
 }
 
-<span class='kw'>fn</span> <span class='ident'>to_lowercase</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>S</span>: <span class='ident'>IntoCow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>str</span><span class='op'>&gt;&gt;</span>(<span class='ident'>s</span>: <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
-    <span class='ident'>s</span>.<span class='ident'>into_cow</span>().<span class='ident'>chars</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span>.<span class='ident'>to_lowercase</span>().<span class='ident'>next</span>().<span class='ident'>unwrap</span>()).<span class='ident'>collect</span>()
-}
-
-<span class='comment'>// I&#39;ve been warned that this is wildly unsafe.</span>
-<span class='comment'>// Unless there&#39;s a reasonable alternative, I&#39;m inclined to say that this is</span>
-<span class='comment'>// the price you pay for convenience.</span>
-<span class='kw'>fn</span> <span class='ident'>exit</span>(<span class='ident'>code</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='op'>!</span> {
-    <span class='kw'>unsafe</span> { ::<span class='ident'>libc</span>::<span class='ident'>exit</span>(<span class='ident'>code</span> <span class='kw'>as</span> ::<span class='ident'>libc</span>::<span class='ident'>c_int</span>) }
+<span class='kw'>fn</span> <span class='ident'>to_lowercase</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span>(<span class='ident'>s</span>: <span class='ident'>S</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
+    <span class='ident'>s</span>.<span class='ident'>into</span>().<span class='ident'>chars</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span>.<span class='ident'>to_lowercase</span>().<span class='ident'>next</span>().<span class='ident'>unwrap</span>()).<span class='ident'>collect</span>()
 }
 </pre>
 </section>

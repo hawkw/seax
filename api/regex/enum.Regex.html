@@ -43,7 +43,7 @@
     <section id='main' class="content enum">
 <h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>regex</a>::<wbr><a class='enum' href=''>Regex</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-7772' href='../src/regex/re.rs.html#104-114'>[src]</a></span></h1>
+        </span><a id='src-7790' href='../src/regex/re.rs.html#108-118'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Regex {
     // some variants omitted
 }</pre><div class='docblock'><p>A compiled regular expression</p>
@@ -77,6 +77,11 @@ pointers into the string given.</p>
 
 <h1 id="using-the-std::str::strext-methods-with-regex" class='section-header'><a
                            href="#using-the-std::str::strext-methods-with-regex">Using the <code>std::str::StrExt</code> methods with <code>Regex</code></a></h1>
+<blockquote>
+<p><strong>Note</strong>: This section requires that this crate is currently compiled with
+          the <code>pattern</code> Cargo feature enabled.</p>
+</blockquote>
+
 <p>Since <code>Regex</code> implements <code>Pattern</code>, you can use regexes with methods
 defined on <code>std::str::StrExt</code>. For example, <code>is_match</code>, <code>find</code>, <code>find_iter</code>
 and <code>split</code> can be replaced with <code>StrExt::contains</code>, <code>StrExt::find</code>,
