@@ -28,7 +28,7 @@ pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
     fn hex_isize(input: State<&str>) -> ParseResult<isize, &str> {
         satisfy(|c| c == '#')
             .with(parser(hex_scalar)
-                    .map(|x| isize::from_str_radix(x.as_slice(), 16).unwrap()) )
+                    .map(|x| isize::from_str_radix(x.as_ref(), 16).unwrap()) )
             .parse_state(input)
     }
 
@@ -37,7 +37,7 @@ pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
         optional(satisfy(|c| c == '#')
             .and(satisfy(|c| c == 'd' || c == 'D')))
             .with(many1::<String, _>(digit())
-                .map(|x| isize::from_str(x.as_slice()).unwrap() ))
+                .map(|x| isize::from_str(x.as_ref()).unwrap() ))
             .parse_state(input)
     }
 
@@ -51,7 +51,7 @@ pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
                 let mut s = String::new();
                 s.push(sign);
                 s.push('1');
-                x.1 * isize::from_str(s.as_slice()).unwrap()
+                x.1 * isize::from_str(s.as_ref()).unwrap()
             } else {
                 x.1
             }
@@ -75,13 +75,13 @@ pub fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
     fn hex_uint(input: State<&str>) -> ParseResult<usize, &str> {
         satisfy(|c| c == '#')
             .with(parser(hex_scalar)
-                    .map(|x| usize::from_str_radix(x.as_slice(), 16).unwrap()) )
+                    .map(|x| usize::from_str_radix(x.as_ref(), 16).unwrap()) )
             .parse_state(input)
     }
 
     try(parser(hex_uint))
         .or( many1::<String, _>(digit())
-            .map(|x|usize::from_str(x.as_slice()).unwrap() )
+            .map(|x|usize::from_str(x.as_ref()).unwrap() )
             )
         .skip(satisfy(|c| c == 'u' || c == 'U'))
         .map(|x: usize| NumNode::UIntConst(UIntNode{value: x}))
@@ -102,11 +102,11 @@ pub fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
         .and(many1::<String, _>(digit()))
         .map(|x| {
             let mut s = String::new();
-            s.push_str( (x.0).0.as_slice() );
+            s.push_str( (x.0).0.as_ref() );
             s.push( (x.0).1 );
-            s.push_str( x.1.as_slice() );
+            s.push_str( x.1.as_ref() );
             NumNode::FloatConst(FloatNode{
-                value: f64::from_str(s.as_slice()).unwrap()
+                value: f64::from_str(s.as_ref()).unwrap()
             })
         })
         .skip(optional(satisfy(|c| c == 'f' || c == 'F')))
@@ -304,7 +304,7 @@ pub fn character(input: State<&str>) -> ParseResult<CharNode, &str> {
     fn hex_char(input: State<&str>) -> ParseResult<char, &str> {
         parser(hex_scalar)
             .map(|x| char::from_u32(
-                    u32::from_str_radix(x.as_slice(),16).unwrap()
+                    u32::from_str_radix(x.as_ref(),16).unwrap()
                 ).unwrap() )
             .parse_state(input)
     }

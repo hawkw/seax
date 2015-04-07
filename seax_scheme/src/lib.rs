@@ -1,10 +1,28 @@
 #![crate_name = "seax_scheme"]
 #![crate_type = "lib"]
-#![feature(core)]
+#![feature(convert,core,box_syntax,box_patterns,slice_patterns,collections)]
+
+//! Library for compiling Scheme programs to Seax SVM bytecode.
+//!
+//! This Scheme implementation is based on the Scheme programming
+//! language described in the
+//! [Revised<sup>6</sup> Report on Scheme](http://www.r6rs.org/)
+//! (R<sup>6</sup>RS). Any cases in which Seax Scheme differs from
+//! R<sup>6</sup>RS Scheme are documented in the RustDoc for the
+//! Seax Scheme library and in the Seax Scheme language manual.
+//! Do note, however, that some inconsistencies between Seax Scheme
+//! and R<sup>6</sup>RS may be the result of unimplemented features in
+//! Seax Scheme.
 
 #[macro_use]
 extern crate seax_svm as svm;
 
+/// Contains the Scheme abstract syntax tree (AST).
+///
+/// The AST stores the semantic structure of a parsed Scheme
+/// program, and is responsible for compiling those programs
+/// to SVM bytecode instructions, performing semantic analysis
+/// (as necessary), and (eventually) for optimizing programs.
 pub mod ast;
 
 /// Contains the Scheme parser.
@@ -18,12 +36,6 @@ pub mod ast;
 pub mod parser;
 
 mod forktab;
-/// An associative map data structure for repreenting scopes.
-///
-/// This is an implementation of the ForkTable data structure for
-/// representing scopes. The ForkTable was initially described by
-/// Max Clive. This implemention is based primarily by the Scala
-/// reference implementation written by Hawk Weisman for the Decaf
-/// compiler, which is available [here](https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala).
+
 pub use self::forktab::ForkTable;
 
