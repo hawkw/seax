@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["slist","Singly-linked list and stack implementations."],["svm","Contains the Seax Virtual Machine (SVM) and miscellaneous support code."]],"macro":[["list!","Convenience macro for making lists."]]});
+initSidebarItems({"fn":[["eval_program","Evaluates a program."]],"macro":[["list!","Convenience macro for making lists."]],"struct":[["State","Represents a SVM machine state"]],"mod":[["cell","SVM cell types."],["slist","Singly-linked list and stack implementations."]]});
