@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>Why use a virtual machine to execute programs?</title>
+
+    <link rel="stylesheet" type="text/css" href="../rust-book.css">
+
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    <div id="nav">
+                <button id="toggle-nav">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                </button>
+              </div>
+<div id='toc' class='mobile-hidden'>
+<ul class='chapter'>
+<li><a href='../README.html'><b>1.</b> Introduction</a>
+</li>
+<li><a href='../background/README.html'><b>2.</b> Background</a>
+<ul class='section'>
+<li><a href='../background/goals.html'><b>2.1.</b> Goals</a>
+</li>
+<li><a href='../background/why-vm.html'><b>2.2.</b> Why a virtual machine?</a>
+</li>
+<li><a href='../background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
+</li>
+<li><a href='../background/secd.html'><b>2.4.</b> The SECD Architecture</a>
+</li>
+</ul>
+</li>
+<li><a href='../influences/README.html'><b>3.</b> Influences</a>
+<ul class='section'>
+<li><a href='../influences/secd.html'><b>3.1.</b> Landin's SECD Machine</a>
+</li>
+<li><a href='../influences/lambda.html'><b>3.2.</b> Functional CPUs</a>
+</li>
+</ul>
+</li>
+<li><a href='../implementation/README.html'><b>4.</b> Implementation</a>
+<ul class='section'>
+<li><a href='../implementation/why-rust.html'><b>4.1.</b> Why Rust?</a>
+</li>
+<li><a href='../implementation/overview.html'><b>4.2.</b> Overview</a>
+</li>
+<li><a href='../implementation/svm.html'><b>4.3.</b> Seax Virtual Machine</a>
+</li>
+<li><a href='../implementation/scheme.html'><b>4.4.</b> Seax Scheme</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id='page-wrapper'>
+<div id='page'>
+
+
+    <h1 class="title">Why use a virtual machine to execute programs?</h1>
+    <blockquote>
+<p>&quot;Any problem in computer science can be solved with another level of indirection.&quot;</p>
+
+<p>&mdash; David Wheeler</p>
+</blockquote>
+
+<p>There are essentially two ways in which computer programs may be executed: either they are compiled directly to the machine code of a given computer architecture and executed by the machine; or they may be fed into another program (an <em>interpreter</em>), which is responsible for evaluating that program&#39;s statements and expressions. As most programmers are likely aware, both of these approaches have their own advantages and disadvantages: compiled programs are typically executed much faster, as there are fewer layers of abstraction between the program and the machine, and because the compiler is able to do much of the work &quot;up front&quot;; while interpreted programs are typically more portable, may be easier to modify or tweak, and provide the program itself with a much greater ability to modify its&#39; own structure.</p>
+
+<p>The use of virtual machines for program execution, as typified by the <a href="http://en.wikipedia.org/wiki/Java_virtual_machine">Java Virtual Machine</a>, provides a hybrid between compilation and interpretation. In this approach, a software program is created that emulates a hardware architecture with its&#39; own instruction set. Programs are then compiled into bytecode that is executed by the virtual machine.</p>
+
+<p>A virtual machine for executing programs has many of the advantages of both comilation and interpretation. Like an interpreted language, as long as the virtual machine binaries are available for a variety of operating systems and environments, programs in the language can be compiled once and run on a wide variety of targets. However, since the language is still being compiled rather than interpreted line-by-line, there is still an opportunity for a compiler to apply optimizations and perform much of the the overhead of transforming human-readable high-level code into machine-readable code. Although the performance benefits of running directly on the CPU may be lost, this means that a compiled program run on a VM may still be significantly faster than an interpreted program. </p>
+
+<p>Furthermore, a virtual machine offers security advantages, by providing an isolated &#39;sandbox&#39; in which programs may be executed with controlled access to system functions and sensitive data. Also, since the virtual machine is software, rather than hardware, it may support more complex primitives or instructions than may reasonably be implemented  as electronics.</p>
+
+    <script type="text/javascript">
+        window.playgroundUrl = "";
+    </script>
+    
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(event) {
+  document.getElementById("toggle-nav").onclick = toggleNav;
+  function toggleNav() {
+    var toc = document.getElementById("toc");
+    var pagewrapper = document.getElementById("page-wrapper");
+    toggleClass(toc, "mobile-hidden");
+    toggleClass(pagewrapper, "mobile-hidden");
+  };
+
+  function toggleClass(el, className) {
+     // from http://youmightnotneedjquery.com/
+     if (el.classList) {
+       el.classList.toggle(className);
+     } else {
+       var classes = el.className.split(' ');
+       var existingIndex = classes.indexOf(className);
+
+       if (existingIndex >= 0) {
+         classes.splice(existingIndex, 1);
+       } else {
+         classes.push(className);
+       }
+
+       el.className = classes.join(' ');
+     }
+  }
+
+  // The below code is used to add prev and next navigation links to the bottom
+  // of each of the sections.
+  // It works by extracting the current page based on the url and iterates over
+  // the menu links until it finds the menu item for the current page. We then
+  // create a copy of the preceding and following menu links and add the
+  // correct css class and insert them into the bottom of the page.
+  var toc = document.getElementById('toc').getElementsByTagName('a');
+  var href = document.location.pathname.split('/').pop();
+  if (href === 'index.html' || href === '') {
+    href = 'README.html';
+  }
+
+  for (var i = 0; i < toc.length; i++) {
+    if (toc[i].attributes['href'].value === href) {
+      var nav = document.createElement('p');
+      if (i > 0) {
+        var prevNode = toc[i-1].cloneNode(true);
+        prevNode.className = 'left';
+        nav.appendChild(prevNode);
+      }
+      if (i < toc.length - 1) {
+        var nextNode = toc[i+1].cloneNode(true);
+        nextNode.className = 'right';
+        nav.appendChild(nextNode);
+      }
+      document.getElementById('page').appendChild(nav);
+      break;
+    }
+  }
+
+});
+</script>
+</div></div>
+
+
+</body>
+</html>

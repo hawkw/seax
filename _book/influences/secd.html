@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>Landin&#39;s SECD Machine</title>
+
+    <link rel="stylesheet" type="text/css" href="../rust-book.css">
+
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    <div id="nav">
+                <button id="toggle-nav">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                </button>
+              </div>
+<div id='toc' class='mobile-hidden'>
+<ul class='chapter'>
+<li><a href='../README.html'><b>1.</b> Introduction</a>
+</li>
+<li><a href='../background/README.html'><b>2.</b> Background</a>
+<ul class='section'>
+<li><a href='../background/goals.html'><b>2.1.</b> Goals</a>
+</li>
+<li><a href='../background/why-vm.html'><b>2.2.</b> Why a virtual machine?</a>
+</li>
+<li><a href='../background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
+</li>
+<li><a href='../background/secd.html'><b>2.4.</b> The SECD Architecture</a>
+</li>
+</ul>
+</li>
+<li><a href='../influences/README.html'><b>3.</b> Influences</a>
+<ul class='section'>
+<li><a href='../influences/secd.html'><b>3.1.</b> Landin's SECD Machine</a>
+</li>
+<li><a href='../influences/lambda.html'><b>3.2.</b> Functional CPUs</a>
+</li>
+</ul>
+</li>
+<li><a href='../implementation/README.html'><b>4.</b> Implementation</a>
+<ul class='section'>
+<li><a href='../implementation/why-rust.html'><b>4.1.</b> Why Rust?</a>
+</li>
+<li><a href='../implementation/overview.html'><b>4.2.</b> Overview</a>
+</li>
+<li><a href='../implementation/svm.html'><b>4.3.</b> Seax Virtual Machine</a>
+</li>
+<li><a href='../implementation/scheme.html'><b>4.4.</b> Seax Scheme</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id='page-wrapper'>
+<div id='page'>
+
+
+    <h1 class="title">Landin&#39;s SECD Machine</h1>
+    <p>Although Seax has a great deal of influences, both software and academic works, it owes its&#39; entire existence to Peter J. Landin&#39;s visionary papers <a href="http://fsl.cs.illinois.edu/images/e/ef/P157-landin.pdf">The Next 700 Programming Languages</a> and <a href="http://comjnl.oxfordjournals.org/content/6/4/308">The Mechanical Evaluation of Expressions</a>. </p>
+
+<p>In &quot;The Next 700 Programming Languages&quot;, published in the _Communications of the ACM in 1966, Landin describes an unimplemented programming language he calles ISWIM, for &#39;If you See What I Mean&#39;. While the Lisp-inspired ISWIM has never been implemented, it has been a major influence in the design of many modern functional languages.</p>
+
+<p>In &quot;The Mechanical Evaluation of Expressions&quot;, published in <em>Computer Journal</em> in 1964, Landin provides the first description of the SECD abstract machine, which he would later use to define the operational semantics of ISWIM. The machine described here forms the basis of the virtual machine at the core of the Seax runtime environment.</p>
+
+<p>Also of great interest is Olivier Danvey&#39;s much more recent <a href="http://www.brics.dk/RS/03/33/">A Rational Deconstruction of Landin&#39;s SECD Machine</a>, published in <em>Basic Research In Computer Science</em> in 2003; and Brian Graham&#39;s 1989 paper <a href="http://prism.ucalgary.ca/bitstream/1880/46590/2/1989-369-31.pdf">SECD: Design Issues</a> and 1992 book <a href="http://www.amazon.com/The-SECD-Microprocessor-Verification-International/dp/0792392450">The SECD Microprocessor: A Verification Case Study</a>, both of which concern the implementation of the SECD machine as a hardware device.</p>
+
+    <script type="text/javascript">
+        window.playgroundUrl = "";
+    </script>
+    
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(event) {
+  document.getElementById("toggle-nav").onclick = toggleNav;
+  function toggleNav() {
+    var toc = document.getElementById("toc");
+    var pagewrapper = document.getElementById("page-wrapper");
+    toggleClass(toc, "mobile-hidden");
+    toggleClass(pagewrapper, "mobile-hidden");
+  };
+
+  function toggleClass(el, className) {
+     // from http://youmightnotneedjquery.com/
+     if (el.classList) {
+       el.classList.toggle(className);
+     } else {
+       var classes = el.className.split(' ');
+       var existingIndex = classes.indexOf(className);
+
+       if (existingIndex >= 0) {
+         classes.splice(existingIndex, 1);
+       } else {
+         classes.push(className);
+       }
+
+       el.className = classes.join(' ');
+     }
+  }
+
+  // The below code is used to add prev and next navigation links to the bottom
+  // of each of the sections.
+  // It works by extracting the current page based on the url and iterates over
+  // the menu links until it finds the menu item for the current page. We then
+  // create a copy of the preceding and following menu links and add the
+  // correct css class and insert them into the bottom of the page.
+  var toc = document.getElementById('toc').getElementsByTagName('a');
+  var href = document.location.pathname.split('/').pop();
+  if (href === 'index.html' || href === '') {
+    href = 'README.html';
+  }
+
+  for (var i = 0; i < toc.length; i++) {
+    if (toc[i].attributes['href'].value === href) {
+      var nav = document.createElement('p');
+      if (i > 0) {
+        var prevNode = toc[i-1].cloneNode(true);
+        prevNode.className = 'left';
+        nav.appendChild(prevNode);
+      }
+      if (i < toc.length - 1) {
+        var nextNode = toc[i+1].cloneNode(true);
+        nextNode.className = 'right';
+        nav.appendChild(nextNode);
+      }
+      document.getElementById('page').appendChild(nav);
+      break;
+    }
+  }
+
+});
+</script>
+</div></div>
+
+
+</body>
+</html>
