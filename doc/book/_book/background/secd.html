@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <title>Influences</title>
+    <title>The SECD Abstract Machine</title>
 
     <link rel="stylesheet" type="text/css" href="../rust-book.css">
 
@@ -32,19 +32,27 @@
 </li>
 <li><a href='../background/README.html'><b>2.</b> Background</a>
 <ul class='section'>
-<li><a href='../background/influences.html'><b>2.1.</b> Influences</a>
+<li><a href='../background/why-vm.html'><b>2.1.</b> Why a virtual machine?</a>
 </li>
-<li><a href='../background/why-vm.html'><b>2.2.</b> Why a virtual machine?</a>
+<li><a href='../background/why-lisp.html'><b>2.2.</b> Why Lisp?</a>
 </li>
-<li><a href='../background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
+<li><a href='../background/secd.html'><b>2.3.</b> The SECD Architecture</a>
 </li>
 </ul>
 </li>
-<li><a href='../implementation/README.html'><b>3.</b> Implementation</a>
+<li><a href='../influences/README.html'><b>3.</b> Influences</a>
 <ul class='section'>
-<li><a href='../implementation/svm.html'><b>3.1.</b> Seax Virtual Machine</a>
+<li><a href='../influences/secd.html'><b>3.1.</b> Landin's SECD Machine</a>
 </li>
-<li><a href='../implementation/scheme.html'><b>3.2.</b> Seax Scheme</a>
+<li><a href='../influences/lambda.html'><b>3.2.</b> Functional CPU Architectures</a>
+</li>
+</ul>
+</li>
+<li><a href='../implementation/README.html'><b>4.</b> Implementation</a>
+<ul class='section'>
+<li><a href='../implementation/svm.html'><b>4.1.</b> Seax Virtual Machine</a>
+</li>
+<li><a href='../implementation/scheme.html'><b>4.2.</b> Seax Scheme</a>
 </li>
 </ul>
 </li>
@@ -54,16 +62,8 @@
 <div id='page'>
 
 
-    <h1 class="title">Influences</h1>
-    <blockquote>
-<p>&quot;If I have seen further, it is by standing on the shoulders of giants.&quot;</p>
-
-<p>&mdash; Sir Isaac Newton, letter to Robert Hooke, February 5, 1676</p>
-</blockquote>
-
-<h3 id="the-secd-machine" class='section-header'><a
-                           href="#the-secd-machine">The SECD Machine</a></h3>
-<p>Although Seax has a great deal of influences, both software and academic works, it owes its&#39; entire existence to Peter J. Landin&#39;s 1966 paper &#39;<a href="http://fsl.cs.illinois.edu/images/e/ef/P157-landin.pdf">The Next 700 Programming Languages</a>&#39;, published in the <em>Communications of the ACM</em>.</p>
+    <h1 class="title">The SECD Abstract Machine</h1>
+    <p>At the core of the Seax runtime environment is an implementation of the SECD abstract machine.</p>
 
     <script type="text/javascript">
         window.playgroundUrl = "";

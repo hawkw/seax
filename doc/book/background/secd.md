@@ -1,3 +1,3 @@
-% Why SECD? Why Lisp?
+% The SECD Abstract Machine
 
-The SECD machine is deeply linked with the [Lisp](http://en.wikipedia.org/wiki/SECD_machine) programming language.
+At the core of the Seax runtime environment is an implementation of the SECD abstract machine.
