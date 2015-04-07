@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <title>Motivation</title>
+    <title>Why use a virtual machine to execute programs?</title>
 
     <link rel="stylesheet" type="text/css" href="../rust-book.css">
 
@@ -32,9 +32,11 @@
 </li>
 <li><a href='../background/README.html'><b>2.</b> Background</a>
 <ul class='section'>
-<li><a href='../background/motivation.html'><b>2.1.</b> Motivation</a>
+<li><a href='../background/influences.html'><b>2.1.</b> Influences</a>
 </li>
-<li><a href='../background/influences.html'><b>2.2.</b> Influences</a>
+<li><a href='../background/why-vm.html'><b>2.2.</b> Why a virtual machine?</a>
+</li>
+<li><a href='../background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
 </li>
 </ul>
 </li>
@@ -52,10 +54,21 @@
 <div id='page'>
 
 
-    <h1 class="title">Motivation</h1>
-    
-<h1 id="why-use-a-virtual-machine-to-execute-programs?" class='section-header'><a
-                           href="#why-use-a-virtual-machine-to-execute-programs?">Why use a virtual machine to execute programs?</a></h1>
+    <h1 class="title">Why use a virtual machine to execute programs?</h1>
+    <blockquote>
+<p>&quot;Any problem in computer science can be solved with another level of indirection.&quot;</p>
+
+<p>&mdash; David Wheeler</p>
+</blockquote>
+
+<p>There are essentially two ways in which computer programs may be executed: either they are compiled directly to the machine code of a given computer architecture and executed by the machine; or they may be fed into another program (an <em>interpreter</em>), which is responsible for evaluating that program&#39;s statements and expressions. As most programmers are likely aware, both of these approaches have their own advantages and disadvantages: compiled programs are typically executed much faster, as there are fewer layers of abstraction between the program and the machine, and because the compiler is able to do much of the work &quot;up front&quot;; while interpreted programs are typically more portable, may be easier to modify or tweak, and provide the program itself with a much greater ability to modify its&#39; own structure.</p>
+
+<p>The use of virtual machines for program execution, as typified by the <a href="http://en.wikipedia.org/wiki/Java_virtual_machine">Java Virtual Machine</a>, provides a hybrid between compilation and interpretation. In this approach, a software program is created that emulates a hardware architecture with its&#39; own instruction set. Programs are then compiled into bytecode that is executed by the virtual machine.</p>
+
+<p>A virtual machine for executing programs has many of the advantages of both comilation and interpretation. Like an interpreted language, as long as the virtual machine binaries are available for a variety of operating systems and environments, programs in the language can be compiled once and run on a wide variety of targets. However, since the language is still being compiled rather than interpreted line-by-line, there is still an opportunity for a compiler to apply optimizations and perform much of the the overhead of transforming human-readable high-level code into machine-readable code. Although the performance benefits of running directly on the CPU may be lost, this means that a compiled program run on a VM may still be significantly faster than an interpreted program. </p>
+
+<p>Furthermore, a virtual machine offers security advantages, by providing an isolated &#39;sandbox&#39; in which programs may be executed with controlled access to system functions and sensitive data. Also, since the virtual machine is software, rather than hardware, it may support more complex primitives or instructions than may reasonably be implemented  as electronics.</p>
+
     <script type="text/javascript">
         window.playgroundUrl = "";
     </script>

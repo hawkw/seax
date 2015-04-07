@@ -1,0 +1,13 @@
+%  Why use a virtual machine to execute programs?
+
+> "Any problem in computer science can be solved with another level of indirection."
+> 
+> &mdash; David Wheeler
+
+There are essentially two ways in which computer programs may be executed: either they are compiled directly to the machine code of a given computer architecture and executed by the machine; or they may be fed into another program (an _interpreter_), which is responsible for evaluating that program's statements and expressions. As most programmers are likely aware, both of these approaches have their own advantages and disadvantages: compiled programs are typically executed much faster, as there are fewer layers of abstraction between the program and the machine, and because the compiler is able to do much of the work "up front"; while interpreted programs are typically more portable, may be easier to modify or tweak, and provide the program itself with a much greater ability to modify its' own structure.
+
+The use of virtual machines for program execution, as typified by the [Java Virtual Machine](http://en.wikipedia.org/wiki/Java_virtual_machine), provides a hybrid between compilation and interpretation. In this approach, a software program is created that emulates a hardware architecture with its' own instruction set. Programs are then compiled into bytecode that is executed by the virtual machine.
+
+A virtual machine for executing programs has many of the advantages of both comilation and interpretation. Like an interpreted language, as long as the virtual machine binaries are available for a variety of operating systems and environments, programs in the language can be compiled once and run on a wide variety of targets. However, since the language is still being compiled rather than interpreted line-by-line, there is still an opportunity for a compiler to apply optimizations and perform much of the the overhead of transforming human-readable high-level code into machine-readable code. Although the performance benefits of running directly on the CPU may be lost, this means that a compiled program run on a VM may still be significantly faster than an interpreted program. 
+
+Furthermore, a virtual machine offers security advantages, by providing an isolated 'sandbox' in which programs may be executed with controlled access to system functions and sensitive data. Also, since the virtual machine is software, rather than hardware, it may support more complex primitives or instructions than may reasonably be implemented  as electronics.
