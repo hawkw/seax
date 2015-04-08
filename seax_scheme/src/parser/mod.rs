@@ -7,9 +7,10 @@ use super::ast::*;
 use super::ast::ExprNode::*;
 
 use std::str::FromStr;
-use std::num::FromStrRadix;
 use std::char;
+use std::error::Error;
 
+#[stable(feature="parser",since="0.0.2")]
 fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
     satisfy(|c| c == 'x' || c == 'X')
         .with( many1(hex_digit()) )
@@ -23,6 +24,7 @@ fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
 /// TODO: add support for octal
 /// TODO: add support for binary
 /// TODO: add support for R6RS exponents
+#[unstable(feature="parser")]
 pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
     fn hex_isize(input: State<&str>) -> ParseResult<isize, &str> {
@@ -70,6 +72,7 @@ pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 /// TODO: add support for octal
 /// TODO: add support for binary
 /// TODO: add support for R6RS exponents
+#[unstable(feature="parser")]
 pub fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
     fn hex_uint(input: State<&str>) -> ParseResult<usize, &str> {
@@ -96,6 +99,7 @@ pub fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 /// i.e. `1F`, are currently not recognized. While this form of number
 /// is not specified by R6RS, I'd like to support it anyway as it's
 /// a common form for floating-point numbers. Priority: low.
+#[stable(feature="parser",since="0.0.2")]
 pub fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
     many1::<String,_>(digit())
         .and(satisfy(|c| c == '.'))
@@ -124,6 +128,7 @@ pub fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 ///
 /// `#t`, `#T`, or `true`  -> `true`
 /// `#f`, `#F`, or `false` -> `false`
+#[stable(feature="parser",since="0.0.2")]
 pub fn bool_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
 
     let t_const = try(string("#t"))
@@ -140,6 +145,7 @@ pub fn bool_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
 }
 
 /// Parses a floating-point, signed integer, or unsigned integer constant.
+#[stable(feature="parser",since="0.0.2")]
 pub fn number(input: State<&str>) -> ParseResult<NumNode, &str> {
     try(parser(sint_const))
         .or(try(parser(uint_const)))
@@ -159,6 +165,7 @@ pub fn number(input: State<&str>) -> ParseResult<NumNode, &str> {
 ///
 /// For more information, consult the
 /// [R6RS](http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-7.html).
+#[stable(feature="parser",since="0.0.2")]
 pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
 
     fn initial(input: State<&str>) -> ParseResult<char, &str> {
@@ -219,6 +226,7 @@ pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
 /// 3. Hex scalar value
 ///     + delimited with the character `x`
 ///     + e.g. `#\x1B` etc.
+#[stable(feature="parser",since="0.0.2")]
 pub fn character(input: State<&str>) -> ParseResult<CharNode, &str> {
 
     fn newline(input: State<&str>) -> ParseResult<char, &str> {
@@ -318,12 +326,13 @@ pub fn character(input: State<&str>) -> ParseResult<CharNode, &str> {
 }
 
 /// Parses a R<sup>6</sup>RS single-line comment
+#[unstable(feature="parser")]
 pub fn line_comment(input: State<&str>) -> ParseResult<(),&str> {
     satisfy(|c| c == ';')
         .with(skip_many(satisfy(|c| c != '\n')).skip(newline()))
         .parse_state(input)
 }
-
+#[stable(feature="parser",since="0.0.2")]
 pub fn string_const(input: State<&str>) -> ParseResult<StringNode, &str> {
 
     fn escape_char(input: State<&str>) -> ParseResult<char, &str> {
@@ -361,6 +370,7 @@ pub fn string_const(input: State<&str>) -> ParseResult<StringNode, &str> {
 
 /// Parses Scheme expressions.
 #[allow(unconditional_recursion)]
+#[stable(feature="parser",since="0.0.2")]
 pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
 
         fn sexpr(input: State<&str>) -> ParseResult<ExprNode, &str> {
@@ -401,6 +411,13 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
                     .or(try(parser(string_const).map(StringConst)))
                 )
             ).parse_state(input)
+}
+#[unstable(feature="parser")]
+pub fn parse(program: &str) -> Result<ExprNode, String> {
+    parser(expr) // todo: this should build a root node instead
+        .parse(program)
+        .map_err(|e| { let mut s = String::new(); s.push_str(e.description()); s} )
+        .map(    |x| x.0 )
 }
 
 #[cfg(test)]

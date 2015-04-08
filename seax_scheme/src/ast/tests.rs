@@ -97,3 +97,73 @@ fn test_compile_mul() {
         ])
     )
 }
+
+#[test]
+fn test_compile_nested_sexpr() {
+    let ast = SExprNode {
+        operator: NameNode { name: "+".to_string() },
+        operands: vec![
+            NumConst(IntConst(IntNode{ value: 4isize })),
+            SExpr(SExprNode {
+                operator: NameNode { name: "-".to_string() },
+                operands: vec![
+                    NumConst(IntConst(IntNode{ value: 1isize })),
+                    NumConst(IntConst(IntNode{ value: 2isize })),
+                    NumConst(IntConst(IntNode{ value: 3isize }))
+                ]
+            })
+        ]
+    };
+    assert_eq!(
+        ast.compile(&SymTable::new()),
+        Ok(vec![
+            InstCell(LDC), AtomCell(SInt(3)),
+            InstCell(LDC), AtomCell(SInt(2)),
+            InstCell(SUB),
+            InstCell(LDC), AtomCell(SInt(1)),
+            InstCell(SUB),
+            InstCell(LDC), AtomCell(SInt(4)),
+            InstCell(ADD)
+        ])
+    )
+}
+
+#[test]
+fn test_compile_gte() {
+    let ast = SExprNode {
+        operator: NameNode { name: ">=".to_string() },
+        operands: vec![
+            NumConst(FloatConst(FloatNode{ value: 1f64 })),
+            NumConst(IntConst(IntNode{ value: 2isize })),
+        ]
+    };
+    assert_eq!(
+        ast.compile(&SymTable::new()),
+        Ok(vec![
+            InstCell(LDC), AtomCell(SInt(2isize)),
+            InstCell(LDC), AtomCell(Float(1f64)),
+            InstCell(GTE)
+        ])
+    )
+}
+
+#[test]
+fn test_compile_lte() {
+    let ast = SExprNode {
+        operator: NameNode { name: "<=".to_string() },
+        operands: vec![
+            NumConst(UIntConst(UIntNode{ value: 3usize })),
+            NumConst(IntConst(IntNode{ value: 2isize })),
+        ]
+    };
+    assert_eq!(
+        ast.compile(&SymTable::new()),
+        Ok(vec![
+            InstCell(LDC), AtomCell(SInt(2isize)),
+            InstCell(LDC), AtomCell(UInt(3usize)),
+            InstCell(LTE)
+        ])
+    )
+}
+
+
