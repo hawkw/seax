@@ -437,6 +437,52 @@
 <span id="395">395</span>
 <span id="396">396</span>
 <span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
 </pre><pre class='rust '>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>SVMCell</span>::<span class='op'>*</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>Atom</span>::<span class='op'>*</span>;
@@ -447,12 +493,17 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>;
 
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>,<span class='ident'>Clone</span>,<span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>SVMCell</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>AtomCell</span>(<span class='ident'>Atom</span>),
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>ListCell</span>(<span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;&gt;</span>),
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>InstCell</span>(<span class='ident'>Inst</span>)
 }
 
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
 <span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>SVMCell</span> {
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
         <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;[{}]&quot;</span>, <span class='self'>self</span>)
@@ -463,18 +514,24 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// A VM atom can be either an unsigned int, signed int, float, or char.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>,<span class='ident'>PartialOrd</span>,<span class='ident'>Copy</span>,<span class='ident'>Clone</span>,<span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Atom</span> {
     <span class='doccomment'>/// Unsigned integer atom (machine size)</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>UInt</span>(<span class='ident'>usize</span>),
     <span class='doccomment'>/// Signed integer atom (machine size)</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>SInt</span>(<span class='ident'>isize</span>),
     <span class='doccomment'>/// Floating point number atom (64-bits)</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>Float</span>(<span class='ident'>f64</span>),
     <span class='doccomment'>/// UTF-8 character atom</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>Char</span>(<span class='ident'>char</span>)
 }
-
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
 <span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Display</span> <span class='kw'>for</span> <span class='ident'>Atom</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
         <span class='kw'>match</span> <span class='self'>self</span> {
             <span class='kw-2'>&amp;</span><span class='ident'>Atom</span>::<span class='ident'>UInt</span>(<span class='ident'>value</span>) <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>value</span>),
@@ -484,10 +541,11 @@
         }
     }
 }
-
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
 <span class='kw'>impl</span> <span class='ident'>ops</span>::<span class='ident'>Add</span> <span class='kw'>for</span> <span class='ident'>Atom</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Atom</span>;
-
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>add</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='ident'>Atom</span>) <span class='op'>-&gt;</span> <span class='ident'>Atom</span> {
         <span class='kw'>match</span> (<span class='self'>self</span>, <span class='ident'>other</span>) {
             <span class='comment'>// same type:  no coercion</span>
@@ -517,10 +575,11 @@
     }
 
 }
-
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
 <span class='kw'>impl</span> <span class='ident'>ops</span>::<span class='ident'>Sub</span> <span class='kw'>for</span> <span class='ident'>Atom</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Atom</span>;
-
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>sub</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='ident'>Atom</span>) <span class='op'>-&gt;</span> <span class='ident'>Atom</span> {
         <span class='kw'>match</span> (<span class='self'>self</span>, <span class='ident'>other</span>) {
             <span class='comment'>// same type:  no coercion</span>
@@ -547,10 +606,11 @@
     }
 
 }
-
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
 <span class='kw'>impl</span> <span class='ident'>ops</span>::<span class='ident'>Div</span> <span class='kw'>for</span> <span class='ident'>Atom</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Atom</span>;
-
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>div</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='ident'>Atom</span>) <span class='op'>-&gt;</span> <span class='ident'>Atom</span> {
         <span class='kw'>match</span> (<span class='self'>self</span>, <span class='ident'>other</span>) {
             <span class='comment'>// same type:  no coercion</span>
@@ -577,10 +637,12 @@
     }
 
 }
-
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
 <span class='kw'>impl</span> <span class='ident'>ops</span>::<span class='ident'>Mul</span> <span class='kw'>for</span> <span class='ident'>Atom</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Atom</span>;
 
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='ident'>Atom</span>) <span class='op'>-&gt;</span> <span class='ident'>Atom</span> {
         <span class='kw'>match</span> (<span class='self'>self</span>, <span class='ident'>other</span>) {
             <span class='comment'>// same type:  no coercion</span>
@@ -607,10 +669,12 @@
     }
 
 }
-
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
 <span class='kw'>impl</span> <span class='ident'>ops</span>::<span class='ident'>Rem</span> <span class='kw'>for</span> <span class='ident'>Atom</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> <span class='ident'>Atom</span>;
 
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>rem</span>(<span class='self'>self</span>, <span class='ident'>other</span>: <span class='ident'>Atom</span>) <span class='op'>-&gt;</span> <span class='ident'>Atom</span> {
         <span class='kw'>match</span> (<span class='self'>self</span>, <span class='ident'>other</span>) {
             <span class='comment'>// same type:  no coercion</span>
@@ -640,12 +704,15 @@
 
 <span class='doccomment'>/// SVM instruction types</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>,<span class='ident'>Copy</span>,<span class='ident'>Clone</span>,<span class='ident'>PartialEq</span>)]</span>
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Inst</span> {
     <span class='doccomment'>/// `nil`</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Pusizehes an empty list (nil) onto the stack</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>NIL</span>,
     <span class='doccomment'>/// `ldc`: `L`oa`d` `C`onstant. Loads a constant (atom)</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>LDC</span>,
     <span class='doccomment'>/// `ld`: `L`oa`d`. Pusizehes a variable onto the stack.</span>
     <span class='doccomment'>///</span>
@@ -653,18 +720,21 @@
     <span class='doccomment'>/// The pair&#39;s `car` specifies the level, the `cdr` the position.</span>
     <span class='doccomment'>/// So `(1 . 3)` gives the current function&#39;s (level 1) third</span>
     <span class='doccomment'>/// parameter.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>LD</span>,
     <span class='doccomment'>/// `ldf`: `L`oa`d` `F`unction.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>///  Takes one list argument representing a function and constructs</span>
     <span class='doccomment'>///  a closure (a pair containing the function and the current</span>
     <span class='doccomment'>///  environment) and pusizehes that onto the stack.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>LDF</span>,
     <span class='doccomment'>/// `join`</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Pops a list reference from the dump and makes thisize the new value</span>
     <span class='doccomment'>/// of `C`. This instruction occurs at the end of both alternatives of</span>
     <span class='doccomment'>///  a `sel`.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>JOIN</span>,
     <span class='doccomment'>/// `ap`: `Ap`ply.</span>
     <span class='doccomment'>///</span>
@@ -674,21 +744,25 @@
     <span class='doccomment'>/// in front of that, clearing the stack, and setting `C` to the</span>
     <span class='doccomment'>/// closure&#39;s function pointer. The previous values of `S`, `E`,</span>
     <span class='doccomment'>///  and the next value of `C` are saved on the dump.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>AP</span>,
     <span class='doccomment'>/// `ret`: `Ret`urn.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Pops one return value from the stack, restores</span>
     <span class='doccomment'>/// `S`, `E`, and `C` from the dump, and pusizehes</span>
     <span class='doccomment'>/// the return value onto the now-current stack.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>RET</span>,
     <span class='doccomment'>/// `dum`: `Dum`my.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Pops a dummy environment (an empty list) onto the `E` stack.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>DUM</span>,
     <span class='doccomment'>/// `rap`: `R`ecursive `Ap`ply.</span>
     <span class='doccomment'>/// Works like `ap`, only that it replaces an occurrence of a</span>
     <span class='doccomment'>/// dummy environment with the current one, thusize making recursive</span>
     <span class='doccomment'>///  functions possible.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>RAP</span>,
     <span class='doccomment'>/// `sel`: `Sel`ect branch</span>
     <span class='doccomment'>///</span>
@@ -697,6 +771,7 @@
     <span class='doccomment'>/// was non-nil, the second list otherwise. Before one of these list</span>
     <span class='doccomment'>/// pointers is made the new `C`, a pointer to the instruction</span>
     <span class='doccomment'>/// following `sel` is saved on the dump.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>SEL</span>,
     <span class='doccomment'>/// `add`</span>
     <span class='doccomment'>///</span>
@@ -706,6 +781,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// TODO: figure out what happens when you try to add things that aren&#39;t</span>
     <span class='doccomment'>/// numbers (maybe the compiler won&#39;t let thisize happen?).</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>ADD</span>,
     <span class='doccomment'>/// `sub`: `Sub`tract</span>
     <span class='doccomment'>///</span>
@@ -715,6 +791,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// TODO: figure out what happens when you try to subtract things that</span>
     <span class='doccomment'>/// aren&#39;t numbers (maybe the compiler won&#39;t let thisize happen?).</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>SUB</span>,
     <span class='doccomment'>/// `mul`: `Mul`tiply</span>
     <span class='doccomment'>///</span>
@@ -724,6 +801,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// TODO: figure out what happens when you try to multiply things that</span>
     <span class='doccomment'>/// aren&#39;t numbers (maybe the compiler won&#39;t let thisize happen?).</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>MUL</span>,
     <span class='doccomment'>/// `div`: `Div`ide</span>
     <span class='doccomment'>///</span>
@@ -732,6 +810,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// TODO: figure out what happens when you try to divide things that</span>
     <span class='doccomment'>/// aren&#39;t numbers (maybe the compiler won&#39;t let thisize happen?).</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>DIV</span>,
     <span class='doccomment'>/// `fdiv`: `F`loating-point `div`ide</span>
     <span class='doccomment'>///</span>
@@ -743,6 +822,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// TODO: Not sure if there should be separate float and int divide words</span>
     <span class='doccomment'>/// I guess the compiler can figure this out</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>FDIV</span>,
     <span class='doccomment'>/// `mod`: `Mod`ulo</span>
     <span class='doccomment'>///</span>
@@ -751,60 +831,72 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// TODO: figure out what happens when you try to modulo things that</span>
     <span class='doccomment'>/// aren&#39;t numbers (maybe the compiler won&#39;t let this happen?).</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>MOD</span>,
     <span class='doccomment'>/// `eq`: `Eq`uality of atoms</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>EQ</span>,
     <span class='doccomment'>/// `gt`: `G`reater `t`han</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Pops two numbers on the stack and puts a &#39;true&#39; on the stack</span>
     <span class='doccomment'>/// if the first atom isize greater than the other atom, false otherwisizee.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>GT</span>,
     <span class='doccomment'>/// `gte`: `G`reater `t`han or `e`qual</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>GTE</span>,
     <span class='doccomment'>/// `lt`: `L`ess `t`han</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>LT</span>,
     <span class='doccomment'>/// `lte`: `L`ess `t`han or `e`qual</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>LTE</span>,
     <span class='doccomment'>/// `atom`: test if `atom`</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Pops an item from the stack and returns true if it&#39;s an atom, false</span>
     <span class='doccomment'>/// otherwise.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>ATOM</span>,
     <span class='doccomment'>/// `car`: `C`ontents of `A`ddress `R`egister</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Pops a list from the stack and returns the list&#39;s `car` (head)</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>CAR</span>,
     <span class='doccomment'>/// `cdr`: `C`ontents of `D`ecrement `R`egister</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Pops a list from the stack and returns the list&#39;s `cdr` (tail)</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>CDR</span>,
     <span class='doccomment'>/// `cons`: `Cons`truct</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Pops an item and a list from the stack and returns the list, with</span>
     <span class='doccomment'>/// the item prepended.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>CONS</span>,
     <span class='doccomment'>/// `null`: test if `null`</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>///  Pops an item from the stack and returns true if it is `nil`, false</span>
     <span class='doccomment'>///  otherwise.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.0&quot;</span>)]</span>
     <span class='ident'>NULL</span>,
     <span class='doccomment'>/// `stop`: `stop` execution</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Terminates program execution. The `eval_program()` function will return</span>
     <span class='doccomment'>/// the last state of the VM.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_core&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.1.2&quot;</span>)]</span>
     <span class='ident'>STOP</span>,
     <span class='doccomment'>/// `readc`: `read` `c`haracter</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Reads a character from the machine&#39;s input stream and places it</span>
     <span class='doccomment'>/// on top of the stack</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_io&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.2.0&quot;</span>)]</span>
     <span class='ident'>READC</span>,
     <span class='doccomment'>/// `writec`: `write` `c`haracter</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Writes a character from the top of the stack to the machine&#39;s</span>
     <span class='doccomment'>/// output stream.</span>
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;vm_io&quot;</span>, <span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.2.0&quot;</span>)]</span>
     <span class='ident'>WRITEC</span>,
-    <span class='comment'>// TODO: add some hardcoded I/O instructions here so that you can</span>
-    <span class='comment'>//  do I/O without farming everything out to `stdio`</span>
 }
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>

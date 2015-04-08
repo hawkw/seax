@@ -41,9 +41,9 @@
     </nav>
 
     <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>seax_svm</a>::<wbr><a href='index.html'>slist</a>::<wbr><a class='trait' href=''>Stack</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>seax_svm</a>::<wbr><a href='index.html'>slist</a>::<wbr><a class='trait' href=''>Stack</a><wbr><a class='stability Stable' title=''>Stable</a></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-11' href='../../src/seax_svm/slist.rs.html#28-45'>[src]</a></span></h1>
+        </span><a id='src-11' href='../../src/seax_svm/slist.rs.html#30-51'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Stack&lt;T&gt; {
     fn <a href='#tymethod.push' class='fnname'>push</a>(self, item: T) -&gt; Self;
     fn <a href='#tymethod.pop' class='fnname'>pop</a>(self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(T, Self)</a>&gt;;
@@ -53,18 +53,18 @@
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.push' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.push' class='fnname'>push</a>(self, item: T) -&gt; Self</code></h3><div class='docblock'><p>Push an item to the top of the stack, returning a new stack</p>
-</div><h3 id='tymethod.pop' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.pop' class='fnname'>pop</a>(self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(T, Self)</a>&gt;</code></h3><div class='docblock'><p>Pop the top element of the stack. Returns an Option on a T and
+        <h3 id='tymethod.push' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#tymethod.push' class='fnname'>push</a>(self, item: T) -&gt; Self</code></h3><div class='docblock'><p>Push an item to the top of the stack, returning a new stack</p>
+</div><h3 id='tymethod.pop' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#tymethod.pop' class='fnname'>pop</a>(self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(T, Self)</a>&gt;</code></h3><div class='docblock'><p>Pop the top element of the stack. Returns an Option on a T and
 a new Stack<T> to replace this.</p>
-</div><h3 id='tymethod.peek' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.peek' class='fnname'>peek</a>(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;T&gt;</code></h3><div class='docblock'><p>Peek at the top item of the stack.</p>
+</div><h3 id='tymethod.peek' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#tymethod.peek' class='fnname'>peek</a>(&amp;self) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;T&gt;</code></h3><div class='docblock'><p>Peek at the top item of the stack.</p>
 
 <p>Returns Some<T> if there is an item on top of the stack,
 and None if the stack is empty.</p>
-</div><h3 id='tymethod.empty' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#tymethod.empty' class='fnname'>empty</a>() -&gt; Self</code></h3><div class='docblock'><p>Returns an empty stack.</p>
+</div><h3 id='tymethod.empty' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#tymethod.empty' class='fnname'>empty</a>() -&gt; Self</code></h3><div class='docblock'><p>Returns an empty stack.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;T&gt; <a class='trait' href='../../seax_svm/slist/trait.Stack.html' title='seax_svm::slist::Stack'>Stack</a>&lt;T&gt; for <a class='enum' href='../../seax_svm/slist/enum.List.html' title='seax_svm::slist::List'>List</a>&lt;T&gt;</code></li>
+    <li><a class='stability Stable' title='Stable'></a><code>impl&lt;T&gt; <a class='trait' href='../../seax_svm/slist/trait.Stack.html' title='seax_svm::slist::Stack'>Stack</a>&lt;T&gt; for <a class='enum' href='../../seax_svm/slist/enum.List.html' title='seax_svm::slist::List'>List</a>&lt;T&gt;</code></li>
 </ul><script type="text/javascript" async
                               src="../../implementors/seax_svm/slist/trait.Stack.js">
                       </script></section>
