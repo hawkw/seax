@@ -7,7 +7,6 @@ use super::ast::*;
 use super::ast::ExprNode::*;
 
 use std::str::FromStr;
-use std::num::FromStrRadix;
 use std::char;
 use std::error::Error;
 
