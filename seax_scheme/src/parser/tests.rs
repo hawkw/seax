@@ -163,6 +163,71 @@ fn test_parse_arith() {
         );
 }
 
+/// This is the parsing component of the CAR integration target
+///
+/// ```lisp
+/// (car (cons 10 (cons 20 nil)))
+/// ```
+#[test]
+fn test_parse_car() {
+    assert_eq!(
+        parser(expr).parse("(car (cons 10 (cons 20 nil)))"),
+        Ok((
+            SExpr(SExprNode {
+                operator: NameNode { name: "car".to_string() },
+                operands: vec![
+                    SExpr(SExprNode {
+                        operator: NameNode { name: "cons".to_string() },
+                        operands: vec![
+                            NumConst(IntConst(IntNode{ value: 10 })),
+                            SExpr(SExprNode {
+                                operator: NameNode { name: "cons".to_string() },
+                                operands: vec![
+                                    NumConst(IntConst(IntNode{ value: 20 })),
+                                    Name(NameNode { name: "nil".to_string() })
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            }),
+            ""))
+        );
+}
+
+
+/// This is the parsing component of the CDR integration target
+///
+/// ```lisp
+/// (cdr (cons 10 (cons 20 nil)))
+/// ```
+#[test]
+fn test_parse_cdr() {
+    assert_eq!(
+        parser(expr).parse("(cdr (cons 10 (cons 20 nil)))"),
+        Ok((
+            SExpr(SExprNode {
+                operator: NameNode { name: "cdr".to_string() },
+                operands: vec![
+                    SExpr(SExprNode {
+                        operator: NameNode { name: "cons".to_string() },
+                        operands: vec![
+                            NumConst(IntConst(IntNode{ value: 10 })),
+                            SExpr(SExprNode {
+                                operator: NameNode { name: "cons".to_string() },
+                                operands: vec![
+                                    NumConst(IntConst(IntNode{ value: 20 })),
+                                    Name(NameNode { name: "nil".to_string() })
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            }),
+            ""))
+        );
+}
+
 /// This is the parsing component of nested arithmetic
 /// integration target
 ///

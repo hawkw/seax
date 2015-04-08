@@ -10,6 +10,9 @@ use std::str::FromStr;
 use std::char;
 use std::error::Error;
 
+#[cfg(test)]
+mod tests;
+
 #[stable(feature="parser",since="0.0.2")]
 fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
     satisfy(|c| c == 'x' || c == 'X')
@@ -463,6 +466,3 @@ pub fn parse(program: &str) -> Result<ExprNode, String> {
         .map_err(|e| { let mut s = String::new(); s.push_str(e.description()); s} )
         .map(    |x| x.0 )
 }
-
-#[cfg(test)]
-mod tests;
