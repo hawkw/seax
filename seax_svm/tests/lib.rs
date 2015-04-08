@@ -1,5 +1,5 @@
-
 #![feature(box_syntax,box_patterns)]
+
 #[macro_use]
 extern crate seax_svm as svm;
 

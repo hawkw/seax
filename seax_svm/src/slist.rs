@@ -18,6 +18,7 @@ use std::ops::Index;
 /// # }
 /// ```
 #[macro_export]
+#[stable(feature="list", since="0.1.0")]
 macro_rules! list(
     ( $e:expr, $($rest:expr),+ ) => ( Cons($e, Box::new(list!( $( $rest ),+ )) ));
     ( $e:expr ) => ( Cons($e, Box::new(Nil)) );
@@ -25,22 +26,27 @@ macro_rules! list(
 );
 
 /// Common functions for an immutable Stack abstract data type.
+#[stable(feature="stack", since="0.1.0")]
 pub trait Stack<T> {
 
     /// Push an item to the top of the stack, returning a new stack
+    #[stable(feature="stack", since="0.1.0")]
     fn push(self, item : T) -> Self;
 
     /// Pop the top element of the stack. Returns an Option on a T and
     /// a new Stack<T> to replace this.
+    #[stable(feature="stack", since="0.1.0")]
     fn pop(self)            -> Option<(T, Self)>;
 
     /// Peek at the top item of the stack.
     ///
     /// Returns Some<T> if there is an item on top of the stack,
     /// and None if the stack is empty.
+    #[stable(feature="stack", since="0.1.0")]
     fn peek(&self)          -> Option<&T>;
 
     /// Returns an empty stack.
+    #[stable(feature="stack", since="0.1.0")]
     fn empty()              -> Self;
 }
 
@@ -60,6 +66,7 @@ impl<T> Stack<T> for List<T> {
     /// s = s.push(6);
     /// assert_eq!(s.peek(), Some(&6));
     /// ```
+    #[stable(feature="stack", since="0.1.0")]
     fn push(self, item: T) -> List<T> {
         Cons(item, box self)
     }
@@ -83,6 +90,7 @@ impl<T> Stack<T> for List<T> {
     /// assert_eq!(s.peek(), Some(&2));
     /// assert_eq!(pop_result.0, 1);
     /// ```
+    #[stable(feature="stack", since="0.1.0")]
     fn pop(self) -> Option<(T,List<T>)> {
         match self {
             Cons(item, new_self)    => Some((item, *new_self)),
@@ -90,6 +98,7 @@ impl<T> Stack<T> for List<T> {
         }
     }
 
+    #[stable(feature="stack", since="0.1.0")]
     fn empty() -> List<T> {
         Nil
     }
@@ -113,6 +122,7 @@ impl<T> Stack<T> for List<T> {
     /// assert_eq!(s.peek(), Some(&2));
     /// assert_eq!(pop_result.0, 1);
     /// ```
+    #[stable(feature="stack", since="0.1.0")]
     fn peek(&self) -> Option<&T> {
         match self {
             &Nil => None,
@@ -127,18 +137,23 @@ impl<T> Stack<T> for List<T> {
 /// This is used internally to represent list primitives in the
 /// machine.
 #[derive(PartialEq,Clone,Debug)]
+#[stable(feature="list", since="0.1.0")]
 pub enum List<T> {
     /// Cons cell containing a `T` and a link to the tail
+    #[stable(feature="list", since="0.1.0")]
     Cons(T, Box<List<T>>),
     /// The empty list.
+    #[stable(feature="list", since="0.1.0")]
     Nil,
 }
 
 /// Public implementation for List.
+#[stable(feature="list", since="0.1.0")]
 impl<T> List<T> {
 
 
     /// Creates a new empty list
+    #[stable(feature="list", since="0.1.0")]
     pub fn new() -> List<T> {
         Nil
     }
@@ -147,6 +162,7 @@ impl<T> List<T> {
     ///
     /// Returns the list containing the new  head item.
     /// This is an O(1) operation.
+    #[stable(feature="list", since="0.1.0")]
     pub fn prepend(self, it: T) -> List<T> {
         Cons(it, box self)
     }
@@ -154,11 +170,13 @@ impl<T> List<T> {
     /// Appends an item to the end of the list.
     ///
     /// This is an O(n) operation.
+    #[unstable(feature="list")]
     pub fn append(self, it: T) {
         unimplemented!()
     }
 
     /// Returns the length of the list.
+    #[stable(feature="list", since="0.1.0")]
     pub fn length (&self) -> usize {
         match *self {
             Cons(_, ref tail) => 1 + tail.length(),
@@ -168,10 +186,13 @@ impl<T> List<T> {
 
     /// Provide a forward iterator
     #[inline]
+    #[stable(feature="list", since="0.1.0")]
     pub fn iter<'a>(&'a self) -> ListIterator<'a, T> {
         ListIterator{current: self}
     }
 
+    /// Returns the last element of the list
+    #[stable(feature="list", since="0.1.0")]
     pub fn last(&self) -> &T {
         match *self {
             Cons(ref car, box Nil) => &car,
@@ -181,8 +202,9 @@ impl<T> List<T> {
     }
 }
 
+#[unstable(feature="list")]
 impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
-
+    #[unstable(feature="list")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         // TODO: replace toString with this
         match *self {
@@ -193,12 +215,14 @@ impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
 }
 
 /// Wraps a List<T> to allow it to be used as an Iterator<T>
+#[stable(feature="list", since="0.1.0")]
 pub struct ListIterator<'a, T:'a> {
     current: &'a List<T>
 }
 
 /// Implementation of Iterator for List. This allows iteration by
 /// link hopping.
+#[stable(feature="list", since="0.1.0")]
 impl<'a, T> Iterator for ListIterator<'a, T> {
     type Item = &'a T;
 
@@ -236,6 +260,7 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
     /// assert_eq!(string, "1, 2, 3, 4, 5, 6, ".to_string())
     /// # }
     /// ```
+    #[stable(feature="list", since="0.1.0")]
     fn next(&mut self) -> Option<&'a T> {
         match self.current {
             &Cons(ref head, box ref tail) => { self.current = tail; Some(head) },
@@ -243,7 +268,7 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
         }
     }
 }
-
+#[stable(feature="list", since="0.1.0")]
 impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
     fn len(&self) -> usize {
         self.current.length()
@@ -262,9 +287,11 @@ impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
 /// assert_eq!(list[0us], 1);
 /// # }
 /// ```
+#[stable(feature="list", since="0.1.0")]
 impl<T> Index<usize> for List<T> {
+    #[stable(feature="list", since="0.1.0")]
     type Output = T;
-
+    #[stable(feature="list", since="0.1.0")]
     fn index<'a>(&'a self, _index: usize) -> &'a T {
         match _index {
             0usize => match *self {
@@ -302,9 +329,12 @@ impl<T> Index<usize> for List<T> {
 /// assert_eq!(list[0is], 1);
 /// # }
 /// ```
+#[stable(feature="list", since="0.1.0")]
 impl<T> Index<isize> for List<T> {
+    #[stable(feature="list", since="0.1.0")]
     type Output = T;
 
+    #[stable(feature="list", since="0.1.0")]
     fn index<'a>(&'a self, _index: isize) -> &'a T {
         match _index {
             0isize => match *self {
