@@ -151,19 +151,11 @@ fn test_lex_bool() {
         Ok((BoolNode { value: true}, ""))
         );
     assert_eq!(
-        parser(bool_const).parse("true"),
-        Ok((BoolNode { value: true}, ""))
-        );
-    assert_eq!(
         parser(bool_const).parse("#f"),
         Ok((BoolNode { value: false}, ""))
         );
     assert_eq!(
         parser(bool_const).parse("#F"),
-        Ok((BoolNode { value: false}, ""))
-        );
-    assert_eq!(
-        parser(bool_const).parse("false"),
         Ok((BoolNode { value: false}, ""))
         );
 }

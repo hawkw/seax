@@ -119,28 +119,28 @@ pub fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
 /// Parses boolean constants.
 ///
-/// Note that this parser recognizes the strings `"true"` and `"false"`
-/// as true and false. While this is not specified in R6RS, the use of
-/// these tokens is common enough in other programming languages that
-/// I've decided that Seax Scheme should support it as well. This may
-/// be removed in a future version if it causes unforseen compatibility
-/// issues.
-///
-/// `#t`, `#T`, or `true`  -> `true`
-/// `#f`, `#F`, or `false` -> `false`
+/// `#t`, `#T` -> `true`
+/// `#f`, `#F` -> `false`
 #[stable(feature="parser",since="0.0.2")]
 pub fn bool_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
 
-    let t_const = try(string("#t"))
-        .or(try(string("#T")))
-        .or(try(string("true")))
-        .map(|_| BoolNode{ value: true });
-    let f_const = try(string("#f"))
-        .or(try(string("#F")))
-        .or(try(string("false")))
-        .map(|_| BoolNode{ value: false });
-    t_const
-        .or(f_const)
+    fn t_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
+        try(satisfy(|c| c == 't' || c == 'T'))
+            .map(|_| BoolNode{ value: true })
+            .parse_state(input)
+    }
+
+    fn f_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
+        try(satisfy(|c| c == 'f' || c == 'F'))
+            .map(|_| BoolNode{ value: false })
+            .parse_state(input)
+    }
+
+    satisfy(|c| c == '#')
+        .with(
+            parser(t_const)
+                .or(parser(f_const))
+            )
         .parse_state(input)
 }
 
