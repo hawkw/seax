@@ -206,14 +206,7 @@ pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
     }
 
     fn rest(input: State<&str>) -> ParseResult<String, &str> {
-        many::<Vec<_>, _>(parser(subsequent))
-            .map(|it|
-                it.iter().fold(
-                    String::new(),
-                    |mut s: String, i| {
-                        s.push(*i);
-                        s
-                    }) )
+        many::<String, _>(parser(subsequent))
             .parse_state(input)
     }
 
@@ -389,32 +382,32 @@ pub fn string_const(input: State<&str>) -> ParseResult<StringNode, &str> {
 pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
 
     fn sexpr(input: State<&str>) -> ParseResult<ExprNode, &str> {
-            between(
-                satisfy(|c| c == '('),
-                satisfy(|c| c == ')'),
-                parser(name)
-                    .and(many(parser(expr)))
-                    .map(|x| {
-                        SExpr(SExprNode {
-                            operator: x.0,
-                            operands: x.1
-                        })
+        between(
+            satisfy(|c| c == '('),
+            satisfy(|c| c == ')'),
+            parser(name)
+                .and(many(parser(expr)))
+                .map(|x| {
+                    SExpr(SExprNode {
+                        operator: x.0,
+                        operands: x.1
                     })
-            ).parse_state(input)
-        }
+                })
+        ).parse_state(input)
+    }
 
     fn list(input: State<&str>) -> ParseResult<ExprNode, &str>{
-            between(
-                satisfy(|c| c == '('),
-                satisfy(|c| c == ')'),
-                many(parser(expr))
-                    .map(|x| {
-                        ListConst(ListNode {
-                            elements: x
-                        })
+        between(
+            satisfy(|c| c == '('),
+            satisfy(|c| c == ')'),
+            many(parser(expr))
+                .map(|x| {
+                    ListConst(ListNode {
+                        elements: x
                     })
-            ).parse_state(input)
-        }
+                })
+        ).parse_state(input)
+    }
 
     fn constant(input: State<&str>) -> ParseResult<ExprNode, &str>{
         try(parser(number).map(NumConst))
