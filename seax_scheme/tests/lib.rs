@@ -112,12 +112,8 @@ fn compile_nested_arith() {
 /// ```lisp
 /// ((if (= 0 (- 1 1)) #t #f)
 /// ```
-///
-/// ```lisp
-/// (+ 10 (if (nil? nil) 10 20))
-/// ```
 #[test]
-fn compile_basic_branching() {
+fn compile_basic_branching_1() {
     assert_eq!(
         scheme::compile("((if (= 0 (- 1 1)) #t #f)"),
         Ok(list!(
@@ -131,6 +127,13 @@ fn compile_basic_branching() {
             )
         ))
     );
+}
+///
+/// ```lisp
+/// (+ 10 (if (nil? nil) 10 20))
+/// ```
+#[test]
+fn compile_basic_branching_2() {
     assert_eq!(
         scheme::compile("(+ 10 (if (nil? nil) 10 20))"),
         Ok(list!(
