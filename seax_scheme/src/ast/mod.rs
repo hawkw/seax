@@ -195,7 +195,18 @@ impl ASTNode for SExprNode {
                 }
                 Ok(result)
             },
-            ref op if op.is_kw()    => unimplemented!(),
+            ref op if op.is_kw()    => {
+                let mut result = Vec::new();
+                let mut it = self.operands.iter().rev();
+                // TODO: can thsi be represented with a reduce/fold?
+                result.push_all(try!(
+                    it.next().unwrap().compile(state)).as_slice());
+                for ref operand in it {
+                    result.push_all(try!(operand.compile(state)).as_slice());
+                    result.push_all(&try!(op.compile(state)));
+                }
+                Ok(result)
+            },
             ref op                  => match state.get(&op.name.as_ref()) {
                 Some(&(x,y)) => Ok(vec!(
                     // TODO: finish
@@ -290,7 +301,8 @@ impl NameNode {
             | "scode-quote" | "declare" | "let" | "sequence" | "default-object?"
             | "let*" | "set!" | "define" | "let-syntax" | "the-environment"
             | "define-integrable" | "letrec" | "unassigned?" | "define-macro"
-            | "local-declare" | "using-syntax" | "define-structure" => true,
+            | "local-declare" | "using-syntax" | "define-structure" | "car"
+            | "cdr" | "cons" | "nil" | "nil?" | "atom?" => true,
             _ => false
         }
     }
@@ -318,7 +330,17 @@ impl NameNode {
 impl ASTNode for NameNode {
     #[unstable(feature="compile")]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED".to_string())
+        match self.name.as_ref() {
+            "cons"   => Ok(vec![InstCell(CONS)]),
+            "car"    => Ok(vec![InstCell(CAR)]),
+            "cdr"    => Ok(vec![InstCell(CDR)]),
+            "nil"    => Ok(vec![InstCell(NIL)]),
+            "atom?"  => Ok(vec![InstCell(ATOM)]),
+            ref name => match state.get(&name) {
+                Some(&(x,y)) =>  unimplemented!(),
+                None         => Err(format!("[error] Unknown identifier `{}`", name))
+            }
+        }
     }
 
     #[stable(feature = "ast", since = "0.0.2")]
