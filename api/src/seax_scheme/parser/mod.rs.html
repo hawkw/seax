@@ -464,6 +464,50 @@
 <span id="422">422</span>
 <span id="423">423</span>
 <span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
 </pre><pre class='rust '>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>parser_combinators</span>;
 
@@ -476,6 +520,9 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>FromStr</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>char</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>::<span class='ident'>Error</span>;
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='kw'>mod</span> <span class='ident'>tests</span>;
 
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;parser&quot;</span>,<span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>fn</span> <span class='ident'>hex_scalar</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
@@ -494,7 +541,7 @@
 <span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;parser&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>sint_const</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>NumNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
 
-    <span class='kw'>fn</span> <span class='ident'>hex_isize</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>isize</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>hex_int</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>isize</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
         <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;#&#39;</span>)
             .<span class='ident'>with</span>(<span class='ident'>parser</span>(<span class='ident'>hex_scalar</span>)
                     .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>isize</span>::<span class='ident'>from_str_radix</span>(<span class='ident'>x</span>.<span class='ident'>as_ref</span>(), <span class='number'>16</span>).<span class='ident'>unwrap</span>()) )
@@ -502,7 +549,7 @@
     }
 
 
-    <span class='kw'>fn</span> <span class='ident'>dec_string</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>isize</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>dec_int</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>isize</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
         <span class='ident'>optional</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;#&#39;</span>)
             .<span class='ident'>and</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;d&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;D&#39;</span>)))
             .<span class='ident'>with</span>(<span class='ident'>many1</span>::<span class='op'>&lt;</span><span class='ident'>String</span>, _<span class='op'>&gt;</span>(<span class='ident'>digit</span>())
@@ -510,11 +557,16 @@
             .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
     }
 
-    <span class='ident'>optional</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;-&#39;</span>))
-        .<span class='ident'>and</span>(
-            <span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>hex_isize</span>))
-            .<span class='ident'>or</span>(<span class='ident'>parser</span>(<span class='ident'>dec_string</span>))
-            )
+    <span class='kw'>fn</span> <span class='ident'>signed</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span>(<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>char</span><span class='op'>&gt;</span>,<span class='ident'>isize</span>), <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+        <span class='ident'>optional</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;-&#39;</span>))
+            .<span class='ident'>and</span>(
+                <span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>hex_int</span>))
+                .<span class='ident'>or</span>(<span class='ident'>parser</span>(<span class='ident'>dec_int</span>))
+                )
+            .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+    }
+
+    <span class='ident'>parser</span>(<span class='ident'>signed</span>)
         .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
             <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>sign</span>) <span class='op'>=</span> <span class='ident'>x</span>.<span class='number'>0</span> {
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
@@ -549,10 +601,14 @@
             .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
     }
 
-    <span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>hex_uint</span>))
-        .<span class='ident'>or</span>( <span class='ident'>many1</span>::<span class='op'>&lt;</span><span class='ident'>String</span>, _<span class='op'>&gt;</span>(<span class='ident'>digit</span>())
+    <span class='kw'>fn</span> <span class='ident'>dec_uint</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>usize</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+        <span class='ident'>many1</span>::<span class='op'>&lt;</span><span class='ident'>String</span>, _<span class='op'>&gt;</span>(<span class='ident'>digit</span>())
             .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span><span class='ident'>usize</span>::<span class='ident'>from_str</span>(<span class='ident'>x</span>.<span class='ident'>as_ref</span>()).<span class='ident'>unwrap</span>() )
-            )
+            .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+    }
+
+    <span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>hex_uint</span>))
+        .<span class='ident'>or</span>(<span class='ident'>parser</span>(<span class='ident'>dec_uint</span>))
         .<span class='ident'>skip</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;u&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;U&#39;</span>))
         .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span>: <span class='ident'>usize</span><span class='op'>|</span> <span class='ident'>NumNode</span>::<span class='ident'>UIntConst</span>(<span class='ident'>UIntNode</span>{<span class='ident'>value</span>: <span class='ident'>x</span>}))
         .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
@@ -568,9 +624,15 @@
 <span class='doccomment'>/// a common form for floating-point numbers. Priority: low.</span>
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;parser&quot;</span>,<span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>float_const</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>NumNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
-    <span class='ident'>many1</span>::<span class='op'>&lt;</span><span class='ident'>String</span>,_<span class='op'>&gt;</span>(<span class='ident'>digit</span>())
-        .<span class='ident'>and</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;.&#39;</span>))
-        .<span class='ident'>and</span>(<span class='ident'>many1</span>::<span class='op'>&lt;</span><span class='ident'>String</span>, _<span class='op'>&gt;</span>(<span class='ident'>digit</span>()))
+
+    <span class='kw'>fn</span> <span class='ident'>float_str</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span>((<span class='ident'>String</span>, <span class='ident'>char</span>), <span class='ident'>String</span>), <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+        <span class='ident'>many1</span>::<span class='op'>&lt;</span><span class='ident'>String</span>,_<span class='op'>&gt;</span>(<span class='ident'>digit</span>())
+            .<span class='ident'>and</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;.&#39;</span>))
+            .<span class='ident'>and</span>(<span class='ident'>many1</span>::<span class='op'>&lt;</span><span class='ident'>String</span>, _<span class='op'>&gt;</span>(<span class='ident'>digit</span>()))
+            .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+    }
+
+    <span class='ident'>parser</span>(<span class='ident'>float_str</span>)
         .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
             <span class='ident'>s</span>.<span class='ident'>push_str</span>( (<span class='ident'>x</span>.<span class='number'>0</span>).<span class='number'>0</span>.<span class='ident'>as_ref</span>() );
@@ -586,28 +648,28 @@
 
 <span class='doccomment'>/// Parses boolean constants.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// Note that this parser recognizes the strings `&quot;true&quot;` and `&quot;false&quot;`</span>
-<span class='doccomment'>/// as true and false. While this is not specified in R6RS, the use of</span>
-<span class='doccomment'>/// these tokens is common enough in other programming languages that</span>
-<span class='doccomment'>/// I&#39;ve decided that Seax Scheme should support it as well. This may</span>
-<span class='doccomment'>/// be removed in a future version if it causes unforseen compatibility</span>
-<span class='doccomment'>/// issues.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// `#t`, `#T`, or `true`  -&gt; `true`</span>
-<span class='doccomment'>/// `#f`, `#F`, or `false` -&gt; `false`</span>
+<span class='doccomment'>/// `#t`, `#T` -&gt; `true`</span>
+<span class='doccomment'>/// `#f`, `#F` -&gt; `false`</span>
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;parser&quot;</span>,<span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>bool_const</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>BoolNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
 
-    <span class='kw'>let</span> <span class='ident'>t_const</span> <span class='op'>=</span> <span class='ident'>try</span>(<span class='ident'>string</span>(<span class='string'>&quot;#t&quot;</span>))
-        .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>string</span>(<span class='string'>&quot;#T&quot;</span>)))
-        .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>string</span>(<span class='string'>&quot;true&quot;</span>)))
-        .<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>BoolNode</span>{ <span class='ident'>value</span>: <span class='boolval'>true</span> });
-    <span class='kw'>let</span> <span class='ident'>f_const</span> <span class='op'>=</span> <span class='ident'>try</span>(<span class='ident'>string</span>(<span class='string'>&quot;#f&quot;</span>))
-        .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>string</span>(<span class='string'>&quot;#F&quot;</span>)))
-        .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>string</span>(<span class='string'>&quot;false&quot;</span>)))
-        .<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>BoolNode</span>{ <span class='ident'>value</span>: <span class='boolval'>false</span> });
-    <span class='ident'>t_const</span>
-        .<span class='ident'>or</span>(<span class='ident'>f_const</span>)
+    <span class='kw'>fn</span> <span class='ident'>t_const</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>BoolNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+        <span class='ident'>try</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;t&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;T&#39;</span>))
+            .<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>BoolNode</span>{ <span class='ident'>value</span>: <span class='boolval'>true</span> })
+            .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>f_const</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>BoolNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+        <span class='ident'>try</span>(<span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;f&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;F&#39;</span>))
+            .<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>BoolNode</span>{ <span class='ident'>value</span>: <span class='boolval'>false</span> })
+            .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+    }
+
+    <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;#&#39;</span>)
+        .<span class='ident'>with</span>(
+            <span class='ident'>parser</span>(<span class='ident'>t_const</span>)
+                .<span class='ident'>or</span>(<span class='ident'>parser</span>(<span class='ident'>f_const</span>))
+            )
         .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
 }
 
@@ -635,49 +697,68 @@
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;parser&quot;</span>,<span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>name</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>NameNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
 
-    <span class='kw'>fn</span> <span class='ident'>initial</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>char</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
-        <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span>
-                <span class='ident'>c</span>.<span class='ident'>is_alphabetic</span>()
-                <span class='comment'>// R6RS &#39;special initial&#39; characters</span>
-                <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;!&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;$&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;%&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;:&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;^&#39;</span>
-                <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;&lt;&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;&gt;&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;_&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;~&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;\\&#39;</span>
-                <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;?&#39;</span> )
+    <span class='kw'>fn</span> <span class='ident'>operator</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+
+        <span class='kw'>fn</span> <span class='ident'>single_op</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+            <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;+&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;-&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;*&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;/&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;=&#39;</span>)
+                .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> { <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>(); <span class='ident'>s</span>.<span class='ident'>push</span>(<span class='ident'>c</span>); <span class='ident'>s</span>})
+                .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+        }
+
+        <span class='ident'>parser</span>(<span class='ident'>single_op</span>)
+            .<span class='ident'>or</span>(<span class='ident'>string</span>(<span class='string'>&quot;!=&quot;</span>)
+                    .<span class='ident'>or</span>(<span class='ident'>string</span>(<span class='string'>&quot;&gt;=&quot;</span>))
+                    .<span class='ident'>or</span>(<span class='ident'>string</span>(<span class='string'>&quot;&lt;=&quot;</span>))
+                    .<span class='ident'>map</span>(<span class='ident'>String</span>::<span class='ident'>from_str</span>)
+                )
             .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
     }
 
-    <span class='kw'>fn</span> <span class='ident'>subsequent</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>char</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
-        <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span>
-                <span class='ident'>c</span>.<span class='ident'>is_alphanumeric</span>()
-                <span class='comment'>// R6RS &#39;special initial&#39; characters</span>
-                <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;!&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;$&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;%&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;:&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;^&#39;</span>
-                <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;&lt;&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;&gt;&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;_&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;~&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;\\&#39;</span>
-                <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;?&#39;</span>
-                <span class='comment'>// R6RS &#39;special subsequent&#39; characters</span>
-                <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;+&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;-&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;.&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;@&#39;</span> )
+    <span class='kw'>fn</span> <span class='ident'>ident</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+
+        <span class='kw'>fn</span> <span class='ident'>initial</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>char</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+            <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span>
+                    <span class='ident'>c</span>.<span class='ident'>is_alphabetic</span>()
+                    <span class='comment'>// R6RS &#39;special initial&#39; characters</span>
+                    <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;!&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;$&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;%&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;:&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;^&#39;</span>
+                    <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;&lt;&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;&gt;&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;_&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;~&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;\\&#39;</span>
+                    <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;?&#39;</span>
+                    )
+                .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+        }
+
+        <span class='kw'>fn</span> <span class='ident'>subsequent</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>char</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+            <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span>
+                    <span class='ident'>c</span>.<span class='ident'>is_alphanumeric</span>()
+                    <span class='comment'>// R6RS &#39;special initial&#39; characters</span>
+                    <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;!&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;$&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;%&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;:&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;^&#39;</span>
+                    <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;&lt;&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;&gt;&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;_&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;~&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;\\&#39;</span>
+                    <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;?&#39;</span>
+                    <span class='comment'>// R6RS &#39;special subsequent&#39; characters</span>
+                    <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;+&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;-&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;.&#39;</span> <span class='op'>||</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;@&#39;</span> )
+                .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+        }
+
+        <span class='kw'>fn</span> <span class='ident'>rest</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+            <span class='ident'>many</span>::<span class='op'>&lt;</span><span class='ident'>String</span>, _<span class='op'>&gt;</span>(<span class='ident'>parser</span>(<span class='ident'>subsequent</span>))
+                .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+        }
+
+        <span class='ident'>parser</span>(<span class='ident'>initial</span>)
+            .<span class='ident'>and</span>(<span class='ident'>parser</span>(<span class='ident'>rest</span>))
+            .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
+                <span class='ident'>s</span>.<span class='ident'>push</span>((<span class='ident'>x</span>.<span class='number'>0</span>));
+                <span class='ident'>s</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>x</span>.<span class='number'>1</span>));
+                <span class='ident'>s</span>
+            })
             .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
     }
 
-    <span class='kw'>fn</span> <span class='ident'>rest</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
-        <span class='ident'>many</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;</span>, _<span class='op'>&gt;</span>(<span class='ident'>parser</span>(<span class='ident'>subsequent</span>))
-            .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>it</span><span class='op'>|</span>
-                <span class='ident'>it</span>.<span class='ident'>iter</span>().<span class='ident'>fold</span>(
-                    <span class='ident'>String</span>::<span class='ident'>new</span>(),
-                    <span class='op'>|</span><span class='kw-2'>mut</span> <span class='ident'>s</span>: <span class='ident'>String</span>, <span class='ident'>i</span><span class='op'>|</span> {
-                        <span class='ident'>s</span>.<span class='ident'>push</span>(<span class='op'>*</span><span class='ident'>i</span>);
-                        <span class='ident'>s</span>
-                    }) )
-            .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
-    }
-
-    <span class='ident'>parser</span>(<span class='ident'>initial</span>)
-        .<span class='ident'>and</span>(<span class='ident'>parser</span>(<span class='ident'>rest</span>))
+    <span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>operator</span>))
+        .<span class='ident'>or</span>(<span class='ident'>parser</span>(<span class='ident'>ident</span>))
+        .<span class='ident'>map</span>(<span class='ident'>NameNode</span>::<span class='ident'>new</span>)
         .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
-        .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
-            <span class='ident'>s</span>.<span class='ident'>push</span>((<span class='ident'>x</span>.<span class='number'>0</span>).<span class='number'>0</span>);
-            <span class='ident'>s</span>.<span class='ident'>push_str</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>x</span>.<span class='number'>0</span>).<span class='number'>1</span>);
-            (<span class='ident'>NameNode</span>{ <span class='ident'>name</span>: <span class='ident'>s</span>}, <span class='ident'>x</span>.<span class='number'>1</span>)
-        })
 }
 
 <span class='doccomment'>/// Recognizes R&lt;sup&gt;6&lt;/sup&gt;RS character constants.</span>
@@ -840,44 +921,54 @@
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;parser&quot;</span>,<span class='ident'>since</span><span class='op'>=</span><span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>expr</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>ExprNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
 
-        <span class='kw'>fn</span> <span class='ident'>sexpr</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>ExprNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
-                <span class='ident'>between</span>(
-                    <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;(&#39;</span>),
-                    <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;)&#39;</span>),
-                    <span class='ident'>parser</span>(<span class='ident'>name</span>)
-                        .<span class='ident'>and</span>(<span class='ident'>many</span>(<span class='ident'>parser</span>(<span class='ident'>expr</span>)))
-                        .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
-                            <span class='ident'>SExpr</span>(<span class='ident'>SExprNode</span> {
-                                <span class='ident'>operator</span>: <span class='ident'>x</span>.<span class='number'>0</span>,
-                                <span class='ident'>operands</span>: <span class='ident'>x</span>.<span class='number'>1</span>
-                            })
-                        })
-                ).<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
-            }
+    <span class='kw'>fn</span> <span class='ident'>sexpr</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>ExprNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> {
+        <span class='ident'>between</span>(
+            <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;(&#39;</span>),
+            <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;)&#39;</span>),
+            <span class='ident'>parser</span>(<span class='ident'>name</span>)
+                .<span class='ident'>and</span>(<span class='ident'>many</span>(<span class='ident'>parser</span>(<span class='ident'>expr</span>)))
+                .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
+                    <span class='ident'>SExpr</span>(<span class='ident'>SExprNode</span> {
+                        <span class='ident'>operator</span>: <span class='ident'>x</span>.<span class='number'>0</span>,
+                        <span class='ident'>operands</span>: <span class='ident'>x</span>.<span class='number'>1</span>
+                    })
+                })
+        ).<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+    }
 
-        <span class='kw'>fn</span> <span class='ident'>list</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>ExprNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>{
-                <span class='ident'>between</span>(
-                    <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;(&#39;</span>),
-                    <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;)&#39;</span>),
-                    <span class='ident'>many</span>(<span class='ident'>parser</span>(<span class='ident'>expr</span>))
-                        .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
-                            <span class='ident'>ListConst</span>(<span class='ident'>ListNode</span> {
-                                <span class='ident'>elements</span>: <span class='ident'>x</span>
-                            })
-                        })
-                ).<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
-            }
+    <span class='kw'>fn</span> <span class='ident'>list</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>ExprNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>{
+        <span class='ident'>between</span>(
+            <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;(&#39;</span>),
+            <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;)&#39;</span>),
+            <span class='ident'>many</span>(<span class='ident'>parser</span>(<span class='ident'>expr</span>))
+                .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
+                    <span class='ident'>ListConst</span>(<span class='ident'>ListNode</span> {
+                        <span class='ident'>elements</span>: <span class='ident'>x</span>
+                    })
+                })
+        ).<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+    }
 
-        <span class='ident'>spaces</span>().<span class='ident'>with</span>(
-            <span class='ident'>try</span>(<span class='ident'>optional</span>(<span class='ident'>parser</span>(<span class='ident'>line_comment</span>))).<span class='ident'>with</span>(
-                <span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>sexpr</span>))
-                    .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>list</span>)))
-                    .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>name</span>).<span class='ident'>map</span>(<span class='ident'>Name</span>)))
-                    .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>number</span>).<span class='ident'>map</span>(<span class='ident'>NumConst</span>)))
-                    .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>character</span>).<span class='ident'>map</span>(<span class='ident'>CharConst</span>)))
-                    .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>string_const</span>).<span class='ident'>map</span>(<span class='ident'>StringConst</span>)))
-                )
-            ).<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+    <span class='kw'>fn</span> <span class='ident'>constant</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>ExprNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>{
+        <span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>number</span>).<span class='ident'>map</span>(<span class='ident'>NumConst</span>))
+            .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>character</span>).<span class='ident'>map</span>(<span class='ident'>CharConst</span>)))
+            .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>string_const</span>).<span class='ident'>map</span>(<span class='ident'>StringConst</span>)))
+            .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>non_constant</span>(<span class='ident'>input</span>: <span class='ident'>State</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>ExprNode</span>, <span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span>{
+        <span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>sexpr</span>))
+            .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>list</span>)))
+            .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>name</span>).<span class='ident'>map</span>(<span class='ident'>Name</span>)))
+            .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
+    }
+
+    <span class='ident'>spaces</span>().<span class='ident'>with</span>(
+        <span class='ident'>try</span>(<span class='ident'>optional</span>(<span class='ident'>parser</span>(<span class='ident'>line_comment</span>))).<span class='ident'>with</span>(
+            <span class='ident'>parser</span>(<span class='ident'>non_constant</span>)
+                .<span class='ident'>or</span>(<span class='ident'>parser</span>(<span class='ident'>constant</span>))
+            )
+        ).<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
 }
 <span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;parser&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>parse</span>(<span class='ident'>program</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>ExprNode</span>, <span class='ident'>String</span><span class='op'>&gt;</span> {
@@ -886,9 +977,6 @@
         .<span class='ident'>map_err</span>(<span class='op'>|</span><span class='ident'>e</span><span class='op'>|</span> { <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>(); <span class='ident'>s</span>.<span class='ident'>push_str</span>(<span class='ident'>e</span>.<span class='ident'>description</span>()); <span class='ident'>s</span>} )
         .<span class='ident'>map</span>(    <span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>0</span> )
 }
-
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
-<span class='kw'>mod</span> <span class='ident'>tests</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

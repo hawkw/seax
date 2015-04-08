@@ -43,8 +43,24 @@
     <section id='main' class="content fn">
 <h1 class='fqn'><span class='in-band'>Function <a href='index.html'>seax_scheme</a>::<wbr><a class='fn' href=''>compile</a><wbr><a class='stability Unstable' title=''>Unstable</a></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-5919' href='../src/seax_scheme/lib.rs.html#59-65'>[src]</a></span></h1>
+        </span><a id='src-6344' href='../src/seax_scheme/lib.rs.html#71-77'>[src]</a></span></h1>
 <pre class='rust fn'>pub fn compile(program: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='../seax_svm/slist/enum.List.html' title='seax_svm::slist::List'>List</a>&lt;<a class='enum' href='../seax_svm/cell/enum.SVMCell.html' title='seax_svm::cell::SVMCell'>SVMCell</a>&gt;, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</pre><div class='docblock'><p>Compile a Scheme program into a list of SVM cells (a control stack)</p>
+
+<h1 id="arguments" class='section-header'><a
+                           href="#arguments">Arguments</a></h1>
+<ul>
+<li><code>program</code> - a string containing a Scheme program or line</li>
+</ul>
+
+<h1 id="return-value" class='section-header'><a
+                           href="#return-value">Return Value</a></h1>
+<ul>
+<li>A <code>Result</code> containing either a <code>List</code> of <code>SVMCells</code> if the program
+was compiled successfully, or a <code>String</code> with any error messages that
+occured during compilation</li>
+</ul>
+
+<p>TODO: Should this return a list of errors instead?</p>
 </div></section>
     <section id='search' class="content hidden"></section>
 

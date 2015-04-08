@@ -43,18 +43,11 @@
     <section id='main' class="content fn">
 <h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>seax_scheme</a>::<wbr><a href='index.html'>parser</a>::<wbr><a class='fn' href=''>bool_const</a><wbr><a class='stability Stable' title=''>Stable</a></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-4305' href='../../src/seax_scheme/parser/mod.rs.html#132-145'>[src]</a></span></h1>
+        </span><a id='src-4574' href='../../src/seax_scheme/parser/mod.rs.html#143-163'>[src]</a></span></h1>
 <pre class='rust fn'>pub fn bool_const(input: <a class='struct' href='../../parser_combinators/primitives/struct.State.html' title='parser_combinators::primitives::State'>State</a>&lt;&amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;) -&gt; <a class='type' href='../../parser_combinators/primitives/type.ParseResult.html' title='parser_combinators::primitives::ParseResult'>ParseResult</a>&lt;<a class='struct' href='../../seax_scheme/ast/struct.BoolNode.html' title='seax_scheme::ast::BoolNode'>BoolNode</a>, &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</pre><div class='docblock'><p>Parses boolean constants.</p>
 
-<p>Note that this parser recognizes the strings <code>&quot;true&quot;</code> and <code>&quot;false&quot;</code>
-as true and false. While this is not specified in R6RS, the use of
-these tokens is common enough in other programming languages that
-I&#39;ve decided that Seax Scheme should support it as well. This may
-be removed in a future version if it causes unforseen compatibility
-issues.</p>
-
-<p><code>#t</code>, <code>#T</code>, or <code>true</code>  -&gt; <code>true</code>
-<code>#f</code>, <code>#F</code>, or <code>false</code> -&gt; <code>false</code></p>
+<p><code>#t</code>, <code>#T</code> -&gt; <code>true</code>
+<code>#f</code>, <code>#F</code> -&gt; <code>false</code></p>
 </div></section>
     <section id='search' class="content hidden"></section>
 

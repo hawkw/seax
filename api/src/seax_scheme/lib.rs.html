@@ -105,6 +105,18 @@
 <span id="63">63</span>
 <span id="64">64</span>
 <span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;seax_scheme&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;scheme&quot;</span>)]</span>
@@ -163,6 +175,18 @@
 
 
 <span class='doccomment'>/// Compile a Scheme program into a list of SVM cells (a control stack)</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// # Arguments</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>///  + `program` - a string containing a Scheme program or line</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// # Return Value</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>///  + A `Result` containing either a `List` of `SVMCells` if the program</span>
+<span class='doccomment'>///    was compiled successfully, or a `String` with any error messages that</span>
+<span class='doccomment'>///    occured during compilation</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// TODO: Should this return a list of errors instead?</span>
 <span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;compile&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>compile</span>(<span class='ident'>program</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> {
     <span class='ident'>parser</span>::<span class='ident'>parse</span>(<span class='ident'>program</span>)

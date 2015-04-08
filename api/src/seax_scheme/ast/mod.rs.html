@@ -526,6 +526,109 @@
 <span id="484">484</span>
 <span id="485">485</span>
 <span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>svm</span>::<span class='ident'>cell</span>::<span class='ident'>SVMCell</span>;
 <span class='kw'>use</span> <span class='ident'>svm</span>::<span class='ident'>cell</span>::<span class='ident'>Atom</span>::<span class='op'>*</span>;
@@ -536,6 +639,8 @@
 <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>ExprNode</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>NumNode</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>ForkTable</span>;
+
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span>;
@@ -564,11 +669,18 @@
 
     <span class='doccomment'>/// Pretty-print this node</span>
     <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
-    <span class='kw'>fn</span> <span class='ident'>prettyprint</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>)               <span class='op'>-&gt;</span> <span class='ident'>String</span> { <span class='self'>self</span>.<span class='ident'>print_level</span>(<span class='number'>0usize</span>) }
+    <span class='kw'>fn</span> <span class='ident'>prettyprint</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>)               <span class='op'>-&gt;</span> <span class='ident'>String</span> { <span class='self'>self</span>.<span class='ident'>print_level</span>(<span class='number'>0</span>) }
 
     <span class='doccomment'>/// Pretty-print this node at the desired indent level</span>
     <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>print_level</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>level</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span>;
+}
+
+<span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>ASTNode</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.4&quot;</span>)]</span>
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
+        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>.<span class='ident'>prettyprint</span>())
+    }
 }
 
 <span class='doccomment'>/// Expression</span>
@@ -588,7 +700,7 @@
 <span class='doccomment'>///  TODO: implement the entire Scheme &#39;numeric tower&#39;</span>
 <span class='doccomment'>///  TODO: macros should happen</span>
 <span class='doccomment'>///  TODO: figure out quasiquote somehow.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>,<span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>ExprNode</span> {
     <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
@@ -641,8 +753,13 @@
     }
 }
 
+<span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>ExprNode</span> {
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
+        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>.<span class='ident'>prettyprint</span>())
+    }
+}
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>,<span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>NumNode</span> {
     <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
@@ -653,10 +770,22 @@
     <span class='ident'>FloatConst</span>(<span class='ident'>FloatNode</span>)
 }
 
+<span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>NumNode</span> {
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
+        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>.<span class='ident'>prettyprint</span>())
+    }
+}
+
 <span class='doccomment'>/// AST node for the root of a program&#39;s AST</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>,<span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RootNode</span> { <span class='kw'>pub</span> <span class='ident'>exprs</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>ExprNode</span><span class='op'>&gt;</span> }
+
+<span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>RootNode</span> {
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
+        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>.<span class='ident'>prettyprint</span>())
+    }
+}
 
 <span class='kw'>impl</span> <span class='ident'>ASTNode</span> <span class='kw'>for</span> <span class='ident'>RootNode</span> {
     <span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;compile&quot;</span>)]</span>
@@ -682,7 +811,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// This includes function application, assignment,</span>
 <span class='doccomment'>/// function definition, et cetera...Scheme is not a complexl anguage.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>,<span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>SExprNode</span> {
     <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
@@ -694,56 +823,88 @@
 <span class='kw'>impl</span> <span class='ident'>ASTNode</span> <span class='kw'>for</span> <span class='ident'>SExprNode</span> {
     <span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;compile&quot;</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>compile</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>state</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>SymTable</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>CompileResult</span> {
-        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>operator</span> {
-            <span class='kw-2'>ref</span> <span class='ident'>op</span> <span class='kw'>if</span> <span class='ident'>op</span>.<span class='ident'>is_arith</span>() <span class='op'>||</span> <span class='ident'>op</span>.<span class='ident'>is_cmp</span>() <span class='op'>=&gt;</span> {
-                <span class='kw'>let</span> <span class='ident'>instruction</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>op</span>.<span class='ident'>name</span>.<span class='ident'>as_ref</span>() {
-                    <span class='string'>&quot;+&quot;</span>  <span class='op'>=&gt;</span> <span class='ident'>ADD</span>,
-                    <span class='string'>&quot;-&quot;</span>  <span class='op'>=&gt;</span> <span class='ident'>SUB</span>,
-                    <span class='string'>&quot;*&quot;</span>  <span class='op'>=&gt;</span> <span class='ident'>MUL</span>,
-                    <span class='string'>&quot;/&quot;</span>  <span class='op'>=&gt;</span> <span class='ident'>DIV</span>,
-                    <span class='string'>&quot;%&quot;</span>  <span class='op'>=&gt;</span> <span class='ident'>MOD</span>,
-                    <span class='string'>&quot;=&quot;</span>  <span class='op'>=&gt;</span> <span class='ident'>EQ</span>,
-                    <span class='string'>&quot;&gt;&quot;</span>  <span class='op'>=&gt;</span> <span class='ident'>GT</span>,
-                    <span class='string'>&quot;&gt;=&quot;</span> <span class='op'>=&gt;</span> <span class='ident'>GTE</span>,
-                    <span class='string'>&quot;&lt;&quot;</span>  <span class='op'>=&gt;</span> <span class='ident'>LT</span>,
-                    <span class='string'>&quot;&lt;=&quot;</span> <span class='op'>=&gt;</span> <span class='ident'>LTE</span>,
-                    <span class='comment'>// TODO:  floating-point</span>
-                    <span class='comment'>// TODO: figure out how to handle &quot;!=&quot; -&gt; &quot;EQ + Invert&quot;</span>
-                    _   <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>( <span class='string'>&quot;Something impossible happened!&quot;</span>)
-                        <span class='comment'>// this never happens, barring force majeure</span>
+        <span class='comment'>/*match self.operator {
+            ref op if op.is_arith() || op.is_cmp() =&gt; { // todo: make this one thing
+                let instruction = match op.name.as_ref() {
+                    &quot;+&quot;  =&gt; ADD,
+                    &quot;-&quot;  =&gt; SUB,
+                    &quot;*&quot;  =&gt; MUL,
+                    &quot;/&quot;  =&gt; DIV,
+                    &quot;%&quot;  =&gt; MOD,
+                    &quot;=&quot;  =&gt; EQ,
+                    &quot;&gt;&quot;  =&gt; GT,
+                    &quot;&gt;=&quot; =&gt; GTE,
+                    &quot;&lt;&quot;  =&gt; LT,
+                    &quot;&lt;=&quot; =&gt; LTE,
+                    // TODO:  floating-point
+                    // TODO: move to NameNode.compile()
+                    // TODO: figure out how to handle &quot;!=&quot; -&gt; &quot;EQ + Invert&quot;
+                    _   =&gt; panic!( &quot;Something impossible happened!&quot;)
+                        // this never happens, barring force majeure
                 };
-                <span class='comment'>// TODO: optimize if constants</span>
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>it</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>operands</span>.<span class='ident'>iter</span>().<span class='ident'>rev</span>();
-                <span class='comment'>// TODO: can thsi be represented with a reduce/fold?</span>
-                <span class='ident'>result</span>.<span class='ident'>push_all</span>(<span class='macro'>try</span><span class='macro'>!</span>(
-                    <span class='ident'>it</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>().<span class='ident'>compile</span>(<span class='ident'>state</span>)).<span class='ident'>as_slice</span>());
-                <span class='kw'>for</span> <span class='kw-2'>ref</span> <span class='ident'>operand</span> <span class='kw'>in</span> <span class='ident'>it</span> {
-                    <span class='ident'>result</span>.<span class='ident'>push_all</span>(<span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>operand</span>.<span class='ident'>compile</span>(<span class='ident'>state</span>)).<span class='ident'>as_slice</span>());
-                    <span class='ident'>result</span>.<span class='ident'>push</span>(<span class='ident'>InstCell</span>(<span class='ident'>instruction</span>));
+                // TODO: optimize if constants
+                let mut result = Vec::new();
+                let mut it = self.operands.iter().rev();
+                // TODO: can thsi be represented with a reduce/fold?
+                result.push_all(try!(
+                    it.next().unwrap().compile(state)).as_slice());
+                for ref operand in it {
+                    result.push_all(try!(operand.compile(state)).as_slice());
+                    result.push(InstCell(instruction));
                 }
-                <span class='prelude-val'>Ok</span>(<span class='ident'>result</span>)
+                Ok(result)
             },
-            <span class='kw-2'>ref</span> <span class='ident'>op</span> <span class='kw'>if</span> <span class='ident'>op</span>.<span class='ident'>is_kw</span>()    <span class='op'>=&gt;</span> <span class='macro'>unimplemented</span><span class='macro'>!</span>(),
-            <span class='kw-2'>ref</span> <span class='ident'>op</span>                  <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>state</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='ident'>op</span>.<span class='ident'>name</span>.<span class='ident'>as_ref</span>()) {
-                <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>x</span>,<span class='ident'>y</span>)) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>(
-                    <span class='comment'>// TODO: finish</span>
-                    <span class='ident'>InstCell</span>(<span class='ident'>LD</span>),
-                    <span class='ident'>ListCell</span>(<span class='kw'>box</span> <span class='macro'>list</span><span class='macro'>!</span>(
-                        <span class='ident'>AtomCell</span>(<span class='ident'>UInt</span>(<span class='ident'>x</span>)),
-                        <span class='ident'>AtomCell</span>(<span class='ident'>UInt</span>(<span class='ident'>y</span>))
+            ref op if op.is_kw()    =&gt; {
+                let mut result = Vec::new();
+                let mut it = self.operands.iter().rev();
+                // TODO: can thsi be represented with a reduce/fold?
+                result.push_all(try!(
+                    it.next().unwrap().compile(state)).as_slice());
+                for ref operand in it {
+                    result.push_all(try!(operand.compile(state)).as_slice());
+                    result.push_all(&amp;try!(op.compile(state)));
+                }
+                Ok(result)
+            },
+            ref op                  =&gt; match state.get(&amp;op.name.as_ref()) {
+                Some(&amp;(x,y)) =&gt; Ok(vec!(
+                    // TODO: finish
+                    InstCell(LD),
+                    ListCell(box list!(
+                        AtomCell(UInt(x)),
+                        AtomCell(UInt(y))
                         )),
-                    <span class='ident'>InstCell</span>(<span class='ident'>LDF</span>)
+                    InstCell(LDF)
                     )),
-                <span class='prelude-val'>None</span>         <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;[error] Unknown identifier `{}`&quot;</span>, <span class='ident'>op</span>.<span class='ident'>name</span>))
+                None         =&gt; Err(format!(&quot;[error] Unknown identifier `{}`&quot;, op.name))
             }
-        }
+        }*/</span>
         <span class='comment'>/*let ref token = self.operator.name;
         match token.as_ref() {
             &quot;let&quot; =&gt; unimplemented!(),
             ref name if state.chain_contains_key(name) =&gt; unimplemented!(),
             name =&gt; Err(&quot;[error] Unknown identifier&quot;)
         }*/</span>
+        <span class='kw'>let</span> <span class='kw-2'>ref</span> <span class='ident'>op</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>operator</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
+        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>operands</span> {
+            <span class='kw-2'>ref</span> <span class='ident'>other</span> <span class='kw'>if</span> <span class='ident'>other</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>1</span> <span class='op'>=&gt;</span> {
+                <span class='ident'>result</span>.<span class='ident'>push_all</span>(<span class='kw-2'>&amp;</span><span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>other</span>[<span class='number'>0</span>].<span class='ident'>compile</span>(<span class='ident'>state</span>)));
+                <span class='ident'>result</span>.<span class='ident'>push_all</span>(<span class='kw-2'>&amp;</span><span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>op</span>.<span class='ident'>compile</span>(<span class='ident'>state</span>)));
+            },
+            _       <span class='op'>=&gt;</span> {
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>it</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>operands</span>.<span class='ident'>iter</span>().<span class='ident'>rev</span>();
+                <span class='comment'>// TODO: can thsi be represented with a reduce/fold?</span>
+                <span class='ident'>result</span>.<span class='ident'>push_all</span>(<span class='kw-2'>&amp;</span><span class='macro'>try</span><span class='macro'>!</span>(
+                    <span class='ident'>it</span>.<span class='ident'>next</span>().<span class='ident'>unwrap</span>().<span class='ident'>compile</span>(<span class='ident'>state</span>)));
+                <span class='kw'>for</span> <span class='kw-2'>ref</span> <span class='ident'>operand</span> <span class='kw'>in</span> <span class='ident'>it</span> {
+                    <span class='ident'>result</span>.<span class='ident'>push_all</span>(<span class='kw-2'>&amp;</span><span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>operand</span>.<span class='ident'>compile</span>(<span class='ident'>state</span>)));
+                    <span class='ident'>result</span>.<span class='ident'>push_all</span>(<span class='kw-2'>&amp;</span><span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>op</span>.<span class='ident'>compile</span>(<span class='ident'>state</span>)));
+                }
+            }
+        }
+
+        <span class='prelude-val'>Ok</span>(<span class='ident'>result</span>)
     }
 
     <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
@@ -771,11 +932,25 @@
     }
 
 }
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.4&quot;</span>)]</span>
+<span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>SExprNode</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
+        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>.<span class='ident'>prettyprint</span>())
+    }
+}
 
 <span class='doccomment'>/// AST node for a list literal</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>,<span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ListNode</span> { <span class='kw'>pub</span> <span class='ident'>elements</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>ExprNode</span><span class='op'>&gt;</span> }
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.4&quot;</span>)]</span>
+<span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>ListNode</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.4&quot;</span>)]</span>
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
+        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>.<span class='ident'>prettyprint</span>())
+    }
+}
 
 <span class='kw'>impl</span> <span class='ident'>ASTNode</span> <span class='kw'>for</span> <span class='ident'>ListNode</span> {
     <span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;compile&quot;</span>)]</span>
@@ -803,7 +978,7 @@
 }
 
 <span class='doccomment'>/// AST node for an identifier</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>,<span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>)]</span>
 <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>NameNode</span> { <span class='kw'>pub</span> <span class='ident'>name</span>: <span class='ident'>String</span> }
 
@@ -819,7 +994,8 @@
             <span class='op'>|</span> <span class='string'>&quot;scode-quote&quot;</span> <span class='op'>|</span> <span class='string'>&quot;declare&quot;</span> <span class='op'>|</span> <span class='string'>&quot;let&quot;</span> <span class='op'>|</span> <span class='string'>&quot;sequence&quot;</span> <span class='op'>|</span> <span class='string'>&quot;default-object?&quot;</span>
             <span class='op'>|</span> <span class='string'>&quot;let*&quot;</span> <span class='op'>|</span> <span class='string'>&quot;set!&quot;</span> <span class='op'>|</span> <span class='string'>&quot;define&quot;</span> <span class='op'>|</span> <span class='string'>&quot;let-syntax&quot;</span> <span class='op'>|</span> <span class='string'>&quot;the-environment&quot;</span>
             <span class='op'>|</span> <span class='string'>&quot;define-integrable&quot;</span> <span class='op'>|</span> <span class='string'>&quot;letrec&quot;</span> <span class='op'>|</span> <span class='string'>&quot;unassigned?&quot;</span> <span class='op'>|</span> <span class='string'>&quot;define-macro&quot;</span>
-            <span class='op'>|</span> <span class='string'>&quot;local-declare&quot;</span> <span class='op'>|</span> <span class='string'>&quot;using-syntax&quot;</span> <span class='op'>|</span> <span class='string'>&quot;define-structure&quot;</span> <span class='op'>=&gt;</span> <span class='boolval'>true</span>,
+            <span class='op'>|</span> <span class='string'>&quot;local-declare&quot;</span> <span class='op'>|</span> <span class='string'>&quot;using-syntax&quot;</span> <span class='op'>|</span> <span class='string'>&quot;define-structure&quot;</span> <span class='op'>|</span> <span class='string'>&quot;car&quot;</span>
+            <span class='op'>|</span> <span class='string'>&quot;cdr&quot;</span> <span class='op'>|</span> <span class='string'>&quot;cons&quot;</span> <span class='op'>|</span> <span class='string'>&quot;nil&quot;</span> <span class='op'>|</span> <span class='string'>&quot;nil?&quot;</span> <span class='op'>|</span> <span class='string'>&quot;atom?&quot;</span> <span class='op'>=&gt;</span> <span class='boolval'>true</span>,
             _ <span class='op'>=&gt;</span> <span class='boolval'>false</span>
         }
     }
@@ -839,12 +1015,42 @@
          _ <span class='op'>=&gt;</span> <span class='boolval'>false</span>
       }
    }
+
+   <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.4&quot;</span>)]</span>
+   <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>name</span>: <span class='ident'>String</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> { <span class='ident'>NameNode</span> {<span class='ident'>name</span>: <span class='ident'>name</span>} }
+}
+<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.4&quot;</span>)]</span>
+<span class='kw'>impl</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>NameNode</span> {
+    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.4&quot;</span>)]</span>
+    <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
+        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>f</span>, <span class='string'>&quot;{}&quot;</span>, <span class='self'>self</span>.<span class='ident'>prettyprint</span>())
+    }
 }
 
 <span class='kw'>impl</span> <span class='ident'>ASTNode</span> <span class='kw'>for</span> <span class='ident'>NameNode</span> {
     <span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;compile&quot;</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>compile</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>, <span class='ident'>state</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>SymTable</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>CompileResult</span> {
-        <span class='prelude-val'>Err</span>(<span class='string'>&quot;UNINPLEMENTED&quot;</span>.<span class='ident'>to_string</span>())
+        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>name</span>.<span class='ident'>as_ref</span>() {
+            <span class='string'>&quot;cons&quot;</span>  <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>CONS</span>)]),
+            <span class='string'>&quot;car&quot;</span>   <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>CAR</span>)]),
+            <span class='string'>&quot;cdr&quot;</span>   <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>CDR</span>)]),
+            <span class='string'>&quot;nil&quot;</span>   <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>NIL</span>)]),
+            <span class='string'>&quot;atom?&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>ATOM</span>)]),
+            <span class='string'>&quot;+&quot;</span>     <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>ADD</span>)]),
+            <span class='string'>&quot;-&quot;</span>     <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>SUB</span>)]),
+            <span class='string'>&quot;*&quot;</span>     <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>MUL</span>)]),
+            <span class='string'>&quot;/&quot;</span>     <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>DIV</span>)]),
+            <span class='string'>&quot;%&quot;</span>     <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>MOD</span>)]),
+            <span class='string'>&quot;=&quot;</span>     <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>EQ</span>)]),
+            <span class='string'>&quot;&gt;&quot;</span>     <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>GT</span>)]),
+            <span class='string'>&quot;&gt;=&quot;</span>    <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>GTE</span>)]),
+            <span class='string'>&quot;&lt;&quot;</span>     <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>LT</span>)]),
+            <span class='string'>&quot;&lt;=&quot;</span>    <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>InstCell</span>(<span class='ident'>LTE</span>)]),
+            <span class='kw-2'>ref</span> <span class='ident'>name</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>state</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='ident'>name</span>) {
+                <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>x</span>,<span class='ident'>y</span>)) <span class='op'>=&gt;</span>  <span class='macro'>unimplemented</span><span class='macro'>!</span>(),
+                <span class='prelude-val'>None</span>         <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;[error] Unknown identifier `{}`&quot;</span>, <span class='ident'>name</span>))
+            }
+        }
     }
 
     <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;0.0.2&quot;</span>)]</span>
