@@ -9,6 +9,7 @@ use super::ast::ExprNode::*;
 use std::str::FromStr;
 use std::num::FromStrRadix;
 use std::char;
+use std::error::Error;
 
 fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
     satisfy(|c| c == 'x' || c == 'X')
@@ -401,6 +402,13 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
                     .or(try(parser(string_const).map(StringConst)))
                 )
             ).parse_state(input)
+}
+
+pub fn parse(program: &str) -> Result<ExprNode, String> {
+    parser(expr) // todo: this should build a root node instead
+        .parse(program)
+        .map_err(|e| { let mut s = String::new(); s.push_str(e.description()); s} )
+        .map(    |x| x.0 )
 }
 
 #[cfg(test)]

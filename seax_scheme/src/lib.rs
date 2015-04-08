@@ -39,3 +39,17 @@ mod forktab;
 
 pub use self::forktab::ForkTable;
 
+use svm::slist::{List,Stack};
+use svm::cell::SVMCell;
+
+use self::ast::{ASTNode,ExprNode};
+
+
+/// Compile a Scheme program into a list of SVM cells (a control stack)
+pub fn compile(program: &str) -> Result<List<SVMCell>, String> {
+    parser::parse(program)
+        .and_then(|tree: ExprNode      | tree.compile(&ForkTable::new()) )
+        .map(     |insts: Vec<SVMCell> | insts.into_iter().rev().fold(List::new(),
+                  |st: List<SVMCell>, i| st.push(i)
+            ))
+}
