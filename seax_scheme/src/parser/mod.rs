@@ -232,13 +232,14 @@ pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
 
         parser(initial)
             .and(parser(rest))
-            .parse_state(input)
             .map(|x| {
                 let mut s = String::new();
-                s.push((x.0).0);
-                s.push_str(&(x.0).1);
-                (s, x.1)
+                s.push((x.0));
+                s.push_str(&(x.1));
+                s
             })
+            .parse_state(input)
+
     }
 
     try(parser(operator))
