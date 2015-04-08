@@ -1,19 +1,21 @@
 #![feature(box_syntax,box_patterns)]
+#![feature(compile)]
+#![feature(scheme)]
+
+/// Scheme compiler integration tests
+///
+/// These are based on the sample programs in Zach Allaun's Clojure SECD
+/// [implementation](https://github.com/zachallaun/secd).
 
 #[macro_use]
 extern crate seax_svm as svm;
+extern crate seax_scheme as scheme;
 
-use svm::slist::Stack;
 use svm::slist::List::{Cons,Nil};
 use svm::cell::Atom::*;
 use svm::cell::SVMCell::*;
 use svm::Inst::*;
 
-/// SVM integration tests.
-///
-/// These are based on the sample programs in Zach Allaun's Clojure SECD
-/// [implementation](https://github.com/zachallaun/secd). Each example also
-/// provides the source code for the equivalent Lisp program.
 
 /// Test for simple list construction through CONS.
 ///
@@ -21,14 +23,14 @@ use svm::Inst::*;
 /// (cons 10 (cons 20 nil))
 /// ```
 #[test]
-fn test_list_creation() {
+fn compile_list_creation() {
     assert_eq!(
-        svm::eval_program(list!(
+        scheme::compile("(cons 10 (cons 20 nil))"),
+        Ok(list!(
             InstCell(NIL),
             InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS)
-        )).peek(),
-        Some(&ListCell( box list!(AtomCell(SInt(10)), AtomCell(SInt(20)))))
+        ))
     );
 }
 
@@ -38,32 +40,33 @@ fn test_list_creation() {
 /// (car (cons 20 (cons 10 nil)))
 /// ```
 #[test]
-fn test_list_car() {
+fn  compile_list_car() {
     assert_eq!(
-        svm::eval_program(list!(
+        scheme::compile("(car (cons 20 (cons 10 nil)))"),
+        Ok(list!(
             InstCell(NIL),
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
             InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
             InstCell(CAR)
-        )).peek(),
-        Some(&AtomCell(SInt(20)))
+        ))
     );
 }
+
 /// Test for simple list construction and destructuring
 ///
 /// ```lisp
 /// (cdr (cons 20 (cons 10 nil)))
 /// ```
 #[test]
-fn test_list_cdr() {
+fn compile_list_cdr() {
     assert_eq!(
-        svm::eval_program(list!(
+        scheme::compile("(cdr (cons 20 (cons 10 nil)))"),
+        Ok(list!(
             InstCell(NIL),
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
             InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
             InstCell(CDR)
-        )).peek(),
-        Some(&ListCell(box list!(AtomCell(SInt(10)))))
+        ))
     );
 }
 
@@ -73,14 +76,14 @@ fn test_list_cdr() {
 /// (+ 10 10)
 /// ```
 #[test]
-fn test_simple_add() {
+fn compile_simple_add(){
     assert_eq!(
-        svm::eval_program(list!(
+        scheme::compile("(+ 10 10)"),
+        Ok(list!(
             InstCell(LDC), AtomCell(SInt(10)),
             InstCell(LDC), AtomCell(SInt(10)),
             InstCell(ADD)
-        )).peek(),
-        Some(&AtomCell(SInt(20)))
+        ))
     );
 }
 
@@ -90,33 +93,30 @@ fn test_simple_add() {
 /// (- 20 (+ 5 5))
 /// ```
 #[test]
-fn test_nested_arith() {
+fn compile_nested_arith() {
      assert_eq!(
-        svm::eval_program(list!(
+        scheme::compile("(- 20 (+ 5 5))"),
+        Ok(list!(
             InstCell(LDC), AtomCell(SInt(5)),
             InstCell(LDC), AtomCell(SInt(5)),
             InstCell(ADD),
             InstCell(LDC), AtomCell(SInt(20)),
             InstCell(SUB)
-        )).peek(),
-        Some(&AtomCell(SInt(10)))
+        ))
     );
 }
 
-
+/*
 /// Tests for basic branching
 ///
 /// ```lisp
-/// ((if (= 0 (- 1 1)) true false)
-/// ```
-///
-/// ```lisp
-/// (+ 10 (if (nil? nil) 10 20))
+/// ((if (= 0 (- 1 1)) #t #f)
 /// ```
 #[test]
-fn test_basic_branching() {
+fn compile_basic_branching_1() {
     assert_eq!(
-        svm::eval_program(list!(
+        scheme::compile("((if (= 0 (- 1 1)) #t #f)"),
+        Ok(list!(
             InstCell(LDC), AtomCell(SInt(1)), InstCell(LDC), AtomCell(SInt(1)),
             InstCell(SUB),
             InstCell(LDC), AtomCell(SInt(0)),
@@ -125,19 +125,25 @@ fn test_basic_branching() {
                 ListCell(box list!(InstCell(LDC), AtomCell(SInt(1)), InstCell(JOIN))),
                 ListCell(box list!(InstCell(NIL), InstCell(JOIN))
             )
-        )).peek(),
-        Some(&AtomCell(SInt(1)))
+        ))
     );
+}
+///
+/// ```lisp
+/// (+ 10 (if (nil? nil) 10 20))
+/// ```
+#[test]
+fn compile_basic_branching_2() {
     assert_eq!(
-        svm::eval_program(list!(
+        scheme::compile("(+ 10 (if (nil? nil) 10 20))"),
+        Ok(list!(
             InstCell(NIL), InstCell(NULL),
             InstCell(SEL),
                 ListCell(box list!(InstCell(LDC), AtomCell(SInt(10)), InstCell(JOIN))),
                 ListCell(box list!(InstCell(LDC), AtomCell(SInt(20)), InstCell(JOIN))),
             InstCell(LDC), AtomCell(SInt(10)),
             InstCell(ADD)
-        )).peek(),
-        Some(&AtomCell(SInt(20)))
+        ))
     );
 }
-
+*/
