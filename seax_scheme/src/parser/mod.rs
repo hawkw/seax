@@ -373,44 +373,44 @@ pub fn string_const(input: State<&str>) -> ParseResult<StringNode, &str> {
 #[stable(feature="parser",since="0.0.2")]
 pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
 
-        fn sexpr(input: State<&str>) -> ParseResult<ExprNode, &str> {
-                between(
-                    satisfy(|c| c == '('),
-                    satisfy(|c| c == ')'),
-                    parser(name)
-                        .and(many(parser(expr)))
-                        .map(|x| {
-                            SExpr(SExprNode {
-                                operator: x.0,
-                                operands: x.1
-                            })
+    fn sexpr(input: State<&str>) -> ParseResult<ExprNode, &str> {
+            between(
+                satisfy(|c| c == '('),
+                satisfy(|c| c == ')'),
+                parser(name)
+                    .and(many(parser(expr)))
+                    .map(|x| {
+                        SExpr(SExprNode {
+                            operator: x.0,
+                            operands: x.1
                         })
-                ).parse_state(input)
-            }
-
-        fn list(input: State<&str>) -> ParseResult<ExprNode, &str>{
-                between(
-                    satisfy(|c| c == '('),
-                    satisfy(|c| c == ')'),
-                    many(parser(expr))
-                        .map(|x| {
-                            ListConst(ListNode {
-                                elements: x
-                            })
-                        })
-                ).parse_state(input)
-            }
-
-        spaces().with(
-            try(optional(parser(line_comment))).with(
-                try(parser(sexpr))
-                    .or(try(parser(list)))
-                    .or(try(parser(name).map(Name)))
-                    .or(try(parser(number).map(NumConst)))
-                    .or(try(parser(character).map(CharConst)))
-                    .or(try(parser(string_const).map(StringConst)))
-                )
+                    })
             ).parse_state(input)
+        }
+
+    fn list(input: State<&str>) -> ParseResult<ExprNode, &str>{
+            between(
+                satisfy(|c| c == '('),
+                satisfy(|c| c == ')'),
+                many(parser(expr))
+                    .map(|x| {
+                        ListConst(ListNode {
+                            elements: x
+                        })
+                    })
+            ).parse_state(input)
+        }
+
+    spaces().with(
+        try(optional(parser(line_comment))).with(
+            try(parser(sexpr))
+                .or(try(parser(list)))
+                .or(try(parser(name).map(Name)))
+                .or(try(parser(number).map(NumConst)))
+                .or(try(parser(character).map(CharConst)))
+                .or(try(parser(string_const).map(StringConst)))
+            )
+        ).parse_state(input)
 }
 #[unstable(feature="parser")]
 pub fn parse(program: &str) -> Result<ExprNode, String> {
