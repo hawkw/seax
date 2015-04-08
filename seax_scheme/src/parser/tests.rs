@@ -4,10 +4,33 @@ use super::*;
 use super::parser_combinators::{Parser,parser};
 
 #[test]
+fn test_line_comment() {
+    assert_eq!(parser(line_comment).parse(";this is a fake line comment\n"),
+        Ok(((),"")));
+}
+
+#[test]
+fn test_line_comment_ignore() {
+    assert_eq!(parser(expr).parse(
+r#";this is a fake line comment
+ident"#),
+        Ok((Name(NameNode { name: "ident".to_string() }), ""))
+        )
+}
+
+#[test]
 fn test_basic_ident() {
     assert_eq!(
         parser(expr).parse("ident"),
         Ok((Name(NameNode { name: "ident".to_string() }), ""))
+        );
+    assert_eq!(
+        parser(expr).parse("a"),
+        Ok((Name(NameNode { name: "a".to_string() }), ""))
+        );
+    assert_eq!(
+        parser(expr).parse("ident_With\\special!Chars:~-+"),
+        Ok((Name(NameNode { name: "ident_With\\special!Chars:~-+".to_string() }), ""))
         );
 }
 
@@ -26,7 +49,7 @@ fn test_basic_sexpr() {
 }
 
 #[test]
-fn test_parse_sint_pos() {
+fn test_lex_sint_pos() {
     assert_eq!(
         parser(number).parse("1234"),
         Ok((NumNode::IntConst(IntNode { value: 1234isize }), ""))
@@ -42,7 +65,7 @@ fn test_parse_sint_pos() {
 }
 
 #[test]
-fn test_parse_sint_neg() {
+fn test_lex_sint_neg() {
     assert_eq!(
         parser(number).parse("-1234"),
         Ok((NumNode::IntConst(IntNode { value: -1234isize }), ""))
@@ -50,7 +73,7 @@ fn test_parse_sint_neg() {
 }
 
 #[test]
-fn test_parse_sint_hex() {
+fn test_lex_sint_hex() {
     assert_eq!(
         parser(number).parse("#x0ff"),
         Ok((NumNode::IntConst(IntNode { value: 0x0ffisize }), ""))
@@ -74,7 +97,7 @@ fn test_parse_sint_bin_upper() {
 }*/
 
 #[test]
-fn test_parse_uint() {
+fn test_lex_uint() {
     assert_eq!(
         parser(number).parse("1234u"),
         Ok((NumNode::UIntConst(UIntNode { value: 1234usize }), ""))
@@ -86,7 +109,7 @@ fn test_parse_uint() {
 }
 
 #[test]
-fn test_parse_uint_hex() {
+fn test_lex_uint_hex() {
     assert_eq!(
         parser(number).parse("#x0ffu"),
         Ok((NumNode::UIntConst(UIntNode { value: 0x0ffusize }), ""))
@@ -98,7 +121,7 @@ fn test_parse_uint_hex() {
 }
 
 #[test]
-fn test_parse_float() {
+fn test_lex_float() {
     assert_eq!(
         parser(number).parse("1.0"),
         Ok((NumNode::FloatConst(FloatNode { value: 1.0f64 }), ""))
@@ -118,7 +141,7 @@ fn test_parse_float() {
 }
 
 #[test]
-fn test_parse_bool() {
+fn test_lex_bool() {
     assert_eq!(
         parser(bool_const).parse("#t"),
         Ok((BoolNode { value: true}, ""))
@@ -145,3 +168,90 @@ fn test_parse_bool() {
         );
 }
 
+#[test]
+fn test_lex_char() {
+    assert_eq!(
+        parser(character).parse("#\\c"),
+        Ok((CharNode { value: 'c'}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\A"),
+        Ok((CharNode { value: 'A'}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\tab"),
+        Ok((CharNode { value: '\t'}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\newline"),
+        Ok((CharNode { value: '\n'}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\nul"),
+        Ok((CharNode { value: '\u{0000}' }, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\backspace"),
+        Ok((CharNode { value: '\u{0008}' }, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\vtab"),
+        Ok((CharNode { value: '\u{000B}' }, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\page"),
+        Ok((CharNode { value: '\u{000C}' }, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\return"),
+        Ok((CharNode { value: '\u{000D}' }, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\esc"),
+        Ok((CharNode { value: '\u{001B}' }, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\delete"),
+        Ok((CharNode { value: '\u{007F}' }, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\alarm"),
+        Ok((CharNode { value: '\u{0007}' }, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\linefeed"),
+        Ok((CharNode { value: '\n'}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\space"),
+        Ok((CharNode { value: ' '}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\x0020"),
+        Ok((CharNode { value: ' '}, ""))
+        );
+    assert_eq!(
+        parser(character).parse("#\\x001B"),
+        Ok((CharNode { value: '\u{001B}' }, ""))
+        );
+}
+
+#[test]
+fn test_lex_string() {
+    assert_eq!(
+        parser(string_const).parse("\"a string\""),
+        Ok((StringNode { value: "a string".to_string() }, ""))
+    );
+    assert_eq!(
+        parser(string_const).parse("\"a string with a\\ttab\""),
+        Ok((StringNode { value: "a string with a\ttab".to_string() },""))
+    );
+    assert_eq!(
+        parser(string_const).parse("\"a string with an \\\"escaped\\\" quote\""),
+        Ok((StringNode { value: "a string with an \"escaped\" quote".to_string() },""))
+    );
+    assert_eq!(
+        parser(string_const).parse("\"the\\\\worst string ever\\\"\""),
+        Ok((StringNode { value: "the\\worst string ever\"".to_string() }, ""))
+    );
+}

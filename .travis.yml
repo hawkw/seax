@@ -1,36 +1,12 @@
 sudo: false
 language: rust
-os:
-- linux
-- osx
 script:
 - cargo build
 - cargo test
 - cargo test -p seax_svm
 - cargo test -p seax_scheme
 after_success:
-  if ([ "$TRAVIS_BRANCH" == "master" ] || [ ! -z "$TRAVIS_TAG" ]) &&
-      [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    cargo doc
-    .travis/publish.sh
-    cargo login $CRATES_TOKEN
-    if [[ "$TRAVIS_TAG" =~ "svm-*" ]]; then
-      cd seax_svm
-      cargo package
-      cargo publish
-      cd ..
-    elif [[ "$TRAVIS_TAG" =~ "scheme-*" ]]; then
-      cd seax_scheme
-      cargo package
-      cargo publish
-      cd ..
-    else
-      cargo package
-      cargo publish
-    fi
-  else
-    echo "Not on a new tag, skipping deploy step."
-  fi
+- .travis/release.sh
 env:
   global:
   - secure: iEGoVGb3OeqSqP4UP7nbLtMEmGi9JgI0nxjrpRrSg22pCCa+lMIIiYp9gY2558pwAbcxaJpahmTt3lYqe2wdKfXlGWRB7Tz99FR8lX+vRXpgxDLg1Sz8BAnN7X9bu+AGL/INwYOe6tVncXcQgKn4uSTYa001CqhlwPzMmtGSw/w=

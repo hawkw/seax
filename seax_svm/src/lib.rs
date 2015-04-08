@@ -1,6 +1,6 @@
 #![crate_name = "seax_svm"]
 #![crate_type = "lib"]
-#![feature(box_syntax,box_patterns,core)]
+#![feature(box_syntax,box_patterns)]
 
 /// Singly-linked list and stack implementations.
 ///
@@ -660,7 +660,7 @@ impl State {
                     "[fatal]: undefined behaviour\n[fatal]: evaluation of STOP word\n{}",
                     prev.map_or(String::new(), |x| x.dump_state("fatal") )
                     ),
-            None => panic!(
+            None => panic!( // this should never happen (barring force majeure)
                 "[fatal]: expected an instruction on control stack\n{}",
                 prev.map_or(String::new(), |x| x.dump_state("fatal") )),
             Some((thing, _)) => panic!(
@@ -687,8 +687,8 @@ pub fn eval_program(program: List<SVMCell>) -> List<SVMCell> {
     let mut inp  = io::stdin();
     // while there are more instructions,
     while {
-        let next = machine.control.peek();
-        next != None && next != Some(&InstCell(STOP))
+        machine.control.length() > 0usize &&
+        machine.control.peek()!= Some(&InstCell(STOP))
     } {  //TODO: this is kinda heavyweight
         machine = machine.eval(&mut inp, &mut outp, false) // continue evaling
     };

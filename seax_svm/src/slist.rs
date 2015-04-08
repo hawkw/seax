@@ -222,6 +222,7 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
     /// # }
     /// ```
     /// ```
+    /// # #![feature(convert)]
     /// # #[macro_use] extern crate seax_svm;
     /// # use seax_svm::slist;
     /// # use seax_svm::slist::List;
@@ -230,9 +231,9 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
     /// let l: List<isize> = list!(1,2,3,4,5,6);
     /// let mut string = String::new();
     /// for item in l.iter() {
-    ///     string.push_str((item.to_string() + ", ").as_slice());
+    ///     string.push_str((item.to_string() + ", ").as_ref());
     /// }
-    /// assert_eq!(string.as_slice(), "1, 2, 3, 4, 5, 6, ")
+    /// assert_eq!(string, "1, 2, 3, 4, 5, 6, ".to_string())
     /// # }
     /// ```
     fn next(&mut self) -> Option<&'a T> {
@@ -264,8 +265,8 @@ impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
 impl<T> Index<usize> for List<T> {
     type Output = T;
 
-    fn index<'a>(&'a self, _index: &usize) -> &'a T {
-        match *_index {
+    fn index<'a>(&'a self, _index: usize) -> &'a T {
+        match _index {
             0usize => match *self {
                 Cons(ref car, _) => car,
                 Nil => panic!("List index {} out of range", _index)
@@ -304,8 +305,8 @@ impl<T> Index<usize> for List<T> {
 impl<T> Index<isize> for List<T> {
     type Output = T;
 
-    fn index<'a>(&'a self, _index: &isize) -> &'a T {
-        match *_index {
+    fn index<'a>(&'a self, _index: isize) -> &'a T {
+        match _index {
             0isize => match *self {
                 Cons(ref car, _) => car,
                 Nil => panic!("List index {} out of range", _index)
@@ -421,9 +422,10 @@ mod tests {
         let l: List<isize> = list!(1,2,3,4,5,6);
         let mut string = String::new();
         for item in l.iter() {
-            string.push_str((item.to_string() + ", ").as_slice());
+            string.push_str((item.to_string() + ", ").as_ref());
         }
-        assert_eq!(string.as_slice(), "1, 2, 3, 4, 5, 6, ")
+        let slice: &str = string.as_ref(); // this is necessary because assert_eq! is weird
+        assert_eq!(slice, "1, 2, 3, 4, 5, 6, ")
     }
 
 }

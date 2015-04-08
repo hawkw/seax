@@ -1,7 +1,7 @@
 [package]
 
 name = "seax_scheme"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Hawk Weisman <hi@hawkweisman.me>"]
 description = "Scheme compiler for the Seax VM."
 license = "MIT"
@@ -11,7 +11,7 @@ readme = "../README.md"
 keywords = ["vm","lisp","languages"]
 
 [dependencies]
-parser-combinators = "~0.2.2"
+parser-combinators = "~0.2.6"
 
 [dependencies.seax_svm]
 path = "../seax_svm"
