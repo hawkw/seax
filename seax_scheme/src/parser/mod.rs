@@ -27,7 +27,7 @@ fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
 #[unstable(feature="parser")]
 pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
-    fn hex_isize(input: State<&str>) -> ParseResult<isize, &str> {
+    fn hex_int(input: State<&str>) -> ParseResult<isize, &str> {
         satisfy(|c| c == '#')
             .with(parser(hex_scalar)
                     .map(|x| isize::from_str_radix(x.as_ref(), 16).unwrap()) )
@@ -35,7 +35,7 @@ pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
     }
 
 
-    fn dec_string(input: State<&str>) -> ParseResult<isize, &str> {
+    fn dec_int(input: State<&str>) -> ParseResult<isize, &str> {
         optional(satisfy(|c| c == '#')
             .and(satisfy(|c| c == 'd' || c == 'D')))
             .with(many1::<String, _>(digit())
@@ -43,11 +43,16 @@ pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
             .parse_state(input)
     }
 
-    optional(satisfy(|c| c == '-'))
-        .and(
-            try(parser(hex_isize))
-            .or(parser(dec_string))
-            )
+    fn signed(input: State<&str>) -> ParseResult<(Option<char>,isize), &str> {
+        optional(satisfy(|c| c == '-'))
+            .and(
+                try(parser(hex_int))
+                .or(parser(dec_int))
+                )
+            .parse_state(input)
+    }
+
+    parser(signed)
         .map(|x| {
             if let Some(sign) = x.0 {
                 let mut s = String::new();
@@ -82,10 +87,14 @@ pub fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
             .parse_state(input)
     }
 
-    try(parser(hex_uint))
-        .or( many1::<String, _>(digit())
+    fn dec_uint(input: State<&str>) -> ParseResult<usize, &str> {
+        many1::<String, _>(digit())
             .map(|x|usize::from_str(x.as_ref()).unwrap() )
-            )
+            .parse_state(input)
+    }
+
+    try(parser(hex_uint))
+        .or(parser(dec_uint))
         .skip(satisfy(|c| c == 'u' || c == 'U'))
         .map(|x: usize| NumNode::UIntConst(UIntNode{value: x}))
         .parse_state(input)
@@ -101,9 +110,15 @@ pub fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 /// a common form for floating-point numbers. Priority: low.
 #[stable(feature="parser",since="0.0.2")]
 pub fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
-    many1::<String,_>(digit())
-        .and(satisfy(|c| c == '.'))
-        .and(many1::<String, _>(digit()))
+
+    fn float_str(input: State<&str>) -> ParseResult<((String, char), String), &str> {
+        many1::<String,_>(digit())
+            .and(satisfy(|c| c == '.'))
+            .and(many1::<String, _>(digit()))
+            .parse_state(input)
+    }
+
+    parser(float_str)
         .map(|x| {
             let mut s = String::new();
             s.push_str( (x.0).0.as_ref() );
@@ -401,14 +416,24 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
             ).parse_state(input)
         }
 
+    fn constant(input: State<&str>) -> ParseResult<ExprNode, &str>{
+        try(parser(number).map(NumConst))
+            .or(try(parser(character).map(CharConst)))
+            .or(try(parser(string_const).map(StringConst)))
+            .parse_state(input)
+    }
+
+    fn non_constant(input: State<&str>) -> ParseResult<ExprNode, &str>{
+        try(parser(sexpr))
+            .or(try(parser(list)))
+            .or(try(parser(name).map(Name)))
+            .parse_state(input)
+    }
+
     spaces().with(
         try(optional(parser(line_comment))).with(
-            try(parser(sexpr))
-                .or(try(parser(list)))
-                .or(try(parser(name).map(Name)))
-                .or(try(parser(number).map(NumConst)))
-                .or(try(parser(character).map(CharConst)))
-                .or(try(parser(string_const).map(StringConst)))
+            parser(non_constant)
+                .or(parser(constant))
             )
         ).parse_state(input)
 }
