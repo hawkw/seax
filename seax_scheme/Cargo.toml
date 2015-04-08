@@ -15,4 +15,4 @@ parser-combinators = "~0.2.6"
 
 [dependencies.seax_svm]
 path = "../seax_svm"
-version = "~0.2.0"
+version = "~0.2.1"
