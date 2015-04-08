@@ -239,7 +239,6 @@ pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
                 s
             })
             .parse_state(input)
-
     }
 
     try(parser(operator))

@@ -1,5 +1,6 @@
 use ::ast::*;
 use ::ast::ExprNode::*;
+use ::ast::NumNode::*;
 use super::*;
 use super::parser_combinators::{Parser,parser};
 
@@ -52,15 +53,15 @@ fn test_basic_sexpr() {
 fn test_lex_sint_pos() {
     assert_eq!(
         parser(number).parse("1234"),
-        Ok((NumNode::IntConst(IntNode { value: 1234isize }), ""))
+        Ok((IntConst(IntNode { value: 1234isize }), ""))
         );
     assert_eq!(
         parser(number).parse("#d1234"),
-        Ok((NumNode::IntConst(IntNode { value: 1234isize }), ""))
+        Ok((IntConst(IntNode { value: 1234isize }), ""))
         );
     assert_eq!(
         parser(number).parse("#D1234"),
-        Ok((NumNode::IntConst(IntNode { value: 1234isize }), ""))
+        Ok((IntConst(IntNode { value: 1234isize }), ""))
         );
 }
 
@@ -68,7 +69,7 @@ fn test_lex_sint_pos() {
 fn test_lex_sint_neg() {
     assert_eq!(
         parser(number).parse("-1234"),
-        Ok((NumNode::IntConst(IntNode { value: -1234isize }), ""))
+        Ok((IntConst(IntNode { value: -1234isize }), ""))
         );
 }
 
@@ -76,11 +77,11 @@ fn test_lex_sint_neg() {
 fn test_lex_sint_hex() {
     assert_eq!(
         parser(number).parse("#x0ff"),
-        Ok((NumNode::IntConst(IntNode { value: 0x0ffisize }), ""))
+        Ok((IntConst(IntNode { value: 0x0ffisize }), ""))
         );
     assert_eq!(
         parser(number).parse("#X0FF"),
-        Ok((NumNode::IntConst(IntNode { value: 0x0ffisize }), ""))
+        Ok((IntConst(IntNode { value: 0x0ffisize }), ""))
         );
 }
 /* // Currently unsupported
@@ -88,11 +89,11 @@ fn test_lex_sint_hex() {
 fn test_parse_sint_bin_upper() {
     assert_eq!(
         parser(number).parse("0B01"),
-        Ok((NumNode::IntConst(IntNode { value: 0b01isize }), ""))
+        Ok((IntConst(IntNode { value: 0b01isize }), ""))
         );
     assert_eq!(
         parser(number).parse("0b01"),
-        Ok((NumNode::IntConst(IntNode { value: 0b01isize }), ""))
+        Ok((IntConst(IntNode { value: 0b01isize }), ""))
         );
 }*/
 
@@ -100,11 +101,11 @@ fn test_parse_sint_bin_upper() {
 fn test_lex_uint() {
     assert_eq!(
         parser(number).parse("1234u"),
-        Ok((NumNode::UIntConst(UIntNode { value: 1234usize }), ""))
+        Ok((UIntConst(UIntNode { value: 1234usize }), ""))
         );
     assert_eq!(
         parser(number).parse("4321U"),
-        Ok((NumNode::UIntConst(UIntNode { value: 4321usize }), ""))
+        Ok((UIntConst(UIntNode { value: 4321usize }), ""))
         );
 }
 
@@ -112,11 +113,11 @@ fn test_lex_uint() {
 fn test_lex_uint_hex() {
     assert_eq!(
         parser(number).parse("#x0ffu"),
-        Ok((NumNode::UIntConst(UIntNode { value: 0x0ffusize }), ""))
+        Ok((UIntConst(UIntNode { value: 0x0ffusize }), ""))
         );
     assert_eq!(
         parser(number).parse("#X0FFu"),
-        Ok((NumNode::UIntConst(UIntNode { value: 0x0ffusize }), ""))
+        Ok((UIntConst(UIntNode { value: 0x0ffusize }), ""))
         );
 }
 
@@ -124,20 +125,70 @@ fn test_lex_uint_hex() {
 fn test_lex_float() {
     assert_eq!(
         parser(number).parse("1.0"),
-        Ok((NumNode::FloatConst(FloatNode { value: 1.0f64 }), ""))
+        Ok((FloatConst(FloatNode { value: 1.0f64 }), ""))
         );/* // Unsupported
     assert_eq!(
         parser(number).parse("1f").unwrap(),
-        (NumNode::FloatConst(FloatNode { value: 1.0f64 }), "")
+        (FloatConst(FloatNode { value: 1.0f64 }), "")
         );
     assert_eq!(
         parser(number).parse("22.2222").unwrap(),
-        (NumNode::FloatConst(FloatNode { value: 22.2222f64 }), "")
+        (FloatConst(FloatNode { value: 22.2222f64 }), "")
         );
     assert_eq!(
         parser(number).parse("22.2222f").unwrap(),
-        (NumNode::FloatConst(FloatNode { value: 22.2222f64 }), "")
+        (FloatConst(FloatNode { value: 22.2222f64 }), "")
         );*/
+}
+
+/// This is the parsing component of basic arithmetic
+/// integration target
+///
+/// ```lisp
+/// (+ 10 10)
+/// ```
+#[test]
+fn test_parse_arith() {
+    assert_eq!(
+        parser(expr).parse("(+ 10 10)"),
+        Ok((
+            SExpr(SExprNode {
+                operator: NameNode { name: "+".to_string() },
+                operands: vec![
+                    NumConst(IntConst(IntNode{ value: 10 })),
+                    NumConst(IntConst(IntNode{ value: 10 }))
+                ]
+            }),
+            ""))
+        );
+}
+
+/// This is the parsing component of nested arithmetic
+/// integration target
+///
+/// ```lisp
+/// (- 20 (+ 5 5))
+/// ```
+#[test]
+fn test_parse_nested_arith() {
+    assert_eq!(
+        parser(expr).parse("(- 20 (+ 5 5))"),
+        Ok((
+            SExpr(SExprNode {
+                operator: NameNode { name: "-".to_string() },
+                operands: vec![
+                    NumConst(IntConst(IntNode{ value: 20 })),
+                    SExpr(SExprNode {
+                        operator: NameNode { name: "+".to_string() },
+                        operands: vec![
+                            NumConst(IntConst(IntNode{ value: 5 })),
+                            NumConst(IntConst(IntNode{ value: 5 }))
+                        ]
+                    })
+                ]
+            }),
+            ""))
+        );
 }
 
 #[test]
