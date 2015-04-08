@@ -28,8 +28,8 @@ fn compile_list_creation() {
         scheme::compile("(cons 10 (cons 20 nil))"),
         Ok(list!(
             InstCell(NIL),
-            InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
-            InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS)
+            InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
+            InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS)
         ))
     );
 }
@@ -37,12 +37,12 @@ fn compile_list_creation() {
 /// Test for simple list construction and destructuring
 ///
 /// ```lisp
-/// (car (cons 10 (cons 20 nil)))
+/// (car (cons 20 (cons 10 nil)))
 /// ```
 #[test]
 fn  compile_list_car() {
     assert_eq!(
-        scheme::compile("(car (cons 10 (cons 20 nil)))"),
+        scheme::compile("(car (cons 20 (cons 10 nil)))"),
         Ok(list!(
             InstCell(NIL),
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
@@ -55,12 +55,12 @@ fn  compile_list_car() {
 /// Test for simple list construction and destructuring
 ///
 /// ```lisp
-/// (cdr (cons 10 (cons 20 nil)))
+/// (cdr (cons 20 (cons 10 nil)))
 /// ```
 #[test]
 fn compile_list_cdr() {
     assert_eq!(
-        scheme::compile("(cdr (cons 10 (cons 20 nil)))"),
+        scheme::compile("(cdr (cons 20 (cons 10 nil)))"),
         Ok(list!(
             InstCell(NIL),
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),

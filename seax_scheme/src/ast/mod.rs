@@ -258,7 +258,6 @@ impl ASTNode for SExprNode {
             ref other if other.len() == 1 => {
                 result.push_all(&try!(other[0].compile(state)));
                 result.push_all(&try!(op.compile(state)));
-
             },
             _       => {
                 let mut it = self.operands.iter().rev();

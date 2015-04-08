@@ -25,17 +25,17 @@ fn test_list_creation() {
     assert_eq!(
         svm::eval_program(list!(
             InstCell(NIL),
-            InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
-            InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS)
+            InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
+            InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS)
         )).peek(),
-        Some(&ListCell( box list!(AtomCell(SInt(20)), AtomCell(SInt(10)))))
+        Some(&ListCell( box list!(AtomCell(SInt(10)), AtomCell(SInt(20)))))
     );
 }
 
 /// Test for simple list construction and destructuring
 ///
 /// ```lisp
-/// (car (cons 10 (cons 20 nil)))
+/// (car (cons 20 (cons 10 nil)))
 /// ```
 #[test]
 fn test_list_car() {
@@ -52,7 +52,7 @@ fn test_list_car() {
 /// Test for simple list construction and destructuring
 ///
 /// ```lisp
-/// (cdr (cons 10 (cons 20 nil)))
+/// (cdr (cons 20 (cons 10 nil)))
 /// ```
 #[test]
 fn test_list_cdr() {
