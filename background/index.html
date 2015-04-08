@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <title>The SECD Abstract Machine</title>
+    <title>Background</title>
 
     <link rel="stylesheet" type="text/css" href="../rust-book.css">
 
@@ -62,8 +62,28 @@
 <div id='page'>
 
 
-    <h1 class="title">The SECD Abstract Machine</h1>
-    <p>At the core of the Seax runtime environment is an implementation of the SECD abstract machine.</p>
+    <h1 class="title">Background</h1>
+    <p>What are the principles behind Seax&#39;s design and operation? What research preceded Seax and influenced its creation? Perhaps most importantly, why create Seax at all? These are the questions that the Background chapter seeks to address.</p>
+
+<h2 class="section-header"><a href="goals.html">Goals</a></h2>
+
+<p>In implementing Seax, I have attempted to accomplish a number of primary goals. An understanding of these goals and objectives is vital to the reader who wishes to understand the design decisions behind Seax. Therefore, this section will enumerate the core philosophy and objectives on which Seax is built. </p>
+
+<h2 class="section-header"><a href="why-vm.html">Why a virtual machine?</a></h2>
+
+<p>Why use a virtual machine as a platform for a programming language runtime environment? The advantages of the Seax virtual machine over traditional compilers and interpreters will be discussed in this section.</p>
+
+<h2 class="section-header"><a href="why-lisp.html">Why Lisp?</a></h2>
+
+<p>Seax&#39;s architecture is deeply rooted in the history of the Lisp programming language. Why use Lisp principles to inform the virtual machine architecture? Why provide a compiler for a Lisp-variant language (Scheme)? This section shines some light on the attractive qualities of Lisp and functional programming in general.</p>
+
+<h2 class="section-header"><a href="secd.html">The SECD Architecture</a></h2>
+
+<p>How is the Seax virtual machine organized? How are instructions interpreted? What comprises the Seax VM&#39;s instruction set? This section describes the basic principles behind the Seax VM&#39;s operation. </p>
+
+<h2 class="section-header"><a href="influences.html">Influences</a></h2>
+
+<p>There is nothing new under the sun. Seax, like almost all computer software, is indebted deeply to the work and ideas of many outstanding computer scientists. Here, credit is paid to those without whose work Seax would not exist.</p>
 
     <script type="text/javascript">
         window.playgroundUrl = "";

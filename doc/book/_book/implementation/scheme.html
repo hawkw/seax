@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <title>Lambda the Ultimate CPU Architecture</title>
+    <title>Seax Scheme</title>
 
     <link rel="stylesheet" type="text/css" href="../rust-book.css">
 
@@ -30,7 +30,7 @@
 <ul class='chapter'>
 <li><a href='../README.html'><b>1.</b> Introduction</a>
 </li>
-<li><a href='../background/README.html'><b>2.</b> Background</a>
+<li><a href='../background/index.html'><b>2.</b> Background</a>
 <ul class='section'>
 <li><a href='../background/goals.html'><b>2.1.</b> Goals</a>
 </li>
@@ -40,25 +40,19 @@
 </li>
 <li><a href='../background/secd.html'><b>2.4.</b> The SECD Architecture</a>
 </li>
-</ul>
-</li>
-<li><a href='../influences/README.html'><b>3.</b> Influences</a>
-<ul class='section'>
-<li><a href='../influences/secd.html'><b>3.1.</b> Landin's SECD Machine</a>
-</li>
-<li><a href='../influences/lambda.html'><b>3.2.</b> Functional CPUs</a>
+<li><a href='../background/influences.html'><b>2.5.</b> Influences</a>
 </li>
 </ul>
 </li>
-<li><a href='../implementation/README.html'><b>4.</b> Implementation</a>
+<li><a href='../implementation/README.html'><b>3.</b> Implementation</a>
 <ul class='section'>
-<li><a href='../implementation/why-rust.html'><b>4.1.</b> Why Rust?</a>
+<li><a href='../implementation/why-rust.html'><b>3.1.</b> Why Rust?</a>
 </li>
-<li><a href='../implementation/overview.html'><b>4.2.</b> Overview</a>
+<li><a href='../implementation/overview.html'><b>3.2.</b> Overview</a>
 </li>
-<li><a href='../implementation/svm.html'><b>4.3.</b> Seax Virtual Machine</a>
+<li><a href='../implementation/svm.html'><b>3.3.</b> Seax Virtual Machine</a>
 </li>
-<li><a href='../implementation/scheme.html'><b>4.4.</b> Seax Scheme</a>
+<li><a href='../implementation/scheme.html'><b>3.4.</b> Seax Scheme</a>
 </li>
 </ul>
 </li>
@@ -68,13 +62,8 @@
 <div id='page'>
 
 
-    <h1 class="title">Lambda the Ultimate CPU Architecture</h1>
-    <p>While not directly related to the SECD machine, something would be seriously amiss if I neglected to mention Sussman and Steele&#39;s <a href="http://repository.readscheme.org/ftp/papers/ai-lab-pubs/AIM-514.pdf">Design of LISP-based Processors, or SCHEME: A Dielectric LISP, or Finite Memories Considered Harmful, or LAMBDA: The Ultimate Opcode</a>, MIT AI Memo No. 514. The very idea of functions as the core primitives of a hardware architecture can likely be traced back to this paper. All of Sussman and Steele&#39;s <a href="http://library.readscheme.org/page1.html">similarly-named papers</a> are major sources of influence and motivation for Seax.</p>
-
-<p>Also worthy of looking into are the MIT <a href="http://en.wikipedia.org/wiki/Lisp_machine">Lisp Machines</a> built in the 1970s and 80s. These computers, which were designed to run Lisp programs language as efficiently as possible, used a stack-based CPU architecture called CADR, with many similarities to the SECD machine. The CADR computer architecture is described in <a href="ftp://publications.ai.mit.edu/ai-publications/pdf/AIM-528.pdf">MIT AI Memo No. 528</a>, by Thomas F. Knight, Jr., David Moon, Jack Holloway, and Guy L. Steele, Jr.</p>
-
-<p>The Lisp machines were very far ahead of their time, with the distinction of being among the earliest computers to boast high-resolution bitmapped graphics, window-based graphical user interfaces, mice, and automatic memory management. While these beautiful computers are no longer manufactured, hopefully the Seax VM will help to &#39;keep the torch alive&#39; for functional-programming-based computer architectures.</p>
-
+    <h1 class="title">Seax Scheme</h1>
+    
     <script type="text/javascript">
         window.playgroundUrl = "";
     </script>
