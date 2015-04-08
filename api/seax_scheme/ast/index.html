@@ -41,76 +41,82 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>seax_scheme</a>::<wbr><a class='mod' href=''>ast</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>seax_scheme</a>::<wbr><a class='mod' href=''>ast</a><wbr><a class='stability Unstable' title=''>Unstable</a></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-5' href='../../src/seax_scheme/ast/mod.rs.html#1-309'>[src]</a></span></h1>
-<h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+        </span><a id='src-5' href='../../src/seax_scheme/ast/mod.rs.html#1-485'>[src]</a></span></h1>
+<div class='docblock'><p>Contains the Scheme abstract syntax tree (AST).</p>
+
+<p>The AST stores the semantic structure of a parsed Scheme
+program, and is responsible for compiling those programs
+to SVM bytecode instructions, performing semantic analysis
+(as necessary), and (eventually) for optimizing programs.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.BoolNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='struct' href='struct.BoolNode.html'
                                title='seax_scheme::ast::BoolNode'>BoolNode</a></td>
                         <td class='docblock short'><p>AST node for a boolean constant</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.CharNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='struct' href='struct.CharNode.html'
                                title='seax_scheme::ast::CharNode'>CharNode</a></td>
                         <td class='docblock short'><p>AST node for a character constant</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.FloatNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='struct' href='struct.FloatNode.html'
                                title='seax_scheme::ast::FloatNode'>FloatNode</a></td>
                         <td class='docblock short'><p>AST node for a floating-point constant</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.IntNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='struct' href='struct.IntNode.html'
                                title='seax_scheme::ast::IntNode'>IntNode</a></td>
                         <td class='docblock short'><p>AST node for an integer constant</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.ListNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='struct' href='struct.ListNode.html'
                                title='seax_scheme::ast::ListNode'>ListNode</a></td>
                         <td class='docblock short'><p>AST node for a list literal</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.NameNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='struct' href='struct.NameNode.html'
                                title='seax_scheme::ast::NameNode'>NameNode</a></td>
                         <td class='docblock short'><p>AST node for an identifier</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.RootNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='struct' href='struct.RootNode.html'
                                title='seax_scheme::ast::RootNode'>RootNode</a></td>
                         <td class='docblock short'><p>AST node for the root of a program&#39;s AST</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.SExprNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='struct' href='struct.SExprNode.html'
                                title='seax_scheme::ast::SExprNode'>SExprNode</a></td>
                         <td class='docblock short'><p>AST node for an S-expression.</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.StringNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='struct' href='struct.StringNode.html'
                                title='seax_scheme::ast::StringNode'>StringNode</a></td>
                         <td class='docblock short'><p>AST node for a  string constant</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.UIntNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='struct' href='struct.UIntNode.html'
                                title='seax_scheme::ast::UIntNode'>UIntNode</a></td>
                         <td class='docblock short'><p>AST node for an unsigned integer constant</p>
 </td>
@@ -118,23 +124,41 @@
                 </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.ExprNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='enum' href='enum.ExprNode.html'
                                title='seax_scheme::ast::ExprNode'>ExprNode</a></td>
                         <td class='docblock short'><p>Expression</p>
 </td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='enum' href='enum.NumNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='enum' href='enum.NumNode.html'
                                title='seax_scheme::ast::NumNode'>NumNode</a></td>
                         <td class='docblock short'></td>
                     </tr>
                 </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
 <table>
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.ASTNode.html'
+                        <td><a class='stability Stable' title='Stable'></a><a class='trait' href='trait.ASTNode.html'
                                title='seax_scheme::ast::ASTNode'>ASTNode</a></td>
                         <td class='docblock short'><p>Trait for AST nodes.</p>
+</td>
+                    </tr>
+                </table><h2 id='types' class='section-header'><a href="#types">Type Definitions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Stable' title='Stable'></a><a class='type' href='type.CompileResult.html'
+                               title='seax_scheme::ast::CompileResult'>CompileResult</a></td>
+                        <td class='docblock short'><p>A <code>CompileResult</code> is either <code>Ok(SVMCell)</code> or <code>Err(&amp;str)</code></p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='stability Stable' title='Stable'></a><a class='type' href='type.SymTable.html'
+                               title='seax_scheme::ast::SymTable'>SymTable</a></td>
+                        <td class='docblock short'><p>The symbol table for bound names is represented as a
+<code>ForkTable</code> mapping <code>&amp;str</code> (names) to <code>(uint,uint)</code> tuples,
+representing the location in the <code>$e</code> stack storing the value
+bound to that name.</p>
 </td>
                     </tr>
                 </table></section>

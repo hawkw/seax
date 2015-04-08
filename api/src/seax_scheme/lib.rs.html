@@ -69,14 +69,75 @@
 <span id="27">27</span>
 <span id="28">28</span>
 <span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;seax_scheme&quot;</span>]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;scheme&quot;</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_type</span> <span class='op'>=</span> <span class='string'>&quot;lib&quot;</span>]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>core</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>convert</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>box_syntax</span>,<span class='ident'>box_patterns</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>slice_patterns</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>collections</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>staged_api</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>staged_api</span>]</span>
+
+<span class='doccomment'>//! Library for compiling Scheme programs to Seax SVM bytecode.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! This Scheme implementation is based on the Scheme programming</span>
+<span class='doccomment'>//! language described in the</span>
+<span class='doccomment'>//! [Revised&lt;sup&gt;6&lt;/sup&gt; Report on Scheme](http://www.r6rs.org/)</span>
+<span class='doccomment'>//! (R&lt;sup&gt;6&lt;/sup&gt;RS). Any cases in which Seax Scheme differs from</span>
+<span class='doccomment'>//! R&lt;sup&gt;6&lt;/sup&gt;RS Scheme are documented in the RustDoc for the</span>
+<span class='doccomment'>//! Seax Scheme library and in the Seax Scheme language manual.</span>
+<span class='doccomment'>//! Do note, however, that some inconsistencies between Seax Scheme</span>
+<span class='doccomment'>//! and R&lt;sup&gt;6&lt;/sup&gt;RS may be the result of unimplemented features in</span>
+<span class='doccomment'>//! Seax Scheme.</span>
 
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>seax_svm</span> <span class='kw'>as</span> <span class='ident'>svm</span>;
 
+<span class='doccomment'>/// Contains the Scheme abstract syntax tree (AST).</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// The AST stores the semantic structure of a parsed Scheme</span>
+<span class='doccomment'>/// program, and is responsible for compiling those programs</span>
+<span class='doccomment'>/// to SVM bytecode instructions, performing semantic analysis</span>
+<span class='doccomment'>/// (as necessary), and (eventually) for optimizing programs.</span>
+<span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;ast&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>ast</span>;
 
 <span class='doccomment'>/// Contains the Scheme parser.</span>
@@ -87,18 +148,29 @@
 <span class='doccomment'>/// Any deviations from the R6RS standard, especially those with an impact</span>
 <span class='doccomment'>/// on the valid programs accepted by the parser, will be noted in the</span>
 <span class='doccomment'>/// parser&#39;s RustDoc.</span>
+<span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;parser&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>parser</span>;
 
 <span class='kw'>mod</span> <span class='ident'>forktab</span>;
-<span class='doccomment'>/// An associative map data structure for repreenting scopes.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// This is an implementation of the ForkTable data structure for</span>
-<span class='doccomment'>/// representing scopes. The ForkTable was initially described by</span>
-<span class='doccomment'>/// Max Clive. This implemention is based primarily by the Scala</span>
-<span class='doccomment'>/// reference implementation written by Hawk Weisman for the Decaf</span>
-<span class='doccomment'>/// compiler, which is available [here](https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala).</span>
+
+<span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;forktable&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>forktab</span>::<span class='ident'>ForkTable</span>;
 
+<span class='kw'>use</span> <span class='ident'>svm</span>::<span class='ident'>slist</span>::{<span class='ident'>List</span>,<span class='ident'>Stack</span>};
+<span class='kw'>use</span> <span class='ident'>svm</span>::<span class='ident'>cell</span>::<span class='ident'>SVMCell</span>;
+
+<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>ast</span>::{<span class='ident'>ASTNode</span>,<span class='ident'>ExprNode</span>};
+
+
+<span class='doccomment'>/// Compile a Scheme program into a list of SVM cells (a control stack)</span>
+<span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;compile&quot;</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>compile</span>(<span class='ident'>program</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> {
+    <span class='ident'>parser</span>::<span class='ident'>parse</span>(<span class='ident'>program</span>)
+        .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>tree</span>: <span class='ident'>ExprNode</span>      <span class='op'>|</span> <span class='ident'>tree</span>.<span class='ident'>compile</span>(<span class='kw-2'>&amp;</span><span class='ident'>ForkTable</span>::<span class='ident'>new</span>()) )
+        .<span class='ident'>map</span>(     <span class='op'>|</span><span class='ident'>insts</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span> <span class='op'>|</span> <span class='ident'>insts</span>.<span class='ident'>into_iter</span>().<span class='ident'>rev</span>().<span class='ident'>fold</span>(<span class='ident'>List</span>::<span class='ident'>new</span>(),
+                  <span class='op'>|</span><span class='ident'>st</span>: <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>, <span class='ident'>i</span><span class='op'>|</span> <span class='ident'>st</span>.<span class='ident'>push</span>(<span class='ident'>i</span>)
+            ))
+}
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

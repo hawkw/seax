@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `uint_const` fn in crate `seax_scheme`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, uint_const">
+    <meta name="description" content="API documentation for the Rust `parse` fn in crate `seax_scheme`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, parse">
 
-    <title>seax_scheme::parser::uint_const - Rust</title>
+    <title>seax_scheme::parser::parse - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'><a href='../index.html'>seax_scheme</a>::<wbr><a href='index.html'>parser</a></p><script>window.sidebarCurrent = {name: 'uint_const', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>seax_scheme</a>::<wbr><a href='index.html'>parser</a></p><script>window.sidebarCurrent = {name: 'parse', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -41,17 +41,10 @@
     </nav>
 
     <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>seax_scheme</a>::<wbr><a href='index.html'>parser</a>::<wbr><a class='fn' href=''>uint_const</a><wbr><a class='stability Unstable' title=''>Unstable</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>seax_scheme</a>::<wbr><a href='index.html'>parser</a>::<wbr><a class='fn' href=''>parse</a><wbr><a class='stability Unstable' title=''>Unstable</a></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-4105' href='../../src/seax_scheme/parser/mod.rs.html#76-92'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn uint_const(input: <a class='struct' href='../../parser_combinators/primitives/struct.State.html' title='parser_combinators::primitives::State'>State</a>&lt;&amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;) -&gt; <a class='type' href='../../parser_combinators/primitives/type.ParseResult.html' title='parser_combinators::primitives::ParseResult'>ParseResult</a>&lt;<a class='enum' href='../../seax_scheme/ast/enum.NumNode.html' title='seax_scheme::ast::NumNode'>NumNode</a>, &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</pre><div class='docblock'><p>Parser for unsigned integer constants.</p>
-
-<p>This parses unssigned integer constants in decimal and hexadecimal.</p>
-
-<p>TODO: add support for octal
-TODO: add support for binary
-TODO: add support for R6RS exponents</p>
-</div></section>
+        </span><a id='src-5523' href='../../src/seax_scheme/parser/mod.rs.html#416-421'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn parse(program: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='../../seax_scheme/ast/enum.ExprNode.html' title='seax_scheme::ast::ExprNode'>ExprNode</a>, <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</pre></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

@@ -41,19 +41,31 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>seax_scheme</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>seax_scheme</a><wbr><a class='stability Unstable' title=''>Unstable</a></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-0' href='../src/seax_scheme/lib.rs.html#1-28'>[src]</a></span></h1>
-<h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+        </span><a id='src-0' href='../src/seax_scheme/lib.rs.html#1-65'>[src]</a></span></h1>
+<div class='docblock'><p>Library for compiling Scheme programs to Seax SVM bytecode.</p>
+
+<p>This Scheme implementation is based on the Scheme programming
+language described in the
+<a href="http://www.r6rs.org/">Revised<sup>6</sup> Report on Scheme</a>
+(R<sup>6</sup>RS). Any cases in which Seax Scheme differs from
+R<sup>6</sup>RS Scheme are documented in the RustDoc for the
+Seax Scheme library and in the Seax Scheme language manual.
+Do note, however, that some inconsistencies between Seax Scheme
+and R<sup>6</sup>RS may be the result of unimplemented features in
+Seax Scheme.</p>
+</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='ast/index.html'
+                        <td><a class='stability Unstable' title='Unstable'></a><a class='mod' href='ast/index.html'
                                title='seax_scheme::ast'>ast</a></td>
-                        <td class='docblock short'></td>
+                        <td class='docblock short'><p>Contains the Scheme abstract syntax tree (AST).</p>
+</td>
                     </tr>
                 
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='mod' href='parser/index.html'
+                        <td><a class='stability Unstable' title='Unstable'></a><a class='mod' href='parser/index.html'
                                title='seax_scheme::parser'>parser</a></td>
                         <td class='docblock short'><p>Contains the Scheme parser.</p>
 </td>
@@ -61,9 +73,18 @@
                 </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                     <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='struct' href='struct.ForkTable.html'
+                        <td><a class='stability Unstable' title='Unstable'></a><a class='struct' href='struct.ForkTable.html'
                                title='seax_scheme::ForkTable'>ForkTable</a></td>
-                        <td class='docblock short'></td>
+                        <td class='docblock short'><p>An associative map data structure for representing scopes.</p>
+</td>
+                    </tr>
+                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='stability Unstable' title='Unstable'></a><a class='fn' href='fn.compile.html'
+                               title='seax_scheme::compile'>compile</a></td>
+                        <td class='docblock short'><p>Compile a Scheme program into a list of SVM cells (a control stack)</p>
+</td>
                     </tr>
                 </table></section>
     <section id='search' class="content hidden"></section>

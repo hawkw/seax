@@ -41,12 +41,28 @@
     </nav>
 
     <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>seax_scheme</a>::<wbr><a class='struct' href=''>ForkTable</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>seax_scheme</a>::<wbr><a class='struct' href=''>ForkTable</a><wbr><a class='stability Unstable' title=''>Unstable</a></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-4998' href='../src/seax_scheme/forktab.rs.html#6-10'>[src]</a></span></h1>
+        </span><a id='src-5571' href='../src/seax_scheme/forktab.rs.html#22-26'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct ForkTable&lt;'a, K: 'a + <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a>, V: 'a&gt; {
     // some fields omitted
-}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a, K, V&gt; <a class='struct' href='../seax_scheme/struct.ForkTable.html' title='seax_scheme::ForkTable'>ForkTable</a>&lt;'a, K, V&gt; <span class='where'>where K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a></span></code></h3><div class='impl-items'><h4 id='method.get' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get' class='fnname'>get</a>&lt;Q: ?<a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>&gt;(&amp;self, key: &amp;Q) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;V&gt; <span class='where'>where K: <a class='trait' href='http://doc.rust-lang.org/nightly/collections/borrow/trait.Borrow.html' title='collections::borrow::Borrow'>Borrow</a>&lt;Q&gt;, Q: <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a></span></code></h4>
+}</pre><div class='docblock'><p>An associative map data structure for representing scopes.</p>
+
+<p>A <code>ForkTable</code> functions similarly to a standard associative map
+data structure (such as a <code>HashMap</code>), but with the ability to
+fork children off of each level of the map. If a key exists in any
+of a child&#39;s parents, the child will &#39;pass through&#39; that key. If a
+new value is bound to a key in a child level, that child will overwrite
+the previous entry with the new one, but the previous <code>key</code> -&gt; <code>value</code>
+mapping will remain in the level it is defined. This means that the parent
+level will still provide the previous value for that key.</p>
+
+<p>This is an implementation of the ForkTable data structure for
+representing scopes. The ForkTable was initially described by
+Max Clive. This implemention is based primarily by the Scala
+reference implementation written by Hawk Weisman for the Decaf
+compiler, which is available <a href="https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala">here</a>.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unstable' title='Unstable'></a><code>impl&lt;'a, K, V&gt; <a class='struct' href='../seax_scheme/struct.ForkTable.html' title='seax_scheme::ForkTable'>ForkTable</a>&lt;'a, K, V&gt; <span class='where'>where K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a></span></code></h3><div class='impl-items'><h4 id='method.get' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.get' class='fnname'>get</a>&lt;'b&gt;(&amp;'b self, key: &amp;K) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'b V&gt;</code></h4>
 <div class='docblock'><p>Returns a reference to the value corresponding to the key.</p>
 
 <p>If the key is defined in this level of the table, or in any
@@ -56,7 +72,36 @@ returned.</p>
 <p>The key may be any borrowed form of the map&#39;s key type, but
 <code>Hash</code> and <code>Eq</code> on the borrowed form <em>must</em> match those for
 the key type.</p>
-</div><h4 id='method.get_mut' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.get_mut' class='fnname'>get_mut</a>&lt;Q: ?<a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>&gt;(&amp;mut self, key: &amp;Q) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;mut V&gt; <span class='where'>where K: <a class='trait' href='http://doc.rust-lang.org/nightly/collections/borrow/trait.Borrow.html' title='collections::borrow::Borrow'>Borrow</a>&lt;Q&gt;, Q: <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a></span></code></h4>
+
+<h1 id="arguments" class='section-header'><a
+                           href="#arguments">Arguments</a></h1>
+<ul>
+<li><code>key</code>  - the key to search for</li>
+</ul>
+
+<h1 id="return-value" class='section-header'><a
+                           href="#return-value">Return Value</a></h1>
+<ul>
+<li><code>Some(&amp;V)</code> if an entry for the given key exists in the
+table, or <code>None</code> if there is no entry for that key.</li>
+</ul>
+
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>table</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>None</span>);
+<span class='ident'>table</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='string'>&quot;One&quot;</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>2isize</span>), <span class='prelude-val'>None</span>);
+</pre>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>level_1</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='ident'>level_1</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>level_2</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>level_1</span>.<span class='ident'>fork</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_2</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='string'>&quot;One&quot;</span>));
+</pre>
+</div><h4 id='method.get_mut' class='method'><a class='stability Unstable' title='Unstable'></a><code>fn <a href='#method.get_mut' class='fnname'>get_mut</a>&lt;'b&gt;(&amp;'b mut self, key: &amp;K) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'b mut V&gt;</code></h4>
 <div class='docblock'><p>Returns a mutable reference to the value corresponding to the key.</p>
 
 <p>If the key is defined in this level of the table, or in any
@@ -66,23 +111,218 @@ returned.</p>
 <p>The key may be any borrowed form of the map&#39;s key type, but
 <code>Hash</code> and <code>Eq</code> on the borrowed form <em>must</em> match those for
 the key type.</p>
-</div><h4 id='method.insert' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.insert' class='fnname'>insert</a>(&amp;mut self, k: K, v: V) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;V&gt;</code></h4>
-<h4 id='method.contains_key' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.contains_key' class='fnname'>contains_key</a>(&amp;self, key: &amp;K) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-<div class='docblock'><p>Returns true if the map contains a value for the specified key.</p>
+
+<h1 id="arguments" class='section-header'><a
+                           href="#arguments">Arguments</a></h1>
+<ul>
+<li><code>key</code>  - the key to search for</li>
+</ul>
+
+<h1 id="return-value" class='section-header'><a
+                           href="#return-value">Return Value</a></h1>
+<ul>
+<li><code>Some(&amp;mut V)</code> if an entry for the given key exists in the
+table, or <code>None</code> if there is no entry for that key.</li>
+</ul>
+
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>table</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get_mut</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>None</span>);
+<span class='ident'>table</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get_mut</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='string'>&quot;One&quot;</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get_mut</span>(<span class='kw-2'>&amp;</span><span class='number'>2isize</span>), <span class='prelude-val'>None</span>);
+</pre>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>level_1</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='ident'>level_1</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>level_2</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>level_1</span>.<span class='ident'>fork</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_2</span>.<span class='ident'>get_mut</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='string'>&quot;One&quot;</span>));
+</pre>
+
+<p>TODO: consider only allowing <code>get_mut()</code> from the current
+      level, to remove the need to keep a mutable borrow
+      on the parent level. We could allow an overwrite here
+      instead.</p>
+</div><h4 id='method.remove' class='method'><a class='stability Unstable' title='Unstable'></a><code>fn <a href='#method.remove' class='fnname'>remove</a>(&amp;mut self, key: &amp;K) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;V&gt; <span class='where'>where K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a></span></code></h4>
+<div class='docblock'><p>Removes a key from the map, returning the value at the key if
+the key was previously in the map.</p>
+
+<p>If the removed value exists in a lower level of the table,
+it will be whited out at this level. This means that the entry
+will be &#39;removed&#39; at this level and this table will not provide
+access to it, but the mapping will still exist in the level where
+it was defined. Note that the key will not be returned if it is
+defined in a lower level of the table.</p>
 
 <p>The key may be any borrowed form of the map&#39;s key type, but
 <code>Hash</code> and <code>Eq</code> on the borrowed form <em>must</em> match those for
 the key type.</p>
-</div><h4 id='method.chain_contains_key' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.chain_contains_key' class='fnname'>chain_contains_key</a>(&amp;self, key: &amp;K) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+
+<h1 id="arguments" class='section-header'><a
+                           href="#arguments">Arguments</a></h1>
+<ul>
+<li><code>key</code>  - the key to remove</li>
+</ul>
+
+<h1 id="return-value" class='section-header'><a
+                           href="#return-value">Return Value</a></h1>
+<ul>
+<li><code>Some(V)</code> if an entry for the given key exists in the
+table, or <code>None</code> if there is no entry for that key.</li>
+</ul>
+
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>table</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='ident'>table</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>Some</span>(<span class='string'>&quot;One&quot;</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>false</span>);
+</pre>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>level_1</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='ident'>level_1</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_1</span>.<span class='ident'>contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>true</span>);
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>level_2</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>level_1</span>.<span class='ident'>fork</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_2</span>.<span class='ident'>chain_contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>true</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_2</span>.<span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>None</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_2</span>.<span class='ident'>chain_contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>false</span>);
+</pre>
+</div><h4 id='method.insert' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.insert' class='fnname'>insert</a>(&amp;mut self, k: K, v: V) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;V&gt;</code></h4>
+<div class='docblock'><p>Inserts a key-value pair from the map.</p>
+
+<p>If the key already had a value present in the map, that
+value is returned. Otherwise, <code>None</code> is returned.</p>
+
+<p>If the key is currently whited out (i.e. it was defined
+in a lower level of the map and was removed) then it will
+be un-whited out and added at this level.</p>
+
+<h1 id="arguments" class='section-header'><a
+                           href="#arguments">Arguments</a></h1>
+<ul>
+<li><code>k</code>  - the key to add</li>
+<li><code>v</code>  - the value to associate with that key</li>
+</ul>
+
+<h1 id="return-value" class='section-header'><a
+                           href="#return-value">Return Value</a></h1>
+<ul>
+<li><code>Some(V)</code> if a previous entry for the given key exists in the
+table, or <code>None</code> if there is no entry for that key.</li>
+</ul>
+
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1>
+<p>Simply inserting an entry:</p>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>table</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>None</span>);
+<span class='ident'>table</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='string'>&quot;One&quot;</span>));
+</pre>
+
+<p>Overwriting the value associated with a key:</p>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>table</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>None</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;two&quot;</span>), <span class='prelude-val'>None</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='string'>&quot;two&quot;</span>));
+
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>insert</span>(<span class='number'>2isize</span>, <span class='string'>&quot;Two&quot;</span>), <span class='prelude-val'>Some</span>(<span class='string'>&quot;two&quot;</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>2isize</span>), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='string'>&quot;Two&quot;</span>));
+</pre>
+</div><h4 id='method.contains_key' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.contains_key' class='fnname'>contains_key</a>(&amp;self, key: &amp;K) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Returns true if this level contains a value for the specified key.</p>
+
+<p>The key may be any borrowed form of the map&#39;s key type, but
+<code>Hash</code> and <code>Eq</code> on the borrowed form <em>must</em> match those for
+the key type.</p>
+
+<h1 id="arguments" class='section-header'><a
+                           href="#arguments">Arguments</a></h1>
+<ul>
+<li><code>k</code>  - the key to search for</li>
+</ul>
+
+<h1 id="return-value" class='section-header'><a
+                           href="#return-value">Return Value</a></h1>
+<ul>
+<li><code>true</code> if the given key is defined in this level of the
+table, <code>false</code> if it does not.</li>
+</ul>
+
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>table</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>false</span>);
+<span class='ident'>table</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>true</span>);
+</pre>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>level_1</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_1</span>.<span class='ident'>contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>false</span>);
+<span class='ident'>level_1</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_1</span>.<span class='ident'>contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>true</span>);
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>level_2</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>level_1</span>.<span class='ident'>fork</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_2</span>.<span class='ident'>contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>false</span>);
+</pre>
+</div><h4 id='method.chain_contains_key' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.chain_contains_key' class='fnname'>chain_contains_key</a>(&amp;self, key: &amp;K) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Returns true if the key is defined in this level of the table, or
 in any of its&#39; parents and is not whited out.</p>
 
 <p>The key may be any borrowed form of the map&#39;s key type, but
 <code>Hash</code> and <code>Eq</code> on the borrowed form <em>must</em> match those for
 the key type.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl&lt;'a, K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + 'a + <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a>, V: <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> + 'a&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../seax_scheme/struct.ForkTable.html' title='seax_scheme::ForkTable'>ForkTable</a>&lt;'a, K, V&gt; <span class='where'>where K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, V: <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a>, V: <a class='trait' href='http://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a></span></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../seax_scheme/struct.ForkTable.html' title='seax_scheme::ForkTable'>ForkTable</a>&lt;'a, K, V&gt;</code></h4>
-<h4 id='method.clone_from' class='tymethod'><a class='stability Unstable' title='Unstable: this function is rarely used'></a><code>fn <a href='#tymethod.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
-</div><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl&lt;'a, K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> + 'a + <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a>, V: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> + 'a&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../seax_scheme/struct.ForkTable.html' title='seax_scheme::ForkTable'>ForkTable</a>&lt;'a, K, V&gt; <span class='where'>where K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a>, V: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a>, K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a>, K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a>, V: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a></span></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+
+<h1 id="arguments" class='section-header'><a
+                           href="#arguments">Arguments</a></h1>
+<ul>
+<li><code>k</code>  - the key to search for</li>
+</ul>
+
+<h1 id="return-value" class='section-header'><a
+                           href="#return-value">Return Value</a></h1>
+<ul>
+<li><code>true</code> if the given key is defined in the table,
+<code>false</code> if it does not.</li>
+</ul>
+
+<h1 id="examples" class='section-header'><a
+                           href="#examples">Examples</a></h1><pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>table</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>chain_contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>false</span>);
+<span class='ident'>table</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>table</span>.<span class='ident'>chain_contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>true</span>);
+</pre>
+<pre id='rust-example-rendered' class='rust '>
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>level_1</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>ForkTable</span>::<span class='ident'>new</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_1</span>.<span class='ident'>chain_contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>false</span>);
+<span class='ident'>level_1</span>.<span class='ident'>insert</span>(<span class='number'>1isize</span>, <span class='string'>&quot;One&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_1</span>.<span class='ident'>chain_contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>true</span>);
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>level_2</span>: <span class='ident'>ForkTable</span><span class='op'>&lt;</span><span class='ident'>isize</span>,<span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>level_1</span>.<span class='ident'>fork</span>();
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>level_2</span>.<span class='ident'>chain_contains_key</span>(<span class='kw-2'>&amp;</span><span class='number'>1isize</span>), <span class='boolval'>true</span>);
+</pre>
+</div><h4 id='method.fork' class='method'><a class='stability Unstable' title='Unstable'></a><code>fn <a href='#method.fork' class='fnname'>fork</a>(&amp;'a mut self) -&gt; <a class='struct' href='../seax_scheme/struct.ForkTable.html' title='seax_scheme::ForkTable'>ForkTable</a>&lt;'a, K, V&gt;</code></h4>
+<div class='docblock'><p>Forks this table, returning a new <code>ForkTable&lt;K,V&gt;</code>.</p>
+
+<p>This level of the table will be set as the child&#39;s
+parent. The child will be created with an empty backing
+<code>HashMap</code> and no keys whited out.</p>
+
+<p>Note that the new <code>ForkTable&lt;K,V&gt;</code> has a lifetime
+bound ensuring that it will live at least as long as the
+parent <code>ForkTable</code>.</p>
+
+<p>TODO: should whiteouts be carried over? look into this.</p>
+</div><h4 id='method.new' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../seax_scheme/struct.ForkTable.html' title='seax_scheme::ForkTable'>ForkTable</a>&lt;'a, K, V&gt;</code></h4>
+<div class='docblock'><p>Constructs a new <code>ForkTable&lt;K,V&gt;</code></p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><a class='stability Stable' title='Stable'></a><code>impl&lt;'a, K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> + 'a + <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.Eq.html' title='core::cmp::Eq'>Eq</a> + <a class='trait' href='http://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a>, V: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> + 'a&gt; <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../seax_scheme/struct.ForkTable.html' title='seax_scheme::ForkTable'>ForkTable</a>&lt;'a, K, V&gt; <span class='where'>where K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a>, V: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a>, K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a>, K: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a>, V: <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a></span></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><a class='stability Stable' title='Stable'></a><code>fn <a href='#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
