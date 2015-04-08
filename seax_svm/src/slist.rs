@@ -204,7 +204,7 @@ impl<T> List<T> {
 
 #[stable(feature="list", since="0.2.1")]
 impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
-    #[stable(feature="list"), since="0.2.1"]
+    #[stable(feature="list", since="0.2.1")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Cons(ref head, ref tail) => write!(f, "({}, {})", head, tail),
