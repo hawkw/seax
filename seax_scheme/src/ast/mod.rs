@@ -310,6 +310,9 @@ impl NameNode {
          _ => false
       }
    }
+
+   #[stable(feature = "ast", since = "0.0.4")]
+   pub fn new(name: String) -> Self { NameNode {name: name} }
 }
 
 impl ASTNode for NameNode {

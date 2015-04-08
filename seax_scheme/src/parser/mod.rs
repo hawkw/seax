@@ -183,42 +183,68 @@ pub fn number(input: State<&str>) -> ParseResult<NumNode, &str> {
 #[stable(feature="parser",since="0.0.2")]
 pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
 
-    fn initial(input: State<&str>) -> ParseResult<char, &str> {
-        satisfy(|c|
-                c.is_alphabetic()
-                // R6RS 'special initial' characters
-                || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
-                || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
-                || c == '?' )
+    fn operator(input: State<&str>) -> ParseResult<String, &str> {
+
+        fn single_op(input: State<&str>) -> ParseResult<String, &str> {
+            satisfy(|c| c == '+' || c == '-' || c == '*' || c == '/' || c == '=')
+                .map(|c| { let mut s = String::new(); s.push(c); s})
+                .parse_state(input)
+        }
+
+        parser(single_op)
+            .or(string("!=")
+                    .or(string(">="))
+                    .or(string("<="))
+                    .map(String::from_str)
+                )
             .parse_state(input)
     }
 
-    fn subsequent(input: State<&str>) -> ParseResult<char, &str> {
-        satisfy(|c|
-                c.is_alphanumeric()
-                // R6RS 'special initial' characters
-                || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
-                || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
-                || c == '?'
-                // R6RS 'special subsequent' characters
-                || c == '+' || c == '-' || c == '.' || c == '@' )
+    fn ident(input: State<&str>) -> ParseResult<String, &str> {
+
+        fn initial(input: State<&str>) -> ParseResult<char, &str> {
+            satisfy(|c|
+                    c.is_alphabetic()
+                    // R6RS 'special initial' characters
+                    || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
+                    || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
+                    || c == '?'
+                    )
+                .parse_state(input)
+        }
+
+        fn subsequent(input: State<&str>) -> ParseResult<char, &str> {
+            satisfy(|c|
+                    c.is_alphanumeric()
+                    // R6RS 'special initial' characters
+                    || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
+                    || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
+                    || c == '?'
+                    // R6RS 'special subsequent' characters
+                    || c == '+' || c == '-' || c == '.' || c == '@' )
+                .parse_state(input)
+        }
+
+        fn rest(input: State<&str>) -> ParseResult<String, &str> {
+            many::<String, _>(parser(subsequent))
+                .parse_state(input)
+        }
+
+        parser(initial)
+            .and(parser(rest))
             .parse_state(input)
+            .map(|x| {
+                let mut s = String::new();
+                s.push((x.0).0);
+                s.push_str(&(x.0).1);
+                (s, x.1)
+            })
     }
 
-    fn rest(input: State<&str>) -> ParseResult<String, &str> {
-        many::<String, _>(parser(subsequent))
-            .parse_state(input)
-    }
-
-    parser(initial)
-        .and(parser(rest))
+    try(parser(operator))
+        .or(parser(ident))
+        .map(NameNode::new)
         .parse_state(input)
-        .map(|x| {
-            let mut s = String::new();
-            s.push((x.0).0);
-            s.push_str(&(x.0).1);
-            (NameNode{ name: s}, x.1)
-        })
 }
 
 /// Recognizes R<sup>6</sup>RS character constants.
