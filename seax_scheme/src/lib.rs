@@ -1,4 +1,5 @@
 #![crate_name = "seax_scheme"]
+#![unstable(feature="scheme")]
 #![crate_type = "lib"]
 #![feature(convert)]
 #![feature(box_syntax,box_patterns)]
@@ -44,6 +45,7 @@ pub mod parser;
 
 mod forktab;
 
+#[unstable(feature="forktable")]
 pub use self::forktab::ForkTable;
 
 use svm::slist::{List,Stack};
