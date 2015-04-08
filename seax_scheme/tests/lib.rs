@@ -117,7 +117,7 @@ fn compile_nested_arith() {
 /// (+ 10 (if (nil? nil) 10 20))
 /// ```
 #[test]
-fn test_basic_branching() {
+fn compile_basic_branching() {
     assert_eq!(
         scheme::compile("((if (= 0 (- 1 1)) #t #f)"),
         Ok(list!(
