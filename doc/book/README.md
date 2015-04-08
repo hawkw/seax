@@ -1,5 +1,17 @@
 % Seax
 
+#### Seax Virtual Machine (SVM)
+
+[![Build Status](https://img.shields.io/travis/hawkw/seax/svm-dev.svg?style=flat-square)](https://travis-ci.org/hawkw/seax)
+[![Latest RustDoc](https://img.shields.io/badge/rustdoc-latest-green.svg?style=flat-square)](http://hawkweisman.me/seax/api/seax_svm/)
+[![Latest SVM release](https://img.shields.io/crates/v/seax_svm.svg?style=flat-square)](https://crates.io/crates/seax_svm)
+
+#### Seax Scheme Compiler 
+
+[![Build Status](https://img.shields.io/travis/hawkw/seax/scheme-dev.svg?style=flat-square)](https://travis-ci.org/hawkw/seax)
+[![Latest RustDoc](https://img.shields.io/badge/rustdoc-latest-green.svg?style=flat-square)](http://hawkweisman.me/seax/api/seax_scheme/)
+[![Latest Seax Scheme release](https://img.shields.io/crates/v/seax_scheme.svg?style=flat-square)](https://crates.io/crates/seax_svm)
+
 Seax is a multi-language runtime environment for executing computer programs, with a focus on functional languages. At the core of Seax is a virtual machine based on an implementation of the [SECD machine](https://en.wikipedia.org/wiki/SECD_machine) first described by Peter J. Landin. 
 
 Seax was implemented by [Hawk Weisman](http://hawkweisman.me) and is released under the [MIT license](https://github.com/hawkw/seax/blob/master/LICENSE). While Seax was written primarily for educational purposes, the goal of the project is to create a runtime environment which may be used by developers for real-world projects.
