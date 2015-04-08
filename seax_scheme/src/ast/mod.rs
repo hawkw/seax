@@ -17,7 +17,7 @@ mod tests;
 /// bound to that name.
 pub type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
 /// A `CompileResult` is either `Ok(SVMCell)` or `Err(&str)`.
-pub type CompileResult  = Result<Vec<SVMCell>, &'static str>;
+pub type CompileResult  = Result<Vec<SVMCell>, String>;
 
 static INDENT: &'static str = "\t";
 
@@ -107,7 +107,7 @@ pub struct RootNode { pub exprs: Vec<ExprNode> }
 
 impl ASTNode for RootNode {
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED")
+        Err("UNINPLEMENTED".to_string())
     }
     fn print_level(&self, level: usize) -> String {
         self.exprs
@@ -176,7 +176,7 @@ impl ASTNode for SExprNode {
                         )),
                     InstCell(LDF)
                     )),
-                None         => Err("[error] Unknown identifier!")
+                None         => Err(format!("[error] Unknown identifier `{}`", op.name))
             }
         }
         /*let ref token = self.operator.name;
@@ -218,7 +218,7 @@ pub struct ListNode { pub elements: Vec<ExprNode> }
 
 impl ASTNode for ListNode {
     fn compile<'a>(&'a self, state: &SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED")
+        Err("UNINPLEMENTED".to_string())
     }
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
@@ -275,7 +275,7 @@ impl NameNode {
 
 impl ASTNode for NameNode {
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED")
+        Err("UNINPLEMENTED".to_string())
     }
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
@@ -352,7 +352,7 @@ pub struct BoolNode { pub value: bool }
 impl ASTNode for BoolNode {
 
     fn compile<'a>(&'a self,state:  &'a SymTable)    -> CompileResult {
-        Err("UNINPLEMENTED")
+        Err("UNINPLEMENTED".to_string())
     }
 
     fn print_level(&self, level: usize) -> String {
@@ -376,7 +376,7 @@ pub struct CharNode { pub value: char }
 
 impl ASTNode for CharNode {
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED")
+        Err("UNINPLEMENTED".to_string())
     }
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
@@ -398,7 +398,7 @@ pub struct StringNode { pub value: String }
 
 impl ASTNode for StringNode {
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED")
+        Err("UNINPLEMENTED".to_string())
     }
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
