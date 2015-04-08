@@ -126,7 +126,7 @@ impl<T> Stack<T> for List<T> {
 ///
 /// This is used internally to represent list primitives in the
 /// machine.
-#[derive(PartialEq,Clone,Debug)]
+#[derive(PartialEq,Clone)]
 pub enum List<T> {
     /// Cons cell containing a `T` and a link to the tail
     Cons(T, Box<List<T>>),
@@ -187,6 +187,17 @@ impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
         // TODO: replace toString with this
         match *self {
             Cons(ref head, ref tail) => write!(f, "({}, {})", head, tail),
+            Nil => write!(f,"nil")
+        }
+    }
+}
+
+impl<'a, T> fmt::Debug for List<T> where T: fmt::Debug {
+
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // TODO: replace toString with this
+        match *self {
+            Cons(ref head, ref tail) => write!(f, "({:?}, {:?})", head, tail),
             Nil => write!(f,"nil")
         }
     }
