@@ -8,11 +8,11 @@ Do note that Seax is currently undergoing active development, and therefore, a n
 
 The Seax documentation is split into three primary sections, which can be navigated using the table of contents on the left of this page.
 
-## Background
+<h2 class="section-header"><a href="background/index.html">Background</a></h2>
 
 This section contains information regarding the motivation and goals behind Seax, and the antecedants and previous work that have informed its' implementation.
 
-## Implementation
+<h2 class="section-header"><a href="implementation">Implementation</a></h2>
 
 This section details the implementation of Seax and its components, including descriptions of their architecture and functionality. Discussions of the design choices that went into the Seax's implementation are also furnished.
 
