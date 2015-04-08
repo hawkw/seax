@@ -106,7 +106,7 @@ fn compile_nested_arith() {
     );
 }
 
-
+/*
 /// Tests for basic branching
 ///
 /// ```lisp
@@ -146,4 +146,4 @@ fn compile_basic_branching_2() {
         ))
     );
 }
-
+*/
