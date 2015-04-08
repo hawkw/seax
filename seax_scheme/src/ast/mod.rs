@@ -8,6 +8,8 @@ use self::ExprNode::*;
 use self::NumNode::*;
 use super::ForkTable;
 
+use std::fmt;
+
 #[cfg(test)]
 mod tests;
 
@@ -35,11 +37,17 @@ pub trait ASTNode {
 
     /// Pretty-print this node
     #[stable(feature = "ast", since = "0.0.2")]
-    fn prettyprint(&self)               -> String { self.print_level(0usize) }
+    fn prettyprint(&self)               -> String { self.print_level(0) }
 
     /// Pretty-print this node at the desired indent level
     #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String;
+}
+
+impl fmt::Debug for ASTNode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.prettyprint())
+    }
 }
 
 /// Expression
@@ -59,7 +67,7 @@ pub trait ASTNode {
 ///  TODO: implement the entire Scheme 'numeric tower'
 ///  TODO: macros should happen
 ///  TODO: figure out quasiquote somehow.
-#[derive(Clone, PartialEq,Debug)]
+#[derive(Clone, PartialEq)]
 #[stable(feature = "ast", since = "0.0.2")]
 pub enum ExprNode {
     #[stable(feature = "ast", since = "0.0.2")]
@@ -112,8 +120,13 @@ impl ASTNode for ExprNode {
     }
 }
 
+impl fmt::Debug for ExprNode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.prettyprint())
+    }
+}
 
-#[derive(Clone, PartialEq,Debug)]
+#[derive(Clone, PartialEq)]
 #[stable(feature = "ast", since = "0.0.2")]
 pub enum NumNode {
     #[stable(feature = "ast", since = "0.0.2")]
@@ -124,10 +137,22 @@ pub enum NumNode {
     FloatConst(FloatNode)
 }
 
+impl fmt::Debug for NumNode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.prettyprint())
+    }
+}
+
 /// AST node for the root of a program's AST
-#[derive(Clone, PartialEq,Debug)]
+#[derive(Clone, PartialEq)]
 #[stable(feature = "ast", since = "0.0.2")]
 pub struct RootNode { pub exprs: Vec<ExprNode> }
+
+impl fmt::Debug for RootNode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.prettyprint())
+    }
+}
 
 impl ASTNode for RootNode {
     #[unstable(feature="compile")]
@@ -153,7 +178,7 @@ impl ASTNode for RootNode {
 ///
 /// This includes function application, assignment,
 /// function definition, et cetera...Scheme is not a complexl anguage.
-#[derive(Clone, PartialEq,Debug)]
+#[derive(Clone, PartialEq)]
 #[stable(feature = "ast", since = "0.0.2")]
 pub struct SExprNode {
     #[stable(feature = "ast", since = "0.0.2")]
@@ -165,8 +190,8 @@ pub struct SExprNode {
 impl ASTNode for SExprNode {
     #[unstable(feature="compile")]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        match self.operator {
-            ref op if op.is_arith() || op.is_cmp() => {
+        /*match self.operator {
+            ref op if op.is_arith() || op.is_cmp() => { // todo: make this one thing
                 let instruction = match op.name.as_ref() {
                     "+"  => ADD,
                     "-"  => SUB,
@@ -179,6 +204,7 @@ impl ASTNode for SExprNode {
                     "<"  => LT,
                     "<=" => LTE,
                     // TODO:  floating-point
+                    // TODO: move to NameNode.compile()
                     // TODO: figure out how to handle "!=" -> "EQ + Invert"
                     _   => panic!( "Something impossible happened!")
                         // this never happens, barring force majeure
@@ -219,13 +245,34 @@ impl ASTNode for SExprNode {
                     )),
                 None         => Err(format!("[error] Unknown identifier `{}`", op.name))
             }
-        }
+        }*/
         /*let ref token = self.operator.name;
         match token.as_ref() {
             "let" => unimplemented!(),
             ref name if state.chain_contains_key(name) => unimplemented!(),
             name => Err("[error] Unknown identifier")
         }*/
+        let ref op = self.operator;
+        let mut result = Vec::new();
+        match self.operands {
+            ref other if other.len() == 1 => {
+                result.push_all(&try!(other[0].compile(state)));
+                result.push_all(&try!(op.compile(state)));
+
+            },
+            _       => {
+                let mut it = self.operands.iter().rev();
+                // TODO: can thsi be represented with a reduce/fold?
+                result.push_all(&try!(
+                    it.next().unwrap().compile(state)));
+                for ref operand in it {
+                    result.push_all(&try!(operand.compile(state)));
+                    result.push_all(&try!(op.compile(state)));
+                }
+            }
+        }
+
+        Ok(result)
     }
 
     #[stable(feature = "ast", since = "0.0.2")]
@@ -254,10 +301,22 @@ impl ASTNode for SExprNode {
 
 }
 
+impl fmt::Debug for SExprNode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.prettyprint())
+    }
+}
+
 /// AST node for a list literal
-#[derive(Clone, PartialEq,Debug)]
+#[derive(Clone, PartialEq)]
 #[stable(feature = "ast", since = "0.0.2")]
 pub struct ListNode { pub elements: Vec<ExprNode> }
+
+impl fmt::Debug for ListNode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.prettyprint())
+    }
+}
 
 impl ASTNode for ListNode {
     #[unstable(feature="compile")]
@@ -285,7 +344,7 @@ impl ASTNode for ListNode {
 }
 
 /// AST node for an identifier
-#[derive(Clone, PartialEq,Debug)]
+#[derive(Clone, PartialEq)]
 #[stable(feature = "ast", since = "0.0.2")]
 pub struct NameNode { pub name: String }
 
@@ -327,15 +386,31 @@ impl NameNode {
    pub fn new(name: String) -> Self { NameNode {name: name} }
 }
 
+impl fmt::Debug for NameNode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.prettyprint())
+    }
+}
+
 impl ASTNode for NameNode {
     #[unstable(feature="compile")]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         match self.name.as_ref() {
-            "cons"   => Ok(vec![InstCell(CONS)]),
-            "car"    => Ok(vec![InstCell(CAR)]),
-            "cdr"    => Ok(vec![InstCell(CDR)]),
-            "nil"    => Ok(vec![InstCell(NIL)]),
-            "atom?"  => Ok(vec![InstCell(ATOM)]),
+            "cons"  => Ok(vec![InstCell(CONS)]),
+            "car"   => Ok(vec![InstCell(CAR)]),
+            "cdr"   => Ok(vec![InstCell(CDR)]),
+            "nil"   => Ok(vec![InstCell(NIL)]),
+            "atom?" => Ok(vec![InstCell(ATOM)]),
+            "+"     => Ok(vec![InstCell(ADD)]),
+            "-"     => Ok(vec![InstCell(SUB)]),
+            "*"     => Ok(vec![InstCell(MUL)]),
+            "/"     => Ok(vec![InstCell(DIV)]),
+            "%"     => Ok(vec![InstCell(MOD)]),
+            "="     => Ok(vec![InstCell(EQ)]),
+            ">"     => Ok(vec![InstCell(GT)]),
+            ">="    => Ok(vec![InstCell(GTE)]),
+            "<"     => Ok(vec![InstCell(LT)]),
+            "<="    => Ok(vec![InstCell(LTE)]),
             ref name => match state.get(&name) {
                 Some(&(x,y)) =>  unimplemented!(),
                 None         => Err(format!("[error] Unknown identifier `{}`", name))
