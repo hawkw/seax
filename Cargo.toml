@@ -21,4 +21,4 @@ version = "~0.2.1"
 
 [dependencies.seax_scheme]
 path = "seax_scheme"
-version = "~0.0.3"
+version = "~0.0.4"
