@@ -213,3 +213,43 @@ fn compile_lambda_ap() {
             InstCell(AP)
         )
 }
+
+/// Nested lambdas
+///
+/// ```lisp
+/// ((lambda (z) ((lambda (x y) (+ (- x y) z)) 3 5)) 6)
+/// ```
+#[test]
+fn compile_nested_lambda() {
+    assert_eq!(
+        scheme::compile("((lambda (z) ((lambda (x y) (+ (- x y) z)) 3 5)) 6)"),
+        Ok(list!(
+            InstCell(NIL),
+            InstCell(LDC), AtomCell(SInt(6)), InstCell(CONS),
+            InstCell(LDF),
+            ListCell(box list!(
+                InstCell(NIL),
+                InstCell(LDC), AtomCell(SInt(5)), InstCell(CONS),
+                InstCell(LDC), AtomCell(SInt(3)), InstCell(CONS),
+                InstCell(LDF),
+                ListCell(box list!(
+                    InstCell(LD), ListCell(box list!(
+                        AtomCell(SInt(2)),AtomCell(SInt(1))
+                        ))
+                    InstCell(LD), ListCell(box list!(
+                        AtomCell(SInt(1)),AtomCell(SInt(2))
+                        ))
+                    InstCell(LD), ListCell(box list!(
+                        AtomCell(SInt(1)),AtomCell(SInt(1))
+                        ))
+                    InstCell(SUB),
+                    InstCell(ADD),
+                    InstCell(RTN)
+                ))
+                InstCell(AP),
+                InstCell(RTN)
+            ))
+            InstCell(AP)
+        ))
+    )
+}
