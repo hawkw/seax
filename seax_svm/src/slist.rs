@@ -228,6 +228,22 @@ impl<T> FromIterator<T> for List<T> {
     /// appended to the list, it requires a complete traversal of the
     /// list. It would be possible to optimize this rather significantly
     /// by folding over a pointer to the last element of the list.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # extern crate seax_svm;
+    /// # use seax_svm::slist::List;
+    /// # use std::iter::FromIterator;
+    /// # fn main() {
+    /// let mut a_vec = vec![1,2,3,4];
+    /// let another_vec = a_vec.clone();
+    /// let a_list = List::from_iter(a_vec);
+    /// for i in 0..a_list.length() {
+    ///     assert_eq!(a_list[i], another_vec[i])
+    /// }
+    /// # }
+    /// ```
     #[unstable(feature="list")]
     #[inline]
     fn from_iter<I>(iterable: I) -> List<T> where I: IntoIterator<Item=T> {
