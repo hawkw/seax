@@ -403,6 +403,7 @@ impl ASTNode for NameNode {
             "car"   => Ok(vec![InstCell(CAR)]),
             "cdr"   => Ok(vec![InstCell(CDR)]),
             "nil"   => Ok(vec![InstCell(NIL)]),
+            "nil?"  => Ok(vec![InstCell(NULL)])
             "atom?" => Ok(vec![InstCell(ATOM)]),
             "+"     => Ok(vec![InstCell(ADD)]),
             "-"     => Ok(vec![InstCell(SUB)]),
