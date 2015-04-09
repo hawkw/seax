@@ -191,6 +191,65 @@ impl<T> List<T> {
         Cons(it, box self)
     }
 
+    /// Prepends all of the items in the given list to this list.
+    ///
+    /// # Arguments
+    ///
+    ///   + `other` - the list to prepend to this list
+    ///
+    /// # Return Value
+    ///
+    ///  + The new list with all items from the given list prepended
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate seax_svm;
+    /// # use seax_svm::slist::List;
+    /// # use seax_svm::slist::List::{Cons,Nil};
+    /// # fn main() {
+    /// let mut list_a: List<isize> = list!(4,5,6)
+    /// let mut list_b: List<isize> = list!(1,2,3)
+    ///
+    /// list_a = list_a.prepend_all(list_b)
+    ///
+    /// assert_eq!(list_a, list!(1,2,3,4,5,6))
+    /// # }
+    /// ```
+    #[unstable(feature="list")]
+    pub fn prepend_all(self, other: List<T>) -> List<T> {
+        unimplemented!()
+    }
+
+    /// Appends all of the items in the given list to this list.
+    ///
+    /// # Arguments
+    ///
+    ///   + `other` - the list to append to this list
+    ///
+    /// # Return Value
+    ///
+    ///  + The new list with all items from the given list appended
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate seax_svm;
+    /// # use seax_svm::slist::List;
+    /// # use seax_svm::slist::List::{Cons,Nil};
+    /// # fn main() {
+    /// let mut list_a: List<isize> = list!(1,2,3)
+    /// let mut list_b: List<isize> = list!(4,5,6)
+    ///
+    /// list_a = list_a.append_all(list_b)
+    ///
+    /// assert_eq!(list_a, list!(1,2,3,4,5,6))
+    /// # }
+    /// ```
+    #[unstable(feature="list")]
+    pub fn append_all(self, other: List<T>) -> List<T> {
+        unimplemented!()
+    }
+
+
     /// Appends an item to the end of the list.
     ///
     /// This is an O(_n_) operation.
