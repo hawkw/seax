@@ -240,26 +240,25 @@ impl ASTNode for SExprNode {
         }
     }
 
-    #[stable(feature = "ast", since = "0.0.2")]
+    #[stable(feature = "ast", since = "0.0.6")]
     fn print_level(&self, level: usize) -> String {
         let mut tab = String::new();
         for _ in 0 .. level { tab.push_str(INDENT); };
 
         let mut result = String::new();
+        result.push_str(tab.as_ref());
         result.push_str("S-Expression:\n");
         tab.push_str(INDENT);
 
         // op
         result.push_str(tab.as_ref());
         result.push_str("Operator:\n");
-        result.push_str(self.operator.print_level(level + 1).as_ref());
-        result.push('\n');
+        result.push_str(self.operator.print_level(level + 2).as_ref());
 
         for ref operand in self.operands.iter() {
             result.push_str(tab.as_ref());
             result.push_str("Operand: \n");
-            result.push_str(operand.print_level(level + 1).as_ref());
-            result.push('\n');
+            result.push_str(operand.print_level(level + 2).as_ref());
         };
         result
     }
