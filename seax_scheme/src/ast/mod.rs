@@ -191,88 +191,52 @@ pub struct SExprNode {
 impl ASTNode for SExprNode {
     #[unstable(feature="compile")]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        /*match self.operator {
-            ref op if op.is_arith() || op.is_cmp() => { // todo: make this one thing
-                let instruction = match op.name.as_ref() {
-                    "+"  => ADD,
-                    "-"  => SUB,
-                    "*"  => MUL,
-                    "/"  => DIV,
-                    "%"  => MOD,
-                    "="  => EQ,
-                    ">"  => GT,
-                    ">=" => GTE,
-                    "<"  => LT,
-                    "<=" => LTE,
-                    // TODO:  floating-point
-                    // TODO: move to NameNode.compile()
-                    // TODO: figure out how to handle "!=" -> "EQ + Invert"
-                    _   => panic!( "Something impossible happened!")
-                        // this never happens, barring force majeure
-                };
-                // TODO: optimize if constants
+        match self.operator.name.as_ref() {
+            "if" => match self.operands.as_slice() {
+                [ref condition,ref true_case,ref false_case] => {
+                    let mut result = Vec::new();
+
+                    result.push_all({ // TODO: sure would be nice if this could be made less ugly
+                        let mut code = try!(false_case.compile(state));
+                        code.push(InstCell(JOIN));
+                        &code });
+
+                    result.push_all({
+                        let mut code = try!(true_case.compile(state));
+                        code.push(InstCell(JOIN));
+                        &code });
+
+                    result.push(InstCell(SEL));
+                    result.push_all(&try!(condition.compile(state)));
+
+                    Ok(result)
+                },
+                _ => Err("[error]: malformed if-expression".to_string())
+            },
+            _    => {
+                let ref op = self.operator;
                 let mut result = Vec::new();
-                let mut it = self.operands.iter().rev();
-                // TODO: can thsi be represented with a reduce/fold?
-                result.push_all(try!(
-                    it.next().unwrap().compile(state)).as_slice());
-                for ref operand in it {
-                    result.push_all(try!(operand.compile(state)).as_slice());
-                    result.push(InstCell(instruction));
+                match self.operands {
+                    ref other if other.len() == 1 => {
+                        result.push_all(&try!(other[0].compile(state)));
+                        result.push_all(&try!(op.compile(state)));
+                    },
+                    _       => {
+                        let mut it = self.operands.iter().rev();
+                        // TODO: can thsi be represented with a reduce/fold?
+                        result.push_all(&try!(
+                            it.next().unwrap().compile(state)));
+                        for ref operand in it {
+                            result.push_all(&try!(operand.compile(state)));
+                            result.push_all(&try!(op.compile(state)));
+                        }
+                    }
                 }
+
                 Ok(result)
-            },
-            ref op if op.is_kw()    => {
-                let mut result = Vec::new();
-                let mut it = self.operands.iter().rev();
-                // TODO: can thsi be represented with a reduce/fold?
-                result.push_all(try!(
-                    it.next().unwrap().compile(state)).as_slice());
-                for ref operand in it {
-                    result.push_all(try!(operand.compile(state)).as_slice());
-                    result.push_all(&try!(op.compile(state)));
-                }
-                Ok(result)
-            },
-            ref op                  => match state.get(&op.name.as_ref()) {
-                Some(&(x,y)) => Ok(vec!(
-                    // TODO: finish
-                    InstCell(LD),
-                    ListCell(box list!(
-                        AtomCell(UInt(x)),
-                        AtomCell(UInt(y))
-                        )),
-                    InstCell(LDF)
-                    )),
-                None         => Err(format!("[error] Unknown identifier `{}`", op.name))
-            }
-        }*/
-        /*let ref token = self.operator.name;
-        match token.as_ref() {
-            "let" => unimplemented!(),
-            ref name if state.chain_contains_key(name) => unimplemented!(),
-            name => Err("[error] Unknown identifier")
-        }*/
-        let ref op = self.operator;
-        let mut result = Vec::new();
-        match self.operands {
-            ref other if other.len() == 1 => {
-                result.push_all(&try!(other[0].compile(state)));
-                result.push_all(&try!(op.compile(state)));
-            },
-            _       => {
-                let mut it = self.operands.iter().rev();
-                // TODO: can thsi be represented with a reduce/fold?
-                result.push_all(&try!(
-                    it.next().unwrap().compile(state)));
-                for ref operand in it {
-                    result.push_all(&try!(operand.compile(state)));
-                    result.push_all(&try!(op.compile(state)));
-                }
+
             }
         }
-
-        Ok(result)
     }
 
     #[stable(feature = "ast", since = "0.0.2")]
@@ -403,7 +367,7 @@ impl ASTNode for NameNode {
             "car"   => Ok(vec![InstCell(CAR)]),
             "cdr"   => Ok(vec![InstCell(CDR)]),
             "nil"   => Ok(vec![InstCell(NIL)]),
-            "nil?"  => Ok(vec![InstCell(NULL)])
+            "nil?"  => Ok(vec![InstCell(NULL)]),
             "atom?" => Ok(vec![InstCell(ATOM)]),
             "+"     => Ok(vec![InstCell(ADD)]),
             "-"     => Ok(vec![InstCell(SUB)]),
