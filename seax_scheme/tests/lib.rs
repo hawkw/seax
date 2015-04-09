@@ -110,12 +110,12 @@ fn compile_nested_arith() {
 /// Tests for basic branching
 ///
 /// ```lisp
-/// ((if (= 0 (- 1 1)) #t #f)
+/// (if (= 0 (- 1 1)) #t #f)
 /// ```
 #[test]
 fn compile_basic_branching_1() {
     assert_eq!(
-        scheme::compile("((if (= 0 (- 1 1)) #t #f)"),
+        scheme::compile("(if (= 0 (- 1 1)) #t #f)"),
         Ok(list!(
             InstCell(LDC), AtomCell(SInt(1)), InstCell(LDC), AtomCell(SInt(1)),
             InstCell(SUB),
