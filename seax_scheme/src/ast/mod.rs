@@ -516,7 +516,7 @@ pub struct CharNode {
 }
 
 impl ASTNode for CharNode {
-    #[unstable(feature="compile")]
+    #[stable(feature="compile", since="0.0.7")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         Ok(vec![AtomCell(Char(self.value))])
@@ -548,7 +548,7 @@ impl ASTNode for StringNode {
         let chars: Vec<u8> = self.value.clone().into();
         Ok(vec![
             ListCell(box List::from_iter(
-                chars.map_in_place(|c| AtomCell(Char(c as char)))
+                chars.into_iter().map(|c| AtomCell(Char(c as char)))
                 )) ])
     }
     #[stable(feature = "ast", since = "0.0.2")]
