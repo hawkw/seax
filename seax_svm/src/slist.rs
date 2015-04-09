@@ -173,8 +173,12 @@ impl<T> List<T> {
     ///
     /// This is an O(n) operation.
     #[unstable(feature="list")]
-    pub fn append(self, it: T) {
-        unimplemented!()
+    pub fn append(&mut self, it: T) {
+        match *self {
+            Cons(_, box ref mut tail) => tail.append(it),
+            Nil => *self = Cons(it, box Nil)
+        }
+
     }
 
     /// Returns the length of the list.
@@ -226,8 +230,8 @@ impl<T> FromIterator<T> for List<T> {
     ///
     /// TODO: figure out a way to reverse the source iterator.
     #[unstable(feature="list")]
-    fn from_iter<I>(iterable: I) -> List<T>
-        where I: IntoIterator<Item=T> {
+    #[inline]
+    fn from_iter<I>(iterable: I) -> List<T> where I: IntoIterator<Item=T> {
             iterable
                 .into_iter()
                 .fold(List::new(), |l: List<T>, i| l.prepend(i))
