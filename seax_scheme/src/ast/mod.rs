@@ -480,9 +480,12 @@ pub struct BoolNode {
 }
 
 impl ASTNode for BoolNode {
-    #[unstable(feature="compile")]
+    #[stable(feature="compile", since="0.0.6")]
     fn compile<'a>(&'a self,state:  &'a SymTable)    -> CompileResult {
-        Err("UNINPLEMENTED".to_string())
+        match self.value {
+            true    => Ok(vec![InstCell(LDC), AtomCell(SInt(1))]),
+            false   => k(vec![InstCell(NIL)])
+        }
     }
 
     #[stable(feature = "ast", since = "0.0.2")]
