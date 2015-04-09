@@ -214,7 +214,7 @@ impl<T> List<T> {
     /// assert_eq!(a_list, list![1,2]);
     /// # }
     /// ```
-    #[unstable(feature="list")]
+    #[stable(feature="list", since="0.2.3")]
     pub fn append(&mut self, it: T) {
         match *self {
             Cons(_, box ref mut tail) => tail.append(it),
@@ -230,7 +230,7 @@ impl<T> List<T> {
     /// of the list for every append while folding.
     ///
     /// This is an O(_n_) operation.
-    #[unstable(feature="list")]
+    #[stable(feature="list", since="0.2.3")]
     fn append_chain(&mut self, it: T) -> &mut List<T> {
         match *self {
             Cons(_, box ref mut tail) => tail.append_chain(it),
@@ -300,7 +300,7 @@ impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
 }
 
 
-#[unstable(feature="list")]
+#[stable(feature="list", since="0.2.3")]
 impl<T> FromIterator<T> for List<T> {
     /// Build a `List<T>` from a structure implementing `IntoIterator<T>`.
     ///
@@ -319,7 +319,7 @@ impl<T> FromIterator<T> for List<T> {
     ///     assert_eq!(a_list[i], another_vec[i])
     /// }
     /// ```
-    #[unstable(feature="list")]
+    #[stable(feature="list", since="0.2.3")]
     #[inline]
     fn from_iter<I>(iterable: I) -> List<T> where I: IntoIterator<Item=T> {
             let mut result  = List::new();
