@@ -6,6 +6,8 @@ use svm::cell::Atom::*;
 use svm::cell::Inst::*;
 use svm::cell::SVMCell::*;
 
+use svm::slist::List::{Cons,Nil};
+
 #[test]
 fn test_compile_add() {
     let ast = SExprNode {
@@ -164,6 +166,24 @@ fn test_compile_lte() {
             InstCell(LTE)
         ])
     )
+}
+
+#[test]
+fn test_compile_string() {
+    assert_eq!(
+        StringNode{ value: "a string".to_string() }
+            .compile(&SymTable::new()),
+        Ok(vec![ListCell(box list!(
+            AtomCell(Char('a')),
+            AtomCell(Char(' ')),
+            AtomCell(Char('s')),
+            AtomCell(Char('t')),
+            AtomCell(Char('r')),
+            AtomCell(Char('i')),
+            AtomCell(Char('n')),
+            AtomCell(Char('g'))
+            ))])
+        )
 }
 
 
