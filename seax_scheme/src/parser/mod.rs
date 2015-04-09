@@ -442,6 +442,7 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
         try(parser(number).map(NumConst))
             .or(try(parser(character).map(CharConst)))
             .or(try(parser(string_const).map(StringConst)))
+            .or(try(parser(bool_const).map(BoolConst)))
             .parse_state(input)
     }
 
