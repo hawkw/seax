@@ -2,6 +2,7 @@ use svm::cell::SVMCell;
 use svm::cell::Atom::*;
 use svm::cell::Inst::*;
 use svm::cell::SVMCell::*;
+use svm::slist::{List,Stack};
 use svm::slist::List::{Cons,Nil};
 
 use self::ExprNode::*;
@@ -196,18 +197,29 @@ impl ASTNode for SExprNode {
                 [ref condition,ref true_case,ref false_case] => {
                     let mut result = Vec::new();
 
-                    result.push_all({ // TODO: sure would be nice if this could be made less ugly
-                        let mut code = try!(false_case.compile(state));
-                        code.push(InstCell(JOIN));
-                        &code });
-
-                    result.push_all({
-                        let mut code = try!(true_case.compile(state));
-                        code.push(InstCell(JOIN));
-                        &code });
-
-                    result.push(InstCell(SEL));
                     result.push_all(&try!(condition.compile(state)));
+                    result.push(InstCell(SEL));
+
+                    let mut false_code = try!(false_case.compile(state));
+                    false_code.push(InstCell(JOIN));
+
+
+                    let mut true_code = try!(true_case.compile(state));
+                    true_code.push(InstCell(JOIN));
+
+                    result.push(ListCell(box true_code
+                        .into_iter() // todo: this should be a function
+                        .rev()
+                        .fold(List::new(),
+                            |st: List<SVMCell>, i| st.push(i))
+                        ));
+
+                    result.push(ListCell(box false_code
+                        .into_iter()
+                        .rev()
+                        .fold(List::new(),
+                            |st: List<SVMCell>, i| st.push(i))
+                        ));
 
                     Ok(result)
                 },
