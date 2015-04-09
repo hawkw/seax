@@ -224,17 +224,16 @@ impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
 impl<T> FromIterator<T> for List<T> {
     /// Build a `List<T>` from a structure implementing `IntoIterator<T>`.
     ///
-    /// Note that the list will be built in reverse order. This is because
-    /// I cannot figure out how to place a `DoubleEndedIterator` type bound
-    /// on the source type.
-    ///
-    /// TODO: figure out a way to reverse the source iterator.
+    /// This is currently rather expensive, as each time a new item is
+    /// appended to the list, it requires a complete traversal of the
+    /// list. It would be possible to optimize this rather significantly
+    /// by folding over a pointer to the last element of the list.
     #[unstable(feature="list")]
     #[inline]
     fn from_iter<I>(iterable: I) -> List<T> where I: IntoIterator<Item=T> {
             iterable
                 .into_iter()
-                .fold(List::new(), |l: List<T>, i| l.prepend(i))
+                .fold(List::new(), |mut l: List<T>, i| { l.append(i); l } )
     }
 
 }
