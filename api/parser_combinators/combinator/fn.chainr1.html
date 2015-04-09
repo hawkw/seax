@@ -43,7 +43,7 @@
     <section id='main' class="content fn">
 <h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>parser_combinators</a>::<wbr><a href='index.html'>combinator</a>::<wbr><a class='fn' href=''>chainr1</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-5737' href='../../src/parser_combinators/combinator.rs.html#566-570'>[src]</a></span></h1>
+        </span><a id='src-5718' href='../../src/parser_combinators/combinator.rs.html#566-570'>[src]</a></span></h1>
 <pre class='rust fn'>pub fn chainr1&lt;'a, P, Op&gt;(parser: P, op: Op) -&gt; <a class='struct' href='../../parser_combinators/combinator/struct.Chainr1.html' title='parser_combinators::combinator::Chainr1'>Chainr1</a>&lt;P, Op&gt; <span class='where'>where P: <a class='trait' href='../../parser_combinators/trait.Parser.html' title='parser_combinators::Parser'>Parser</a>, Op: <a class='trait' href='../../parser_combinators/trait.Parser.html' title='parser_combinators::Parser'>Parser</a>&lt;Input=&lt;P as Parser&gt;::Input, Output=<a class='struct' href='http://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&lt;P as Parser&gt;::Output, &lt;P as Parser&gt;::Output) -&gt; &lt;P as Parser&gt;::Output + 'a&gt;&gt;</span></pre><div class='docblock'><p>Parses <code>p</code> one or more times separated by <code>op</code>
 The value returned is the one produced by the right associative application of <code>op</code></p>
 </div></section>
