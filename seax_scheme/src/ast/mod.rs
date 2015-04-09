@@ -486,7 +486,7 @@ impl ASTNode for BoolNode {
     fn compile<'a>(&'a self,state:  &'a SymTable)    -> CompileResult {
         match self.value {
             true    => Ok(vec![InstCell(LDC), AtomCell(SInt(1))]),
-            false   => k(vec![InstCell(NIL)])
+            false   => Ok(vec![InstCell(NIL)])
         }
     }
 
