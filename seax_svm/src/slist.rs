@@ -1,6 +1,8 @@
 pub use slist::List::{Cons,Nil};
+
 use std::fmt;
 use std::ops::Index;
+use std::iter::{IntoIterator, FromIterator};
 
 /// Convenience macro for making lists.
 ///
@@ -160,8 +162,30 @@ impl<T> List<T> {
 
     /// Prepends the given item to the list.
     ///
-    /// Returns the list containing the new  head item.
     /// This is an O(1) operation.
+    ///
+    /// # Arguments
+    ///
+    ///  + `item` - the item to prepend
+    ///
+    /// # Return Value
+    ///
+    ///  + The list with the new head item prepended
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate seax_svm;
+    /// # use seax_svm::slist::List;
+    /// # use seax_svm::slist::List::{Cons,Nil};
+    /// # fn main() {
+    /// let mut a_list: List<isize> = List::new();
+    /// a_list = a_list.prepend(1);
+    /// assert_eq!(a_list, list![1]);
+    ///
+    /// a_list = a_list.prepend(2);
+    /// assert_eq!(a_list, list![2,1]);
+    /// # }
+    /// ```
     #[stable(feature="list", since="0.1.0")]
     pub fn prepend(self, it: T) -> List<T> {
         Cons(it, box self)
@@ -169,13 +193,64 @@ impl<T> List<T> {
 
     /// Appends an item to the end of the list.
     ///
-    /// This is an O(n) operation.
-    #[unstable(feature="list")]
-    pub fn append(self, it: T) {
-        unimplemented!()
+    /// This is an O(_n_) operation.
+    ///
+    /// # Arguments
+    ///
+    ///  + `item` - the item to append
+    ///
+    /// # Examples
+    /// ```
+    /// # #![feature(list)]
+    /// # #[macro_use] extern crate seax_svm;
+    /// # use seax_svm::slist::List;
+    /// # use seax_svm::slist::List::{Cons,Nil};
+    /// # fn main() {
+    /// let mut a_list: List<isize> = List::new();
+    /// a_list.append(1);
+    /// assert_eq!(a_list, list![1]);
+    ///
+    /// a_list.append(2);
+    /// assert_eq!(a_list, list![1,2]);
+    /// # }
+    /// ```
+    #[stable(feature="list", since="0.2.3")]
+    pub fn append(&mut self, it: T) {
+        match *self {
+            Cons(_, box ref mut tail) => tail.append(it),
+            Nil => *self = Cons(it, box Nil)
+        }
+
+    }
+
+    /// Appends an item to the end of the list.
+    ///
+    /// Returns the last element of the list to support 'append chaining'
+    /// of a large number of items; this allows you to omit a complete traversal
+    /// of the list for every append while folding.
+    ///
+    /// This is an O(_n_) operation.
+    #[stable(feature="list", since="0.2.3")]
+    fn append_chain(&mut self, it: T) -> &mut List<T> {
+        match *self {
+            Cons(_, box ref mut tail) => tail.append_chain(it),
+            Nil => { *self = Cons(it, box Nil); self }
+        }
+
     }
 
     /// Returns the length of the list.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate seax_svm;
+    /// # use seax_svm::slist::List;
+    /// # use seax_svm::slist::List::{Cons,Nil};
+    /// # fn main() {
+    /// let a_list = list!(1,2,3,4);
+    /// assert_eq!(a_list.length(), 4)
+    /// # }
+    /// ```
     #[stable(feature="list", since="0.1.0")]
     pub fn length (&self) -> usize {
         match *self {
@@ -192,6 +267,17 @@ impl<T> List<T> {
     }
 
     /// Returns the last element of the list
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate seax_svm;
+    /// # use seax_svm::slist::List;
+    /// # use seax_svm::slist::List::{Cons,Nil};
+    /// # fn main() {
+    /// let a_list = list!(1,2,3,4);
+    /// assert_eq!(a_list.last(), &4)
+    /// # }
+    /// ```
     #[stable(feature="list", since="0.1.0")]
     pub fn last(&self) -> &T {
         match *self {
@@ -214,6 +300,37 @@ impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
 }
 
 
+#[stable(feature="list", since="0.2.3")]
+impl<T> FromIterator<T> for List<T> {
+    /// Build a `List<T>` from a structure implementing `IntoIterator<T>`.
+    ///
+    /// This takes advantage of the `List.append_chain()` method under the
+    /// hood to provide roughly O(_n_) performance.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use seax_svm::slist::List;
+    /// # use std::iter::FromIterator;
+    /// let mut a_vec = vec![1,2,3,4];
+    /// let another_vec = a_vec.clone();
+    /// let a_list = List::from_iter(a_vec);
+    /// for i in 0..a_list.length() {
+    ///     assert_eq!(a_list[i], another_vec[i])
+    /// }
+    /// ```
+    #[stable(feature="list", since="0.2.3")]
+    #[inline]
+    fn from_iter<I>(iterable: I) -> List<T> where I: IntoIterator<Item=T> {
+            let mut result  = List::new();
+            iterable
+                .into_iter()
+                .fold(&mut result, |l, it| l.append_chain(it));
+            result
+    }
+
+}
+
 #[stable(feature="list", since="0.2.1")]
 impl<'a, T> fmt::Debug for List<T> where T: fmt::Debug {
     #[stable(feature="debug", since="0.2.1")]
@@ -223,6 +340,7 @@ impl<'a, T> fmt::Debug for List<T> where T: fmt::Debug {
             Nil => write!(f,"nil")
         }
     }
+
 }
 
 /// Wraps a List<T> to allow it to be used as an Iterator<T>
