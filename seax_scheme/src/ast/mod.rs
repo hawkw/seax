@@ -10,6 +10,7 @@ use self::NumNode::*;
 use super::ForkTable;
 
 use std::fmt;
+use std::iter::FromIterator;
 
 #[cfg(test)]
 mod tests;
@@ -203,23 +204,11 @@ impl ASTNode for SExprNode {
                     let mut false_code = try!(false_case.compile(state));
                     false_code.push(InstCell(JOIN));
 
-
                     let mut true_code = try!(true_case.compile(state));
                     true_code.push(InstCell(JOIN));
 
-                    result.push(ListCell(box true_code
-                        .into_iter() // todo: this should be a function
-                        .rev()
-                        .fold(List::new(),
-                            |st: List<SVMCell>, i| st.push(i))
-                        ));
-
-                    result.push(ListCell(box false_code
-                        .into_iter()
-                        .rev()
-                        .fold(List::new(),
-                            |st: List<SVMCell>, i| st.push(i))
-                        ));
+                    result.push(ListCell(box List::from_iter(true_code)));
+                    result.push(ListCell(box List::from_iter(false_code)));
 
                     Ok(result)
                 },
@@ -393,7 +382,8 @@ impl ASTNode for NameNode {
             "<="    => Ok(vec![InstCell(LTE)]),
             ref name => match state.get(&name) {
                 Some(&(x,y)) =>  unimplemented!(),
-                None         => Err(format!("[error] Unknown identifier `{}`", name))
+                None         => Err(format!(
+                    "[error] Unknown identifier `{}`", name))
             }
         }
     }
