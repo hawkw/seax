@@ -256,6 +256,78 @@ fn test_parse_nested_arith() {
         );
 }
 
+/// This is the parsing component of the `compile_basic_branching_1`
+/// integration target.
+///
+/// ```lisp
+/// (if (= 0 (- 1 1)) #t #f)
+/// ``
+#[test]
+fn test_parse_basic_branching_1() {
+    assert_eq!(
+        parser(expr).parse("(if (= 0 (- 1 1)) #t #f)"),
+        Ok((
+            SExpr(SExprNode {
+                operator: NameNode::new("if".to_string()),
+                operands: vec![
+                    SExpr(SExprNode{
+                        operator: NameNode::new("=".to_string()),
+                        operands: vec![
+                            NumConst(IntConst(IntNode{value: 0})),
+                            SExpr(SExprNode{
+                                operator: NameNode::new("-".to_string()),
+                                operands: vec![
+                                    NumConst(IntConst(IntNode{ value: 1 })),
+                                    NumConst(IntConst(IntNode{ value: 1 }))
+                                ]
+                            })
+                        ]
+                    }),
+                    BoolConst(BoolNode{value:true}),
+                    BoolConst(BoolNode{value:false}),
+                ]
+            }
+            ),
+            "")
+        )
+    )
+}
+
+/// This is the parsing component of the `compile_basic_branching_2`
+/// integration target.
+///
+/// ```lisp
+/// (+ 10 (if (nil? nil) 10 20))
+/// ``
+#[test]
+fn test_parse_basic_branching_2() {
+    assert_eq!(
+        parser(expr).parse("(+ 10 (if (nil? nil) 10 20))"),
+        Ok((
+            SExpr(SExprNode {
+                operator: NameNode::new("+".to_string()),
+                operands: vec![
+                    NumConst(IntConst(IntNode{value:10})),
+                    SExpr(SExprNode{
+                        operator: NameNode::new("if".to_string()),
+                        operands: vec![
+                            SExpr(SExprNode{
+                                operator: NameNode::new("nil?".to_string()),
+                                operands: vec![Name(NameNode::new("nil".to_string()))]
+
+                            }),
+                            NumConst(IntConst(IntNode{value:10})),
+                            NumConst(IntConst(IntNode{value:20}))
+                        ]
+                    })
+                ]
+            }
+            ),
+            "")
+        )
+    )
+}
+
 #[test]
 fn test_lex_bool() {
     assert_eq!(

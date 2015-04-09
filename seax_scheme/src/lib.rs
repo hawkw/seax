@@ -36,7 +36,8 @@ pub mod ast;
 ///
 /// This parser is based on the
 /// [Scheme grammar](final/html/r6rs/r6rs-Z-H-7.html) given in the
-/// [Revised<sup>6</sup> Report on Scheme](http://www.r6rs.org/) (R<sup>6</sup>RS).
+/// [Revised<sup>6</sup> Report on Scheme](http://www.r6rs.org/)
+/// (R<sup>6</sup>RS).
 /// Any deviations from the R6RS standard, especially those with an impact
 /// on the valid programs accepted by the parser, will be noted in the
 /// parser's RustDoc.
@@ -48,8 +49,10 @@ mod forktab;
 #[unstable(feature="forktable")]
 pub use self::forktab::ForkTable;
 
-use svm::slist::{List,Stack};
+use svm::slist::List;
 use svm::cell::SVMCell;
+
+use std::iter::FromIterator;
 
 use self::ast::{ASTNode,ExprNode};
 
@@ -70,8 +73,6 @@ use self::ast::{ASTNode,ExprNode};
 #[unstable(feature="compile")]
 pub fn compile(program: &str) -> Result<List<SVMCell>, String> {
     parser::parse(program)
-        .and_then(|tree: ExprNode      | tree.compile(&ForkTable::new()) )
-        .map(     |insts: Vec<SVMCell> | insts.into_iter().rev().fold(List::new(),
-                  |st: List<SVMCell>, i| st.push(i)
-            ))
+        .and_then(|tree: ExprNode     | tree.compile(&ForkTable::new()) )
+        .map(     |prog: Vec<SVMCell> | List::from_iter(prog) )
 }
