@@ -217,7 +217,7 @@ impl<T> List<T> {
     /// ```
     #[unstable(feature="list")]
     pub fn prepend_all(self, other: List<T>) -> List<T> {
-        unimplemented!()
+        other.into_iter().fold(self, |l,i| l.prepend(i))
     }
 
     /// Appends all of the items in the given list to this list.
