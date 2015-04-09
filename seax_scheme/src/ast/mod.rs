@@ -11,6 +11,7 @@ use super::ForkTable;
 
 use std::fmt;
 use std::iter::FromIterator;
+use std::convert::Into;
 
 #[cfg(test)]
 mod tests;
@@ -518,7 +519,7 @@ impl ASTNode for CharNode {
     #[unstable(feature="compile")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED".to_string())
+        Ok(vec![AtomCell(Char(self.value))])
     }
     #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
@@ -544,7 +545,11 @@ impl ASTNode for StringNode {
     #[unstable(feature="compile")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED".to_string())
+        let chars: Vec<u8> = self.value.clone().into();
+        Ok(vec![
+            ListCell(box List::from_iter(
+                chars.map_in_place(|c| AtomCell(Char(c as char)))
+                )) ])
     }
     #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
