@@ -413,6 +413,7 @@ pub struct IntNode {
 
 impl ASTNode for NumNode {
     #[stable(feature="compile",since="0.0.3")]
+    #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
        match *self {
             NumNode::UIntConst(ref node)    => Ok(
@@ -481,6 +482,7 @@ pub struct BoolNode {
 
 impl ASTNode for BoolNode {
     #[stable(feature="compile", since="0.0.6")]
+    #[allow(unused_variables)]
     fn compile<'a>(&'a self,state:  &'a SymTable)    -> CompileResult {
         match self.value {
             true    => Ok(vec![InstCell(LDC), AtomCell(SInt(1))]),
@@ -514,6 +516,7 @@ pub struct CharNode {
 
 impl ASTNode for CharNode {
     #[unstable(feature="compile")]
+    #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED".to_string())
     }
@@ -539,6 +542,7 @@ pub struct StringNode { pub value: String }
 
 impl ASTNode for StringNode {
     #[unstable(feature="compile")]
+    #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED".to_string())
     }
