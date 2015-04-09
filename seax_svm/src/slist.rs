@@ -1,6 +1,8 @@
 pub use slist::List::{Cons,Nil};
+
 use std::fmt;
 use std::ops::Index;
+use std::iter::{IntoIterator, FromIterator};
 
 /// Convenience macro for making lists.
 ///
@@ -212,6 +214,25 @@ impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
             Nil => write!(f,"nil")
         }
     }
+}
+
+#[unstable(feature="list")]
+impl<T> FromIterator<T> for List<T> {
+    /// Build a `List<T>` from a structure implementing `IntoIterator<T>`.
+    ///
+    /// Note that the list will be built in reverse order. This is because
+    /// I cannot figure out how to place a `DoubleEndedIterator` type bound
+    /// on the source type.
+    ///
+    /// TODO: figure out a way to reverse the source iterator.
+    #[unstable(feature="list")]
+    fn from_iter<I>(iterable: I) -> List<T>
+        where I: IntoIterator<Item=T> {
+            iterable
+                .into_iter()
+                .fold(List::new(), |l: List<T>, i| l.prepend(i))
+    }
+
 }
 
 /// Wraps a List<T> to allow it to be used as an Iterator<T>
