@@ -138,7 +138,7 @@ impl<T> Stack<T> for List<T> {
 ///
 /// This is used internally to represent list primitives in the
 /// machine.
-#[derive(PartialEq,Clone,Debug)]
+#[derive(PartialEq,Clone)]
 #[stable(feature="list", since="0.1.0")]
 pub enum List<T> {
     /// Cons cell containing a `T` and a link to the tail
@@ -288,17 +288,17 @@ impl<T> List<T> {
     }
 }
 
-#[unstable(feature="list")]
+#[stable(feature="list", since="0.2.1")]
 impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
-    #[unstable(feature="list")]
+    #[stable(feature="list", since="0.2.1")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // TODO: replace toString with this
         match *self {
             Cons(ref head, ref tail) => write!(f, "({}, {})", head, tail),
             Nil => write!(f,"nil")
         }
     }
 }
+
 
 #[unstable(feature="list")]
 impl<T> FromIterator<T> for List<T> {
@@ -327,6 +327,18 @@ impl<T> FromIterator<T> for List<T> {
                 .into_iter()
                 .fold(&mut result, |l, it| l.append_chain(it));
             result
+    }
+
+}
+
+#[stable(feature="list", since="0.2.1")]
+impl<'a, T> fmt::Debug for List<T> where T: fmt::Debug {
+    #[stable(feature="debug", since="0.2.1")]
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Cons(ref head, ref tail) => write!(f, "({:?}, {:?})", head, tail),
+            Nil => write!(f,"nil")
+        }
     }
 
 }

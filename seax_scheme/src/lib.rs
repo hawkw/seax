@@ -55,6 +55,18 @@ use self::ast::{ASTNode,ExprNode};
 
 
 /// Compile a Scheme program into a list of SVM cells (a control stack)
+///
+/// # Arguments
+///
+///  + `program` - a string containing a Scheme program or line
+///
+/// # Return Value
+///
+///  + A `Result` containing either a `List` of `SVMCells` if the program
+///    was compiled successfully, or a `String` with any error messages that
+///    occured during compilation
+///
+/// TODO: Should this return a list of errors instead?
 #[unstable(feature="compile")]
 pub fn compile(program: &str) -> Result<List<SVMCell>, String> {
     parser::parse(program)

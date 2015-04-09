@@ -6,7 +6,7 @@ use ::slist::List;
 use std::fmt;
 use std::ops;
 
-#[derive(PartialEq,Clone,Debug)]
+#[derive(PartialEq,Clone)]
 #[stable(feature="vm_core", since="0.1.0")]
 pub enum SVMCell {
     #[stable(feature="vm_core", since="0.1.0")]
@@ -20,14 +20,26 @@ pub enum SVMCell {
 #[stable(feature="vm_core", since="0.1.0")]
 impl fmt::Display for SVMCell {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[{}]", self)
+        write!(f, "{}", self)
+    }
+}
+
+#[stable(feature="debug", since="0.2.1")]
+impl fmt::Debug for SVMCell {
+    #[stable(feature="debug", since="0.2.1")]
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            &AtomCell(atom) => write!(f, "{:?}", atom),
+            &ListCell(ref list) => write!(f, "{:?}", list),
+            &InstCell(inst) => write!(f, "{:?}", inst)
+        }
     }
 }
 
 /// SVM atom types.
 ///
 /// A VM atom can be either an unsigned int, signed int, float, or char.
-#[derive(PartialEq,PartialOrd,Copy,Clone,Debug)]
+#[derive(PartialEq,PartialOrd,Copy,Clone)]
 #[stable(feature="vm_core", since="0.1.0")]
 pub enum Atom {
     /// Unsigned integer atom (machine size)
@@ -55,6 +67,20 @@ impl fmt::Display for Atom {
         }
     }
 }
+
+#[stable(feature="debug", since="0.2.1")]
+impl fmt::Debug for Atom {
+    #[stable(feature="debug", since="0.2.1")]
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            &Atom::UInt(value) => write!(f, "{:?}u", value),
+            &Atom::SInt(value) => write!(f, "{:?}", value),
+            &Atom::Float(value) => write!(f, "{:?}f", value),
+            &Atom::Char(value) => write!(f, "'{}'", value),
+        }
+    }
+}
+
 #[stable(feature="vm_core", since="0.1.0")]
 impl ops::Add for Atom {
     #[stable(feature="vm_core", since="0.1.0")]

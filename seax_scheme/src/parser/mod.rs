@@ -10,6 +10,9 @@ use std::str::FromStr;
 use std::char;
 use std::error::Error;
 
+#[cfg(test)]
+mod tests;
+
 #[stable(feature="parser",since="0.0.2")]
 fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
     satisfy(|c| c == 'x' || c == 'X')
@@ -27,7 +30,7 @@ fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
 #[unstable(feature="parser")]
 pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
-    fn hex_isize(input: State<&str>) -> ParseResult<isize, &str> {
+    fn hex_int(input: State<&str>) -> ParseResult<isize, &str> {
         satisfy(|c| c == '#')
             .with(parser(hex_scalar)
                     .map(|x| isize::from_str_radix(x.as_ref(), 16).unwrap()) )
@@ -35,7 +38,7 @@ pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
     }
 
 
-    fn dec_string(input: State<&str>) -> ParseResult<isize, &str> {
+    fn dec_int(input: State<&str>) -> ParseResult<isize, &str> {
         optional(satisfy(|c| c == '#')
             .and(satisfy(|c| c == 'd' || c == 'D')))
             .with(many1::<String, _>(digit())
@@ -43,11 +46,16 @@ pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
             .parse_state(input)
     }
 
-    optional(satisfy(|c| c == '-'))
-        .and(
-            try(parser(hex_isize))
-            .or(parser(dec_string))
-            )
+    fn signed(input: State<&str>) -> ParseResult<(Option<char>,isize), &str> {
+        optional(satisfy(|c| c == '-'))
+            .and(
+                try(parser(hex_int))
+                .or(parser(dec_int))
+                )
+            .parse_state(input)
+    }
+
+    parser(signed)
         .map(|x| {
             if let Some(sign) = x.0 {
                 let mut s = String::new();
@@ -82,10 +90,14 @@ pub fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
             .parse_state(input)
     }
 
-    try(parser(hex_uint))
-        .or( many1::<String, _>(digit())
+    fn dec_uint(input: State<&str>) -> ParseResult<usize, &str> {
+        many1::<String, _>(digit())
             .map(|x|usize::from_str(x.as_ref()).unwrap() )
-            )
+            .parse_state(input)
+    }
+
+    try(parser(hex_uint))
+        .or(parser(dec_uint))
         .skip(satisfy(|c| c == 'u' || c == 'U'))
         .map(|x: usize| NumNode::UIntConst(UIntNode{value: x}))
         .parse_state(input)
@@ -101,9 +113,15 @@ pub fn uint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 /// a common form for floating-point numbers. Priority: low.
 #[stable(feature="parser",since="0.0.2")]
 pub fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
-    many1::<String,_>(digit())
-        .and(satisfy(|c| c == '.'))
-        .and(many1::<String, _>(digit()))
+
+    fn float_str(input: State<&str>) -> ParseResult<((String, char), String), &str> {
+        many1::<String,_>(digit())
+            .and(satisfy(|c| c == '.'))
+            .and(many1::<String, _>(digit()))
+            .parse_state(input)
+    }
+
+    parser(float_str)
         .map(|x| {
             let mut s = String::new();
             s.push_str( (x.0).0.as_ref() );
@@ -119,28 +137,28 @@ pub fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
 /// Parses boolean constants.
 ///
-/// Note that this parser recognizes the strings `"true"` and `"false"`
-/// as true and false. While this is not specified in R6RS, the use of
-/// these tokens is common enough in other programming languages that
-/// I've decided that Seax Scheme should support it as well. This may
-/// be removed in a future version if it causes unforseen compatibility
-/// issues.
-///
-/// `#t`, `#T`, or `true`  -> `true`
-/// `#f`, `#F`, or `false` -> `false`
+/// `#t`, `#T` -> `true`
+/// `#f`, `#F` -> `false`
 #[stable(feature="parser",since="0.0.2")]
 pub fn bool_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
 
-    let t_const = try(string("#t"))
-        .or(try(string("#T")))
-        .or(try(string("true")))
-        .map(|_| BoolNode{ value: true });
-    let f_const = try(string("#f"))
-        .or(try(string("#F")))
-        .or(try(string("false")))
-        .map(|_| BoolNode{ value: false });
-    t_const
-        .or(f_const)
+    fn t_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
+        try(satisfy(|c| c == 't' || c == 'T'))
+            .map(|_| BoolNode{ value: true })
+            .parse_state(input)
+    }
+
+    fn f_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
+        try(satisfy(|c| c == 'f' || c == 'F'))
+            .map(|_| BoolNode{ value: false })
+            .parse_state(input)
+    }
+
+    satisfy(|c| c == '#')
+        .with(
+            parser(t_const)
+                .or(parser(f_const))
+            )
         .parse_state(input)
 }
 
@@ -168,49 +186,68 @@ pub fn number(input: State<&str>) -> ParseResult<NumNode, &str> {
 #[stable(feature="parser",since="0.0.2")]
 pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
 
-    fn initial(input: State<&str>) -> ParseResult<char, &str> {
-        satisfy(|c|
-                c.is_alphabetic()
-                // R6RS 'special initial' characters
-                || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
-                || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
-                || c == '?' )
+    fn operator(input: State<&str>) -> ParseResult<String, &str> {
+
+        fn single_op(input: State<&str>) -> ParseResult<String, &str> {
+            satisfy(|c| c == '+' || c == '-' || c == '*' || c == '/' || c == '=')
+                .map(|c| { let mut s = String::new(); s.push(c); s})
+                .parse_state(input)
+        }
+
+        parser(single_op)
+            .or(string("!=")
+                    .or(string(">="))
+                    .or(string("<="))
+                    .map(String::from_str)
+                )
             .parse_state(input)
     }
 
-    fn subsequent(input: State<&str>) -> ParseResult<char, &str> {
-        satisfy(|c|
-                c.is_alphanumeric()
-                // R6RS 'special initial' characters
-                || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
-                || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
-                || c == '?'
-                // R6RS 'special subsequent' characters
-                || c == '+' || c == '-' || c == '.' || c == '@' )
+    fn ident(input: State<&str>) -> ParseResult<String, &str> {
+
+        fn initial(input: State<&str>) -> ParseResult<char, &str> {
+            satisfy(|c|
+                    c.is_alphabetic()
+                    // R6RS 'special initial' characters
+                    || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
+                    || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
+                    || c == '?'
+                    )
+                .parse_state(input)
+        }
+
+        fn subsequent(input: State<&str>) -> ParseResult<char, &str> {
+            satisfy(|c|
+                    c.is_alphanumeric()
+                    // R6RS 'special initial' characters
+                    || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
+                    || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
+                    || c == '?'
+                    // R6RS 'special subsequent' characters
+                    || c == '+' || c == '-' || c == '.' || c == '@' )
+                .parse_state(input)
+        }
+
+        fn rest(input: State<&str>) -> ParseResult<String, &str> {
+            many::<String, _>(parser(subsequent))
+                .parse_state(input)
+        }
+
+        parser(initial)
+            .and(parser(rest))
+            .map(|x| {
+                let mut s = String::new();
+                s.push((x.0));
+                s.push_str(&(x.1));
+                s
+            })
             .parse_state(input)
     }
 
-    fn rest(input: State<&str>) -> ParseResult<String, &str> {
-        many::<Vec<_>, _>(parser(subsequent))
-            .map(|it|
-                it.iter().fold(
-                    String::new(),
-                    |mut s: String, i| {
-                        s.push(*i);
-                        s
-                    }) )
-            .parse_state(input)
-    }
-
-    parser(initial)
-        .and(parser(rest))
+    try(parser(operator))
+        .or(parser(ident))
+        .map(NameNode::new)
         .parse_state(input)
-        .map(|x| {
-            let mut s = String::new();
-            s.push((x.0).0);
-            s.push_str(&(x.0).1);
-            (NameNode{ name: s}, x.1)
-        })
 }
 
 /// Recognizes R<sup>6</sup>RS character constants.
@@ -373,44 +410,54 @@ pub fn string_const(input: State<&str>) -> ParseResult<StringNode, &str> {
 #[stable(feature="parser",since="0.0.2")]
 pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
 
-        fn sexpr(input: State<&str>) -> ParseResult<ExprNode, &str> {
-                between(
-                    satisfy(|c| c == '('),
-                    satisfy(|c| c == ')'),
-                    parser(name)
-                        .and(many(parser(expr)))
-                        .map(|x| {
-                            SExpr(SExprNode {
-                                operator: x.0,
-                                operands: x.1
-                            })
-                        })
-                ).parse_state(input)
-            }
+    fn sexpr(input: State<&str>) -> ParseResult<ExprNode, &str> {
+        between(
+            satisfy(|c| c == '('),
+            satisfy(|c| c == ')'),
+            parser(name)
+                .and(many(parser(expr)))
+                .map(|x| {
+                    SExpr(SExprNode {
+                        operator: x.0,
+                        operands: x.1
+                    })
+                })
+        ).parse_state(input)
+    }
 
-        fn list(input: State<&str>) -> ParseResult<ExprNode, &str>{
-                between(
-                    satisfy(|c| c == '('),
-                    satisfy(|c| c == ')'),
-                    many(parser(expr))
-                        .map(|x| {
-                            ListConst(ListNode {
-                                elements: x
-                            })
-                        })
-                ).parse_state(input)
-            }
+    fn list(input: State<&str>) -> ParseResult<ExprNode, &str>{
+        between(
+            satisfy(|c| c == '('),
+            satisfy(|c| c == ')'),
+            many(parser(expr))
+                .map(|x| {
+                    ListConst(ListNode {
+                        elements: x
+                    })
+                })
+        ).parse_state(input)
+    }
 
-        spaces().with(
-            try(optional(parser(line_comment))).with(
-                try(parser(sexpr))
-                    .or(try(parser(list)))
-                    .or(try(parser(name).map(Name)))
-                    .or(try(parser(number).map(NumConst)))
-                    .or(try(parser(character).map(CharConst)))
-                    .or(try(parser(string_const).map(StringConst)))
-                )
-            ).parse_state(input)
+    fn constant(input: State<&str>) -> ParseResult<ExprNode, &str>{
+        try(parser(number).map(NumConst))
+            .or(try(parser(character).map(CharConst)))
+            .or(try(parser(string_const).map(StringConst)))
+            .parse_state(input)
+    }
+
+    fn non_constant(input: State<&str>) -> ParseResult<ExprNode, &str>{
+        try(parser(sexpr))
+            .or(try(parser(list)))
+            .or(try(parser(name).map(Name)))
+            .parse_state(input)
+    }
+
+    spaces().with(
+        try(optional(parser(line_comment))).with(
+            parser(non_constant)
+                .or(parser(constant))
+            )
+        ).parse_state(input)
 }
 #[unstable(feature="parser")]
 pub fn parse(program: &str) -> Result<ExprNode, String> {
@@ -419,6 +466,3 @@ pub fn parse(program: &str) -> Result<ExprNode, String> {
         .map_err(|e| { let mut s = String::new(); s.push_str(e.description()); s} )
         .map(    |x| x.0 )
 }
-
-#[cfg(test)]
-mod tests;

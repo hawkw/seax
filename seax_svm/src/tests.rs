@@ -24,7 +24,7 @@ fn test_ld_empty_env_fail() {
 }
 
 #[test]
-#[should_panic(expected="[fatal][LD]: expected list in $e, found AtomCell(Char('w'))")]
+#[should_panic(expected="[fatal][LD]: expected list in $e, found 'w'")]
 fn test_ld_unexpected_env_fail() {
     State {
         stack:      Stack::empty(),
@@ -35,7 +35,7 @@ fn test_ld_unexpected_env_fail() {
 }
 
 #[test]
-#[should_panic(expected="[fatal][LD]: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Nil)), Nil))")]
+#[should_panic(expected="[fatal][LD]: expected pair, found Some(((0, nil), nil))")]
 fn test_ld_arg_too_short_fail() {
     State {
         stack:      Stack::empty(),
@@ -45,7 +45,7 @@ fn test_ld_arg_too_short_fail() {
     }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 #[test]
-#[should_panic(expected="[fatal][LD]: expected pair, found Some((ListCell(Cons(AtomCell(SInt(0)), Cons(AtomCell(SInt(1)), Cons(AtomCell(SInt(1)), Nil)))), Nil))")]
+#[should_panic(expected="[fatal][LD]: expected pair, found Some(((0, (1, (1, nil))), nil))")]
 fn test_ld_arg_too_long_fail() {
     State {
         stack:      Stack::empty(),
@@ -112,7 +112,7 @@ fn test_mul_unexpected_first_arg_fail () {
 }
 
 #[test]
-#[should_panic(expected="[fatal][ADD]: TypeError: expected compatible operands, found (ADD SInt(1) ListCell(Nil))")]
+#[should_panic(expected="[fatal][ADD]: TypeError: expected compatible operands, found (ADD 1 nil)")]
 fn test_add_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
@@ -122,7 +122,7 @@ fn test_add_type_error () {
     }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
 #[test]
-#[should_panic(expected="[fatal][SUB]: TypeError: expected compatible operands, found (SUB SInt(1) ListCell(Nil))")]
+#[should_panic(expected="[fatal][SUB]: TypeError: expected compatible operands, found (SUB 1 nil)")]
 fn test_sub_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
@@ -133,7 +133,7 @@ fn test_sub_type_error () {
 }
 
 #[test]
-#[should_panic(expected="[fatal][DIV]: TypeError: expected compatible operands, found (DIV SInt(1) ListCell(Nil))")]
+#[should_panic(expected="[fatal][DIV]: TypeError: expected compatible operands, found (DIV 1 nil)")]
 fn test_div_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
@@ -144,7 +144,7 @@ fn test_div_type_error () {
 }
 
 #[test]
-#[should_panic(expected="[fatal][FDIV]: TypeError: expected compatible operands, found (FDIV SInt(1) ListCell(Nil))")]
+#[should_panic(expected="[fatal][FDIV]: TypeError: expected compatible operands, found (FDIV 1 nil)")]
 fn test_fdiv_type_error () {
    State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
@@ -155,7 +155,7 @@ fn test_fdiv_type_error () {
 }
 
 #[test]
-#[should_panic(expected="[fatal][MUL]: TypeError: expected compatible operands, found (MUL SInt(1) ListCell(Nil))")]
+#[should_panic(expected="[fatal][MUL]: TypeError: expected compatible operands, found (MUL 1 nil)")]
 fn test_mul_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
