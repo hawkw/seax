@@ -45,6 +45,7 @@ pub trait ASTNode {
 }
 
 impl fmt::Debug for ASTNode {
+    #[stable(feature = "ast", since = "0.0.4")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.prettyprint())
     }
@@ -299,8 +300,9 @@ impl ASTNode for SExprNode {
     }
 
 }
-
+#[stable(feature = "ast", since = "0.0.4")]
 impl fmt::Debug for SExprNode {
+    #[stable(feature = "ast", since = "0.0.2")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.prettyprint())
     }
@@ -310,8 +312,9 @@ impl fmt::Debug for SExprNode {
 #[derive(Clone, PartialEq)]
 #[stable(feature = "ast", since = "0.0.2")]
 pub struct ListNode { pub elements: Vec<ExprNode> }
-
+#[stable(feature = "ast", since = "0.0.4")]
 impl fmt::Debug for ListNode {
+    #[stable(feature = "ast", since = "0.0.4")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.prettyprint())
     }
@@ -384,8 +387,9 @@ impl NameNode {
    #[stable(feature = "ast", since = "0.0.4")]
    pub fn new(name: String) -> Self { NameNode {name: name} }
 }
-
+#[stable(feature = "ast", since = "0.0.4")]
 impl fmt::Debug for NameNode {
+    #[stable(feature = "ast", since = "0.0.4")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.prettyprint())
     }

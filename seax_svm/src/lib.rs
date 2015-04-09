@@ -1,6 +1,9 @@
 #![crate_name = "seax_svm"]
+#![stable(feature="vm_core", since="0.1.2")]
 #![crate_type = "lib"]
 #![feature(box_syntax,box_patterns)]
+#![feature(staged_api)]
+#![staged_api]
 
 /// Singly-linked list and stack implementations.
 ///
@@ -8,6 +11,7 @@
 ///  defined as a trait providing stack operations(`push()`, `pop()`, and
 ///  `peek()`), and an implementation for `List`.
 #[macro_use]
+#[stable(feature="list", since="0.1.0")]
 pub mod slist;
 
 /// SVM cell types.
@@ -15,6 +19,7 @@ pub mod slist;
 /// A cell in the VM can be either an atom (single item, either unsigned
 /// int, signed int, float, or string), a pointer to a list cell, or an
 /// instruction.
+#[stable(feature="vm_core", since="0.1.2")]
 pub mod cell;
 
 #[cfg(test)]
@@ -33,16 +38,18 @@ use std::io;
 
 /// Represents a SVM machine state
 #[derive(PartialEq,Clone,Debug)]
+#[stable(feature="vm_core", since="0.1.0")]
 pub struct State {
     stack:  List<SVMCell>,
     env:  List<SVMCell>,
     control:  List<SVMCell>,
     dump:  List<SVMCell>
 }
-
+#[stable(feature="vm_core", since="0.1.0")]
 impl State {
 
     /// Creates a new empty state
+    #[stable(feature="vm_core", since="0.1.0")]
     pub fn new() -> State {
         State {
             stack: Stack::empty(),
@@ -58,6 +65,7 @@ impl State {
     /// This produces state dumps suitable for printing as part of
     /// an error report. This is different from fmt::Debug since it
     /// includes a tag for the error reporter.
+    #[stable(feature="debug", since="0.2.0")]
     pub fn dump_state(&self, tag: &str) -> String {
         format!(
             "[{t}] State dump:\n[{t}]\tStack:{s:?}\n[{t}]\tEnv:{e:?}\n[{t}]\tControl:{c:?}\n[{t}]\tDump:{d:?}\n",
@@ -78,6 +86,7 @@ impl State {
     ///  - `outp`: an output stream implementing `io::Write`
     ///  - `debug`: whether or not to snapshot the state before evaluating. This provides more detailed debugging information on errors, but can have a significant impact on performance.
     ///
+    #[stable(feature="vm_core", since="0.2.0")]
     pub fn eval(self,
                 inp: &mut io::Read,
                 outp: &mut io::Write,
@@ -676,6 +685,7 @@ impl State {
 ///
 /// Evaluates a program (control stack) and returns the final state.
 /// TODO: add (optional?) parameters for stdin and stdout
+#[stable(feature="vm_core",since="0.2.0")]
 pub fn eval_program(program: List<SVMCell>) -> List<SVMCell> {
     let mut machine = State {
         stack:      Stack::empty(),
