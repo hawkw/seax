@@ -6,6 +6,7 @@
 ///
 /// These are based on the sample programs in Zach Allaun's Clojure SECD
 /// [implementation](https://github.com/zachallaun/secd).
+/// And from http://webdocs.cs.ualberta.ca/%7Eyou/courses/325/Mynotes/Fun/SECD-slides.html
 
 #[macro_use]
 extern crate seax_svm as svm;
@@ -145,4 +146,70 @@ fn compile_basic_branching_2() {
             InstCell(ADD)
         ))
     );
+}
+
+/// Lambda
+///
+/// ```lisp
+/// (lambda (x y) (+ x y))
+/// ```
+///
+/// (LDF (LD (1.2) LD (1.1) + RTN))
+#[test]
+fn compile_lambda() {
+    assert_eq!(
+        scheme::compile("(lambda (x y) (+ x y))"),
+        Ok(list!(
+            InstCell(LDF),
+            ListCell(box list!(
+                InstCell(LD),
+                ListCell(box list!(
+                    AtomCell(SInt(1)), AtomCell(SInt(2))
+                    ))
+                )),
+                InstCell(LD),
+                ListCell(box list!(
+                    AtomCell(SInt(1)), AtomCell(SInt(1))
+                    ))
+                )),
+                InstCell(ADD),
+                InstCell(RTN)
+            ))
+        )
+}
+
+/// Lambda application
+///
+/// ```lisp
+/// ((lambda (x y) (+ x y)) 2 3)
+/// ```
+///
+/// (NIL LDC 3 CONS LDC 2 CONS LDF (LD (1.2) LD (1.1) + RTN) AP)
+#[test]
+fn compile_lambda_ap() {
+    assert_eq!(
+        scheme::compile("((lambda (x y) (+ x y)) 2 3)"),
+        Ok(list!(
+            InstCell(NIL),
+            InstCell(LDC), AtomCell(SInt(3)),
+            InstCell(CONS),
+            InstCell(LDC), AtomCell(SInt(2)),
+            InstCell(CONS),
+            InstCell(LDF),
+            ListCell(box list!(
+                InstCell(LD),
+                ListCell(box list!(
+                    AtomCell(SInt(1)), AtomCell(SInt(2))
+                    ))
+                )),
+                InstCell(LD),
+                ListCell(box list!(
+                    AtomCell(SInt(1)), AtomCell(SInt(1))
+                    ))
+                )),
+                InstCell(ADD),
+                InstCell(RTN)
+            )),
+            InstCell(AP)
+        )
 }
