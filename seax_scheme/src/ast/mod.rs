@@ -12,6 +12,7 @@ use super::ForkTable;
 use std::fmt;
 use std::iter::FromIterator;
 use std::convert::Into;
+use std::cmp::max;
 
 #[cfg(test)]
 mod tests;
@@ -28,6 +29,15 @@ pub type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
 pub type CompileResult  = Result<Vec<SVMCell>, String>;
 
 static INDENT: &'static str = "\t";
+
+#[unstable(feature="forktable")]
+impl<'a> SymTable<'a> {
+    pub fn max(&self) -> (usize,usize) {
+        self.values().fold((0usize,0usize),
+            |prev, it: &(usize,usize)|
+            (max(prev.0,it.0), max(prev.1,it.1)) )
+    }
+}
 
 /// Trait for AST nodes.
 #[stable(feature = "ast", since = "0.0.2")]
@@ -213,7 +223,16 @@ impl ASTNode for SExprNode {
 
                     Ok(result)
                 },
-                _ => Err("[error]: malformed if-expression".to_string())
+                _ => Err("[error]: malformed if expression".to_string())
+            },
+            "lambda" => match self.operands.as_slice() {
+                [SExpr(ref params), SExpr(ref body)] => {
+                    let sym = state.fork();
+
+                    let mut result = Vec::new();
+                    Ok(result)
+                },
+                _ => Err("[error]: malformed lambda expression".to_string())
             },
             _    => {
                 let ref op = self.operator;
