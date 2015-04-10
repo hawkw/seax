@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::collections::hash_map::{Keys,Values};
 use std::hash::Hash;
 
 /// An associative map data structure for representing scopes.
@@ -22,7 +23,7 @@ use std::hash::Hash;
 pub struct ForkTable<'a, K:'a +  Eq + Hash,V: 'a>  {
     table: HashMap<K, V>,
     whiteouts: HashSet<K>,
-    parent: Option<&'a mut ForkTable<'a, K,V>>
+    parent: Option<&'a ForkTable<'a, K,V>>
 }
 
 impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
@@ -125,16 +126,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///       instead.
    #[unstable(feature = "forktable")]
    pub fn get_mut<'b>(&'b mut self, key: &K) -> Option<&'b mut V> {
-        if self.whiteouts.contains(key) {
-            None
-        } else {
-            self.table
-                .get_mut(key)
-                .or(match self.parent {
-                        Some(ref mut parent)    => parent.get_mut(key),
-                        None                    => None
-                    })
-        }
+        self.table.get_mut(key)
     }
 
 
@@ -346,7 +338,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     ///
     /// TODO: should whiteouts be carried over? look into this.
     #[unstable(feature = "forktable")]
-    pub fn fork(&'a mut self) -> ForkTable<'a, K,V> {
+    pub fn fork(&'a self) -> ForkTable<'a, K,V> {
         ForkTable {
             table: HashMap::new(),
             whiteouts: HashSet::new(),
@@ -362,5 +354,23 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
             whiteouts: HashSet::new(),
             parent: None
         }
+    }
+
+    /// Wrapper for the backing map's `values()` function.
+    ///
+    /// Provides an iterator visiting all values in arbitrary
+    /// order. Iterator element type is &'b V.
+    #[unstable(feature="forktable")]
+    pub fn values<'b>(&'b self) -> Values<'b, K, V> {
+        self.table.values()
+    }
+
+    /// Wrapper for the backing map's `keys()` function.
+    ///
+    /// Provides n iterator visiting all keys in arbitrary
+    /// order. Iterator element type is &'b K.
+    #[unstable(feature="forktable")]
+    pub fn keys<'b>(&'b self) -> Keys<'b, K, V> {
+        self.table.keys()
     }
 }
