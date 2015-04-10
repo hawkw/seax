@@ -165,17 +165,16 @@ fn compile_lambda() {
                 InstCell(LD),
                 ListCell(box list!(
                     AtomCell(SInt(1)), AtomCell(SInt(2))
-                    ))
-                )),
+                    )),
                 InstCell(LD),
                 ListCell(box list!(
                     AtomCell(SInt(1)), AtomCell(SInt(1))
-                    ))
-                )),
+                    )),
                 InstCell(ADD),
                 InstCell(RTN)
             ))
-        )
+        ))
+    )
 }
 
 /// Lambda application
