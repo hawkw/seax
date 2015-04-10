@@ -23,7 +23,7 @@ use std::hash::Hash;
 pub struct ForkTable<'a, K:'a +  Eq + Hash,V: 'a>  {
     table: HashMap<K, V>,
     whiteouts: HashSet<K>,
-    parent: Option<&'a ForkTable<'a, K,V>>
+    pub parent: Option<&'a ForkTable<'a, K,V>>
 }
 
 impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
@@ -370,7 +370,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// Provides n iterator visiting all keys in arbitrary
     /// order. Iterator element type is &'b K.
     #[unstable(feature="forktable")]
-    pub fn keys<'b>(&'b self) -> Keys<'b, K, V> {
+    pub fn keys<'b>(&'b self) -> Keys<'b, K, V>{
         self.table.keys()
     }
 }

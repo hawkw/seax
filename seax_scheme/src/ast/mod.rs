@@ -33,9 +33,12 @@ static INDENT: &'static str = "\t";
 #[unstable(feature="forktable")]
 impl<'a> SymTable<'a> {
     pub fn max(&self) -> (usize,usize) {
-        self.values().fold((0usize,0usize),
-            |prev, it: &(usize,usize)|
-            (max(prev.0,it.0), max(prev.1,it.1)) )
+        self
+            .values()
+            .fold(self.parent
+                .map(|p| p.max())
+                .unwrap_or((0usize,0usize)),
+            |prev, it: &(usize,usize)| (max(prev.0,it.0), max(prev.1,it.1)) )
     }
 }
 
