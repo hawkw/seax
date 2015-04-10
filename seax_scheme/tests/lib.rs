@@ -171,7 +171,7 @@ fn compile_lambda() {
                     AtomCell(SInt(1)), AtomCell(SInt(1))
                     )),
                 InstCell(ADD),
-                InstCell(RTN)
+                InstCell(RET)
             ))
         ))
     )
@@ -196,21 +196,18 @@ fn compile_lambda_ap() {
             InstCell(CONS),
             InstCell(LDF),
             ListCell(box list!(
-                InstCell(LD),
-                ListCell(box list!(
+                InstCell(LD), ListCell(box list!(
                     AtomCell(SInt(1)), AtomCell(SInt(2))
-                    ))
-                )),
-                InstCell(LD),
-                ListCell(box list!(
+                    )),
+                InstCell(LD), ListCell(box list!(
                     AtomCell(SInt(1)), AtomCell(SInt(1))
-                    ))
-                )),
+                    )),
                 InstCell(ADD),
-                InstCell(RTN)
+                InstCell(RET)
             )),
             InstCell(AP)
-        )
+        ))
+    )
 }
 
 /// Nested lambdas
@@ -234,20 +231,20 @@ fn compile_nested_lambda() {
                 ListCell(box list!(
                     InstCell(LD), ListCell(box list!(
                         AtomCell(SInt(2)),AtomCell(SInt(1))
-                        ))
+                        )),
                     InstCell(LD), ListCell(box list!(
                         AtomCell(SInt(1)),AtomCell(SInt(2))
-                        ))
+                        )),
                     InstCell(LD), ListCell(box list!(
                         AtomCell(SInt(1)),AtomCell(SInt(1))
-                        ))
+                        )),
                     InstCell(SUB),
                     InstCell(ADD),
-                    InstCell(RTN)
-                ))
+                    InstCell(RET)
+                )),
                 InstCell(AP),
-                InstCell(RTN)
-            ))
+                InstCell(RET)
+            )),
             InstCell(AP)
         ))
     )
