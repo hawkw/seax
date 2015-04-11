@@ -22,9 +22,9 @@ mod tests;
 /// `ForkTable` mapping `&str` (names) to `(uint,uint)` tuples,
 /// representing the location in the `$e` stack storing the value
 /// bound to that name.
+#[stable(feature = "forktable", since = "0.0.6")]
+pub type SymTable<'a>   = ForkTable<'a, &'a str, usize>;
 
-#[stable(feature = "forktable", since = "0.0.3")]
-pub type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
 /// A `CompileResult` is either `Ok(SVMCell)` or `Err(&str)`
 #[stable(feature = "compile", since = "0.0.3")]
 pub type CompileResult  = Result<Vec<SVMCell>, String>;
@@ -36,44 +36,12 @@ pub trait Scope<K> where K: Eq + Hash {
     /// Bind a name to a scope.
     ///
     /// Returnsthe indices for that name in the SVM environment.
-    fn bind(&self)              -> (usize,usize);
+    fn bind(&self, name: K)      -> (usize,usize);
     /// Look up a name against a scope.
     ///
     /// Returns the indices for that name in the SVM environment,
     /// or None if that name is unbound.
-    fn lookup(&self, name: K)   -> Option<(usize,usize)>;
-}
-
-impl<'a> Scope<&'a str> for ForkTable<'a, &'a str, usize> {
-    /// Bind a name to a scope.
-    ///
-    /// Returnsthe indices for that name in the SVM environment.
-    fn bind(&self)              -> (usize,usize) {
-        unimplemented!()
-    }
-    /// Look up a name against a scope.
-    ///
-    /// Returns the indices for that name in the SVM environment,
-    /// or None if that name is unbound.
-    fn lookup(&self, name: &'a str)   -> Option<(usize,usize)> {
-        unimplemented!()
-    }
-
-}
-
-#[unstable(feature="forktable")]
-impl<'a> SymTable<'a> {
-    pub fn max(&self) -> (usize,usize) {
-        self
-            .values()
-            .fold(self.parent
-                .map(|p| p.max())
-                .unwrap_or((0usize,0usize)),
-            |prev, it: &(usize,usize)| (max(prev.0,it.0), max(prev.1,it.1)) )
-    }
-    pub fn next(&self) -> (usize,usize) {
-        let (x,y) = self.max(); (x + 1, y + 1)
-    }
+    fn lookup(&self, name: &K)   -> Option<(usize,usize)>;
 }
 
 /// Trait for AST nodes.
@@ -267,10 +235,10 @@ impl ASTNode for SExprNode {
                             operator: ref param_a,
                             operands: ref param_bs}), SExpr(ref body)] => {
                     let mut sym = state.fork();
-                    let _ = sym.insert(param_a.name.as_ref(), sym.next());
+                    let _ = sym.bind(param_a.name.as_ref());
                     for b in param_bs {
                         if let &Name(ref node) = b {
-                            let _ = sym.insert(node.name.as_ref(), sym.next());
+                            let _ = sym.bind(node.name.as_ref());
                         } // todo: make errors otherwise
                     }
                     let mut result = Vec::new();
@@ -443,9 +411,9 @@ impl ASTNode for NameNode {
             ">="    => Ok(vec![InstCell(GTE)]),
             "<"     => Ok(vec![InstCell(LT)]),
             "<="    => Ok(vec![InstCell(LTE)]),
-            ref name => match state.get(&name) {
-                Some(&(x,y)) =>  unimplemented!(),
-                None         => Err(format!(
+            ref name => match state.lookup(&name) {
+                Some((x,y)) =>  unimplemented!(),
+                None        => Err(format!(
                     "[error] Unknown identifier `{}`", name))
             }
         }

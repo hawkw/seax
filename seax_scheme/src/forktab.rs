@@ -1,6 +1,9 @@
 use std::collections::{HashMap, HashSet};
 use std::collections::hash_map::{Keys,Values};
 use std::hash::Hash;
+use std::cmp::max;
+
+use super::ast::Scope;
 
 /// An associative map data structure for representing scopes.
 ///
@@ -23,8 +26,8 @@ use std::hash::Hash;
 pub struct ForkTable<'a, K:'a +  Eq + Hash,V: 'a>  {
     table: HashMap<K, V>,
     whiteouts: HashSet<K>,
-    pub parent: Option<&'a ForkTable<'a, K,V>>,
-    pub level: usize
+    parent: Option<&'a ForkTable<'a, K,V>>,
+    level: usize
 }
 
 impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
@@ -376,4 +379,37 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     pub fn keys<'b>(&'b self) -> Keys<'b, K, V>{
         self.table.keys()
     }
+}
+
+/// The symbol table for bound names is represented as a
+/// `ForkTable` mapping `&str` (names) to `(uint,uint)` tuples,
+/// representing the location in the `$e` stack storing the value
+/// bound to that name.
+impl<'a> Scope<&'a str> for ForkTable<'a, &'a str, usize> {
+    /// Bind a name to a scope.
+    ///
+    /// Returnsthe indices for that name in the SVM environment.
+    fn bind(&self,name: &'a str)       -> (usize,usize) {
+        let idx = self.values().fold(0, |a,i| max(a,*i));
+        self.insert(name, idx);
+        (self.level, idx)
+    }
+    /// Look up a name against a scope.
+    ///
+    /// Returns the indices for that name in the SVM environment,
+    /// or None if that name is unbound.
+    fn lookup(&self, name: &&'a str)   -> Option<(usize,usize)> {
+         if self.whiteouts.contains(name) {
+            None
+        } else {
+            self.table
+                .get(name)
+                .map(|idx| (self.level, idx.clone()) )
+                .or(self.parent.and_then(
+                    |parent| parent.lookup(name)
+                    )
+                )
+        }
+    }
+
 }
