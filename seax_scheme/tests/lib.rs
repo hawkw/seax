@@ -164,11 +164,11 @@ fn compile_lambda() {
             ListCell(box list!(
                 InstCell(LD),
                 ListCell(box list!(
-                    AtomCell(SInt(1)), AtomCell(SInt(2))
+                    AtomCell(UInt(1)), AtomCell(UInt(2))
                     )),
                 InstCell(LD),
                 ListCell(box list!(
-                    AtomCell(SInt(1)), AtomCell(SInt(1))
+                    AtomCell(UInt(1)), AtomCell(UInt(1))
                     )),
                 InstCell(ADD),
                 InstCell(RET)
@@ -190,17 +190,17 @@ fn compile_lambda_ap() {
         scheme::compile("((lambda (x y) (+ x y)) 2 3)"),
         Ok(list!(
             InstCell(NIL),
-            InstCell(LDC), AtomCell(SInt(3)),
+            InstCell(LDC), AtomCell(UInt(3)),
             InstCell(CONS),
-            InstCell(LDC), AtomCell(SInt(2)),
+            InstCell(LDC), AtomCell(UInt(2)),
             InstCell(CONS),
             InstCell(LDF),
             ListCell(box list!(
                 InstCell(LD), ListCell(box list!(
-                    AtomCell(SInt(1)), AtomCell(SInt(2))
+                    AtomCell(UInt(1)), AtomCell(UInt(2))
                     )),
                 InstCell(LD), ListCell(box list!(
-                    AtomCell(SInt(1)), AtomCell(SInt(1))
+                    AtomCell(UInt(1)), AtomCell(UInt(1))
                     )),
                 InstCell(ADD),
                 InstCell(RET)
@@ -230,13 +230,13 @@ fn compile_nested_lambda() {
                 InstCell(LDF),
                 ListCell(box list!(
                     InstCell(LD), ListCell(box list!(
-                        AtomCell(SInt(2)),AtomCell(SInt(1))
+                        AtomCell(UInt(2)),AtomCell(UInt(1))
                         )),
                     InstCell(LD), ListCell(box list!(
-                        AtomCell(SInt(1)),AtomCell(SInt(2))
+                        AtomCell(UInt(1)),AtomCell(UInt(2))
                         )),
                     InstCell(LD), ListCell(box list!(
-                        AtomCell(SInt(1)),AtomCell(SInt(1))
+                        AtomCell(UInt(1)),AtomCell(UInt(1))
                         )),
                     InstCell(SUB),
                     InstCell(ADD),

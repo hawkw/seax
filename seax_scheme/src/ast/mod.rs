@@ -36,12 +36,12 @@ pub trait Scope<K> where K: Eq + Hash {
     /// Bind a name to a scope.
     ///
     /// Returnsthe indices for that name in the SVM environment.
-    fn bind(&mut self, name: K)  -> (usize,usize);
+    fn bind(&mut self, name: K)         -> (usize,usize);
     /// Look up a name against a scope.
     ///
     /// Returns the indices for that name in the SVM environment,
     /// or None if that name is unbound.
-    fn lookup(&self, name: &K)   -> Option<(usize,usize)>;
+    fn lookup(&self, name: &K)          -> Option<(usize,usize)>;
 }
 
 /// Trait for AST nodes.
@@ -234,14 +234,25 @@ impl ASTNode for SExprNode {
                 [SExpr(SExprNode{
                             operator: ref param_a,
                             operands: ref param_bs}), SExpr(ref body)] => {
-                    let mut sym = state.fork();
-                    let _ = sym.bind(param_a.name.as_ref());
+                    let mut sym = state.fork(); // fork the symbol table
+
+                    sym.bind(param_a.name.as_ref());
+
                     for b in param_bs {
                         if let &Name(ref node) = b {
-                            let _ = sym.bind(node.name.as_ref());
+                            sym.bind(node.name.as_ref());
                         } // todo: make errors otherwise
                     }
+
                     let mut result = Vec::new();
+                    let mut func = try!(body.compile(&sym));
+                    func.push(InstCell(RET));
+
+                    result.push_all(&vec![
+                        InstCell(LDF),
+                        ListCell(box List::from_iter(func))
+                    ]);
+
                     Ok(result)
                 },
                 _ => Err("[error]: malformed lambda expression".to_string())
@@ -251,8 +262,9 @@ impl ASTNode for SExprNode {
                 let mut result = Vec::new();
                 match self.operands {
                     ref other if other.len() == 1 => {
-                        result.push_all(&try!(other[0].compile(state)));
-                        result.push_all(&try!(op.compile(state)));
+                        result.push_all( &try!(other[0].compile(state)) );
+                        result.push_all( &try!(op.compile(state)) );
+                        //if let SExpr(_) = op { result.push(InstCell(LDF)); }
                     },
                     _       => {
                         let mut it = self.operands.iter().rev();
@@ -262,6 +274,7 @@ impl ASTNode for SExprNode {
                         for ref operand in it {
                             result.push_all(&try!(operand.compile(state)));
                             result.push_all(&try!(op.compile(state)));
+                            //if let SExpr(_) = op { result.push(InstCell(LDF)); }
                         }
                     }
                 }
@@ -412,8 +425,13 @@ impl ASTNode for NameNode {
             "<"     => Ok(vec![InstCell(LT)]),
             "<="    => Ok(vec![InstCell(LTE)]),
             ref name => match state.lookup(&name) {
-                Some((x,y)) => unimplemented!(),
-                None        => Err(format!(
+                Some((lvl,idx)) => Ok(vec![
+                    InstCell(LD),
+                    ListCell(box list!(
+                        AtomCell(UInt(lvl)),
+                        AtomCell(UInt(idx)))
+                    )]),
+                None            => Err(format!(
                     "[error] Unknown identifier `{}`", name))
             }
         }
