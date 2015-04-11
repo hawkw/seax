@@ -36,7 +36,7 @@ pub trait Scope<K> where K: Eq + Hash {
     /// Bind a name to a scope.
     ///
     /// Returnsthe indices for that name in the SVM environment.
-    fn bind(&self, name: K)      -> (usize,usize);
+    fn bind(&mut self, name: K)  -> (usize,usize);
     /// Look up a name against a scope.
     ///
     /// Returns the indices for that name in the SVM environment,
@@ -412,7 +412,7 @@ impl ASTNode for NameNode {
             "<"     => Ok(vec![InstCell(LT)]),
             "<="    => Ok(vec![InstCell(LTE)]),
             ref name => match state.lookup(&name) {
-                Some((x,y)) =>  unimplemented!(),
+                Some((x,y)) => unimplemented!(),
                 None        => Err(format!(
                     "[error] Unknown identifier `{}`", name))
             }

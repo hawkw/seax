@@ -373,7 +373,7 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
 
     /// Wrapper for the backing map's `keys()` function.
     ///
-    /// Provides n iterator visiting all keys in arbitrary
+    /// Provides an iterator visiting all keys in arbitrary
     /// order. Iterator element type is &'b K.
     #[unstable(feature="forktable")]
     pub fn keys<'b>(&'b self) -> Keys<'b, K, V>{
@@ -389,7 +389,7 @@ impl<'a> Scope<&'a str> for ForkTable<'a, &'a str, usize> {
     /// Bind a name to a scope.
     ///
     /// Returnsthe indices for that name in the SVM environment.
-    fn bind(&self,name: &'a str)       -> (usize,usize) {
+    fn bind(&mut self,name: &'a str)       -> (usize,usize) {
         let idx = self.values().fold(0, |a,i| max(a,*i));
         self.insert(name, idx);
         (self.level, idx)
