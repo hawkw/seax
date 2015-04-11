@@ -11,7 +11,7 @@ use svm::slist::List::{Cons,Nil};
 #[test]
 fn test_compile_add() {
     let ast = SExprNode {
-        operator: NameNode { name: "+".to_string() },
+        operator: box Name(NameNode { name: "+".to_string() }),
         operands: vec![
             NumConst(IntConst(IntNode{ value: 1isize })),
             NumConst(IntConst(IntNode{ value: 2isize }))
@@ -30,7 +30,7 @@ fn test_compile_add() {
 #[test]
 fn test_compile_sub() {
     let ast = SExprNode {
-        operator: NameNode { name: "-".to_string() },
+        operator: box Name(NameNode { name: "-".to_string() }),
         operands: vec![
             NumConst(UIntConst(UIntNode{ value: 9usize })),
             NumConst(UIntConst(UIntNode{ value: 9usize })),
@@ -52,7 +52,7 @@ fn test_compile_sub() {
 #[test]
 fn test_compile_div() {
     let ast = SExprNode {
-        operator: NameNode { name: "/".to_string() },
+        operator: box Name(NameNode { name: "/".to_string() }),
         operands: vec![
             NumConst(IntConst(IntNode{ value: 1isize })),
             NumConst(IntConst(IntNode{ value: 2isize })),
@@ -78,7 +78,7 @@ fn test_compile_div() {
 #[test]
 fn test_compile_mul() {
     let ast = SExprNode {
-        operator: NameNode { name: "*".to_string() },
+        operator: box Name(NameNode { name: "*".to_string() }),
         operands: vec![
             NumConst(FloatConst(FloatNode{ value: 1f64 })),
             NumConst(FloatConst(FloatNode{ value: 2f64 })),
@@ -103,11 +103,11 @@ fn test_compile_mul() {
 #[test]
 fn test_compile_nested_sexpr() {
     let ast = SExprNode {
-        operator: NameNode { name: "+".to_string() },
+        operator: box Name(NameNode { name: "+".to_string() }),
         operands: vec![
             NumConst(IntConst(IntNode{ value: 4isize })),
             SExpr(SExprNode {
-                operator: NameNode { name: "-".to_string() },
+                operator: box Name(NameNode { name: "-".to_string() }),
                 operands: vec![
                     NumConst(IntConst(IntNode{ value: 1isize })),
                     NumConst(IntConst(IntNode{ value: 2isize })),
@@ -133,7 +133,7 @@ fn test_compile_nested_sexpr() {
 #[test]
 fn test_compile_gte() {
     let ast = SExprNode {
-        operator: NameNode { name: ">=".to_string() },
+        operator: box Name(NameNode { name: ">=".to_string() }),
         operands: vec![
             NumConst(FloatConst(FloatNode{ value: 1f64 })),
             NumConst(IntConst(IntNode{ value: 2isize })),
@@ -152,7 +152,7 @@ fn test_compile_gte() {
 #[test]
 fn test_compile_lte() {
     let ast = SExprNode {
-        operator: NameNode { name: "<=".to_string() },
+        operator: box Name(NameNode { name: "<=".to_string() }),
         operands: vec![
             NumConst(UIntConst(UIntNode{ value: 3usize })),
             NumConst(IntConst(IntNode{ value: 2isize })),

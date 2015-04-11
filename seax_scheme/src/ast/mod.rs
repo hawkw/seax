@@ -201,7 +201,7 @@ impl ASTNode for RootNode {
 #[stable(feature = "ast", since = "0.0.2")]
 pub struct SExprNode {
     #[stable(feature = "ast", since = "0.0.2")]
-    pub operator: NameNode,
+    pub operator: Box<ExprNode>,
     #[stable(feature = "ast", since = "0.0.2")]
     pub operands: Vec<ExprNode>,
 }
@@ -209,62 +209,89 @@ pub struct SExprNode {
 impl ASTNode for SExprNode {
     #[unstable(feature="compile")]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        match self.operator.name.as_ref() {
-            "if" => match self.operands.as_slice() {
-                [ref condition,ref true_case,ref false_case] => {
-                    let mut result = Vec::new();
+        // TODO: break this monster apart into sub-functions
+        // because this is a wretched abomination of cyclomatic complexity
+        match self.operator {
+            box Name(ref node) => match node.name.as_ref() {
+                "if" => match self.operands.as_slice() {
+                    [ref condition,ref true_case,ref false_case] => {
+                        let mut result = Vec::new();
 
-                    result.push_all(&try!(condition.compile(state)));
-                    result.push(InstCell(SEL));
+                        result.push_all(&try!(condition.compile(state)));
+                        result.push(InstCell(SEL));
 
-                    let mut false_code = try!(false_case.compile(state));
-                    false_code.push(InstCell(JOIN));
+                        let mut false_code = try!(false_case.compile(state));
+                        false_code.push(InstCell(JOIN));
 
-                    let mut true_code = try!(true_case.compile(state));
-                    true_code.push(InstCell(JOIN));
+                        let mut true_code = try!(true_case.compile(state));
+                        true_code.push(InstCell(JOIN));
 
-                    result.push(ListCell(box List::from_iter(true_code)));
-                    result.push(ListCell(box List::from_iter(false_code)));
+                        result.push(ListCell(box List::from_iter(true_code)));
+                        result.push(ListCell(box List::from_iter(false_code)));
 
-                    Ok(result)
+                        Ok(result)
+                    },
+                    _ => Err("[error]: malformed if expression".to_string())
                 },
-                _ => Err("[error]: malformed if expression".to_string())
-            },
-            "lambda" => match self.operands.as_slice() {
-                [SExpr(SExprNode{
-                            operator: ref param_a,
-                            operands: ref param_bs}), SExpr(ref body)] => {
-                    let mut sym = state.fork(); // fork the symbol table
+                "lambda" => match self.operands.as_slice() {
+                    [SExpr(SExprNode{
+                                operator: box Name(ref param_a),
+                                operands: ref param_bs}), SExpr(ref body)] => {
+                        let mut sym = state.fork(); // fork the symbol table
 
-                    sym.bind(param_a.name.as_ref());
+                        sym.bind(param_a.name.as_ref());
 
-                    for b in param_bs {
-                        if let &Name(ref node) = b {
-                            sym.bind(node.name.as_ref());
-                        } // todo: make errors otherwise
+                        for b in param_bs {
+                            if let &Name(ref node) = b {
+                                sym.bind(node.name.as_ref());
+                            } // todo: make errors otherwise
+                        }
+
+                        let mut result = Vec::new();
+                        let mut func = try!(body.compile(&sym));
+                        func.push(InstCell(RET));
+
+                        result.push_all(&vec![
+                            InstCell(LDF),
+                            ListCell(box List::from_iter(func))
+                        ]);
+
+                        Ok(result)
+                    },
+                    _ => Err("[error]: malformed lambda expression".to_string())
+                },
+                _ => { // TODO: this is basically a duplicate of the general case
+                       // I feel bad for doing it this way but nothing else worked
+                    let ref op = self.operator;
+                    let mut result = Vec::new();
+                    match self.operands {
+                        ref other if other.len() == 1 => {
+                            result.push_all( &try!(other[0].compile(state)) );
+                            result.push_all( &try!(op.compile(state)) );
+                        },
+                        _       => {
+                            let mut it = self.operands.iter().rev();
+                            // TODO: can thsi be represented with a reduce/fold?
+                            result.push_all(&try!(
+                                it.next().unwrap().compile(state)));
+                            for ref operand in it {
+                                result.push_all(&try!(operand.compile(state)));
+                                result.push_all(&try!(op.compile(state)));
+                            }
+                        }
                     }
-
-                    let mut result = Vec::new();
-                    let mut func = try!(body.compile(&sym));
-                    func.push(InstCell(RET));
-
-                    result.push_all(&vec![
-                        InstCell(LDF),
-                        ListCell(box List::from_iter(func))
-                    ]);
-
                     Ok(result)
-                },
-                _ => Err("[error]: malformed lambda expression".to_string())
+                }
             },
-            _    => {
-                let ref op = self.operator;
+            box ref op  => {
                 let mut result = Vec::new();
                 match self.operands {
                     ref other if other.len() == 1 => {
                         result.push_all( &try!(other[0].compile(state)) );
                         result.push_all( &try!(op.compile(state)) );
-                        //if let SExpr(_) = op { result.push(InstCell(LDF)); }
+                        if let &SExpr(_) = op {
+                            result.push(InstCell(LDF));
+                        }
                     },
                     _       => {
                         let mut it = self.operands.iter().rev();
@@ -274,15 +301,14 @@ impl ASTNode for SExprNode {
                         for ref operand in it {
                             result.push_all(&try!(operand.compile(state)));
                             result.push_all(&try!(op.compile(state)));
-                            //if let SExpr(_) = op { result.push(InstCell(LDF)); }
+                            if let &SExpr(_) = op { result.push(InstCell(AP)); }
                         }
                     }
                 }
-
                 Ok(result)
-
             }
         }
+
     }
 
     #[stable(feature = "ast", since = "0.0.6")]

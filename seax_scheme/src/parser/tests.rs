@@ -40,7 +40,7 @@ fn test_basic_sexpr() {
     assert_eq!(
         parser(expr).parse("(ident arg1 arg2)"),
         Ok((SExpr(SExprNode {
-            operator: NameNode { name: "ident".to_string() },
+            operator: box Name(NameNode { name: "ident".to_string() }),
             operands: vec![
                 Name(NameNode { name: "arg1".to_string() }),
                 Name(NameNode { name: "arg2".to_string() })
@@ -153,7 +153,7 @@ fn test_parse_arith() {
         parser(expr).parse("(+ 10 10)"),
         Ok((
             SExpr(SExprNode {
-                operator: NameNode { name: "+".to_string() },
+                operator: box Name(NameNode { name: "+".to_string() }),
                 operands: vec![
                     NumConst(IntConst(IntNode{ value: 10 })),
                     NumConst(IntConst(IntNode{ value: 10 }))
@@ -174,14 +174,14 @@ fn test_parse_car() {
         parser(expr).parse("(car (cons 10 (cons 20 nil)))"),
         Ok((
             SExpr(SExprNode {
-                operator: NameNode { name: "car".to_string() },
+                operator: box Name(NameNode { name: "car".to_string() }),
                 operands: vec![
                     SExpr(SExprNode {
-                        operator: NameNode { name: "cons".to_string() },
+                        operator: box Name(NameNode { name: "cons".to_string() }),
                         operands: vec![
                             NumConst(IntConst(IntNode{ value: 10 })),
                             SExpr(SExprNode {
-                                operator: NameNode { name: "cons".to_string() },
+                                operator: box Name(NameNode { name: "cons".to_string() }),
                                 operands: vec![
                                     NumConst(IntConst(IntNode{ value: 20 })),
                                     Name(NameNode { name: "nil".to_string() })
@@ -207,14 +207,14 @@ fn test_parse_cdr() {
         parser(expr).parse("(cdr (cons 10 (cons 20 nil)))"),
         Ok((
             SExpr(SExprNode {
-                operator: NameNode { name: "cdr".to_string() },
+                operator: box Name(NameNode { name: "cdr".to_string() }),
                 operands: vec![
                     SExpr(SExprNode {
-                        operator: NameNode { name: "cons".to_string() },
+                        operator: box Name(NameNode { name: "cons".to_string() }),
                         operands: vec![
                             NumConst(IntConst(IntNode{ value: 10 })),
                             SExpr(SExprNode {
-                                operator: NameNode { name: "cons".to_string() },
+                                operator: box Name(NameNode { name: "cons".to_string() }),
                                 operands: vec![
                                     NumConst(IntConst(IntNode{ value: 20 })),
                                     Name(NameNode { name: "nil".to_string() })
@@ -240,11 +240,11 @@ fn test_parse_nested_arith() {
         parser(expr).parse("(- 20 (+ 5 5))"),
         Ok((
             SExpr(SExprNode {
-                operator: NameNode { name: "-".to_string() },
+                operator: box Name(NameNode { name: "-".to_string() }),
                 operands: vec![
                     NumConst(IntConst(IntNode{ value: 20 })),
                     SExpr(SExprNode {
-                        operator: NameNode { name: "+".to_string() },
+                        operator: box Name(NameNode { name: "+".to_string() }),
                         operands: vec![
                             NumConst(IntConst(IntNode{ value: 5 })),
                             NumConst(IntConst(IntNode{ value: 5 }))
@@ -268,14 +268,14 @@ fn test_parse_basic_branching_1() {
         parser(expr).parse("(if (= 0 (- 1 1)) #t #f)"),
         Ok((
             SExpr(SExprNode {
-                operator: NameNode::new("if".to_string()),
+                operator: box Name(NameNode::new("if".to_string())),
                 operands: vec![
                     SExpr(SExprNode{
-                        operator: NameNode::new("=".to_string()),
+                        operator: box Name(NameNode::new("=".to_string())),
                         operands: vec![
                             NumConst(IntConst(IntNode{value: 0})),
                             SExpr(SExprNode{
-                                operator: NameNode::new("-".to_string()),
+                                operator: box Name(NameNode::new("-".to_string())),
                                 operands: vec![
                                     NumConst(IntConst(IntNode{ value: 1 })),
                                     NumConst(IntConst(IntNode{ value: 1 }))
@@ -305,14 +305,14 @@ fn test_parse_basic_branching_2() {
         parser(expr).parse("(+ 10 (if (nil? nil) 10 20))"),
         Ok((
             SExpr(SExprNode {
-                operator: NameNode::new("+".to_string()),
+                operator: box Name(NameNode::new("+".to_string())),
                 operands: vec![
                     NumConst(IntConst(IntNode{value:10})),
                     SExpr(SExprNode{
-                        operator: NameNode::new("if".to_string()),
+                        operator: box Name(NameNode::new("if".to_string())),
                         operands: vec![
                             SExpr(SExprNode{
-                                operator: NameNode::new("nil?".to_string()),
+                                operator: box Name(NameNode::new("nil?".to_string())),
                                 operands: vec![Name(NameNode::new("nil".to_string()))]
 
                             }),
