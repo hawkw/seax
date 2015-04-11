@@ -3,7 +3,7 @@ use std::collections::hash_map::{Keys,Values};
 use std::hash::Hash;
 use std::cmp::max;
 
-use super::ast::Scope;
+use super::ast::{Scope,CompileResult};
 
 /// An associative map data structure for representing scopes.
 ///
@@ -385,12 +385,14 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
 /// `ForkTable` mapping `&str` (names) to `(uint,uint)` tuples,
 /// representing the location in the `$e` stack storing the value
 /// bound to that name.
+#[unstable(feature="forktable")]
 impl<'a> Scope<&'a str> for ForkTable<'a, &'a str, usize> {
     /// Bind a name to a scope.
     ///
-    /// Returnsthe indices for that name in the SVM environment.
-    fn bind(&mut self,name: &'a str)       -> (usize,usize) {
-        let idx = self.values().fold(0, |a,i| max(a,*i));
+    /// Returns the indices for that name in the SVM environment.
+    #[unstable(feature="forktable")]
+    fn bind(&mut self,name: &'a str)            -> (usize,usize) {
+        let idx = self.values().fold(0, |a,i| max(a,*i)) + 1;
         self.insert(name, idx);
         (self.level, idx)
     }
@@ -398,7 +400,7 @@ impl<'a> Scope<&'a str> for ForkTable<'a, &'a str, usize> {
     ///
     /// Returns the indices for that name in the SVM environment,
     /// or None if that name is unbound.
-    fn lookup(&self, name: &&'a str)   -> Option<(usize,usize)> {
+    fn lookup(&self, name: &&'a str)            -> Option<(usize,usize)> {
          if self.whiteouts.contains(name) {
             None
         } else {
