@@ -190,9 +190,9 @@ fn compile_lambda_ap() {
         scheme::compile("((lambda (x y) (+ x y)) 2 3)"),
         Ok(list!(
             InstCell(NIL),
-            InstCell(LDC), AtomCell(UInt(3)),
+            InstCell(LDC), AtomCell(SInt(3)),
             InstCell(CONS),
-            InstCell(LDC), AtomCell(UInt(2)),
+            InstCell(LDC), AtomCell(SInt(2)),
             InstCell(CONS),
             InstCell(LDF),
             ListCell(box list!(

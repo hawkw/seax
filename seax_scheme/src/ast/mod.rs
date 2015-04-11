@@ -286,22 +286,24 @@ impl ASTNode for SExprNode {
             box ref op  => {
                 let mut result = Vec::new();
                 match self.operands {
-                    ref other if other.len() == 1 => {
+                    ref other if other.len() == 1 => { // just an optimization
+                        result.push(InstCell(NIL));
                         result.push_all( &try!(other[0].compile(state)) );
                         result.push_all( &try!(op.compile(state)) );
-                        if let &SExpr(_) = op {
-                            result.push(InstCell(LDF));
-                        }
+                        result.push(InstCell(LDF));
                     },
                     _       => {
                         let mut it = self.operands.iter().rev();
                         // TODO: can thsi be represented with a reduce/fold?
+                        result.push(InstCell(NIL));
                         result.push_all(&try!(
                             it.next().unwrap().compile(state)));
                         for ref operand in it {
+                            result.push(InstCell(CONS));
                             result.push_all(&try!(operand.compile(state)));
+                            result.push(InstCell(CONS));
                             result.push_all(&try!(op.compile(state)));
-                            if let &SExpr(_) = op { result.push(InstCell(AP)); }
+                            result.push(InstCell(AP));
                         }
                     }
                 }
