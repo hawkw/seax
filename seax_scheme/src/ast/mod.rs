@@ -13,6 +13,7 @@ use std::fmt;
 use std::iter::FromIterator;
 use std::convert::Into;
 use std::cmp::max;
+use std::hash::Hash;
 
 #[cfg(test)]
 mod tests;
@@ -30,6 +31,36 @@ pub type CompileResult  = Result<Vec<SVMCell>, String>;
 
 static INDENT: &'static str = "\t";
 
+/// Trait for a symbol table
+pub trait Scope<K> where K: Eq + Hash {
+    /// Bind a name to a scope.
+    ///
+    /// Returnsthe indices for that name in the SVM environment.
+    fn bind(&self)              -> (usize,usize);
+    /// Look up a name against a scope.
+    ///
+    /// Returns the indices for that name in the SVM environment,
+    /// or None if that name is unbound.
+    fn lookup(&self, name: K)   -> Option<(usize,usize)>;
+}
+
+impl<'a> Scope<&'a str> for ForkTable<'a, &'a str, usize> {
+    /// Bind a name to a scope.
+    ///
+    /// Returnsthe indices for that name in the SVM environment.
+    fn bind(&self)              -> (usize,usize) {
+        unimplemented!()
+    }
+    /// Look up a name against a scope.
+    ///
+    /// Returns the indices for that name in the SVM environment,
+    /// or None if that name is unbound.
+    fn lookup(&self, name: &'a str)   -> Option<(usize,usize)> {
+        unimplemented!()
+    }
+
+}
+
 #[unstable(feature="forktable")]
 impl<'a> SymTable<'a> {
     pub fn max(&self) -> (usize,usize) {
@@ -39,6 +70,9 @@ impl<'a> SymTable<'a> {
                 .map(|p| p.max())
                 .unwrap_or((0usize,0usize)),
             |prev, it: &(usize,usize)| (max(prev.0,it.0), max(prev.1,it.1)) )
+    }
+    pub fn next(&self) -> (usize,usize) {
+        let (x,y) = self.max(); (x + 1, y + 1)
     }
 }
 
@@ -229,9 +263,16 @@ impl ASTNode for SExprNode {
                 _ => Err("[error]: malformed if expression".to_string())
             },
             "lambda" => match self.operands.as_slice() {
-                [SExpr(ref params), SExpr(ref body)] => {
-                    let sym = state.fork();
-
+                [SExpr(SExprNode{
+                            operator: ref param_a,
+                            operands: ref param_bs}), SExpr(ref body)] => {
+                    let mut sym = state.fork();
+                    let _ = sym.insert(param_a.name.as_ref(), sym.next());
+                    for b in param_bs {
+                        if let &Name(ref node) = b {
+                            let _ = sym.insert(node.name.as_ref(), sym.next());
+                        } // todo: make errors otherwise
+                    }
                     let mut result = Vec::new();
                     Ok(result)
                 },

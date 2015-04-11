@@ -23,7 +23,8 @@ use std::hash::Hash;
 pub struct ForkTable<'a, K:'a +  Eq + Hash,V: 'a>  {
     table: HashMap<K, V>,
     whiteouts: HashSet<K>,
-    pub parent: Option<&'a ForkTable<'a, K,V>>
+    pub parent: Option<&'a ForkTable<'a, K,V>>,
+    pub level: usize
 }
 
 impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
@@ -342,7 +343,8 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
         ForkTable {
             table: HashMap::new(),
             whiteouts: HashSet::new(),
-            parent: Some(self)
+            parent: Some(self),
+            level: self.level + 1
         }
     }
 
@@ -352,7 +354,8 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
         ForkTable {
             table: HashMap::new(),
             whiteouts: HashSet::new(),
-            parent: None
+            parent: None,
+            level: 0
         }
     }
 
