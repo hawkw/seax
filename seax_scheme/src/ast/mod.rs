@@ -31,15 +31,18 @@ pub type CompileResult  = Result<Vec<SVMCell>, String>;
 static INDENT: &'static str = "\t";
 
 /// Trait for a symbol table
+#[stable(feature = "compile",since = "0.1.0")]
 pub trait Scope<K> where K: Eq + Hash {
     /// Bind a name to a scope.
     ///
     /// Returnsthe indices for that name in the SVM environment.
+    #[stable(feature = "compile",since = "0.1.0")]
     fn bind(&mut self, name: K, lvl: usize) -> (usize,usize);
     /// Look up a name against a scope.
     ///
     /// Returns the indices for that name in the SVM environment,
     /// or None if that name is unbound.
+    #[stable(feature = "compile",since = "0.1.0")]
     fn lookup(&self, name: &K)              -> Option<(usize,usize)>;
 }
 
@@ -341,6 +344,7 @@ impl ASTNode for SExprNode {
 
 impl SExprNode {
     /// Tests to see if this node is a lambda expression
+    #[stable(feature = "compile",since = "0.1.0")]
     fn is_lambda(&self) -> bool {
         match *self.operator {
             // I wish I didn't have to do it this way, there's an apparent
@@ -354,6 +358,7 @@ impl SExprNode {
         }
     }
     /// Returns the depth of a nested lambda expression
+    #[stable(feature = "compile",since = "0.1.0")]
     fn depth(&self)     -> usize {
             self.operands.iter().fold(
                 match *self.operator {
