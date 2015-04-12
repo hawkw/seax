@@ -120,15 +120,15 @@ impl State {
                         box Cons(AtomCell(SInt(level)),
                         box Cons(AtomCell(SInt(pos)),
                         box Nil))
-                    ), newer_control @ _)) => {
-                        let environment = match self.env[level] {
+                    ), newer_control)) => {
+                        let environment = match self.env[(level-1)] {
                             SVMCell::ListCell(ref l) => l.clone(),
                             _ => panic!(
                                 "[fatal][LD]: expected list in $e, found {:?}\n{}",
-                                self.env[level], prev.map_or(String::new(), |x| x.dump_state("fatal") ))
+                                self.env[level-1], prev.map_or(String::new(), |x| x.dump_state("fatal") ))
                         };
                         State {
-                            stack: self.stack.push(environment[pos].clone()),
+                            stack: self.stack.push(environment[(pos-1)].clone()),
                             env: self.env,
                             control: newer_control,
                             dump: self.dump

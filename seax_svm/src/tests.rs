@@ -18,7 +18,7 @@ fn test_ld_empty_env_fail() {
     State {
         stack:      Stack::empty(),
         env:        Stack::empty(),
-        control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(0))))),
+        control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(1)), AtomCell(SInt(0))))),
         dump:       Stack::empty(),
     }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
@@ -29,7 +29,7 @@ fn test_ld_unexpected_env_fail() {
     State {
         stack:      Stack::empty(),
         env:        list!(AtomCell(Char('w'))),
-        control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(0))))),
+        control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(1)), AtomCell(SInt(1))))),
         dump:       Stack::empty(),
     }.eval(&mut io::stdin(), &mut io::stdout(), true);
 }
@@ -225,7 +225,7 @@ fn test_eval_ld () {
             InstCell(LD),
             ListCell(
                 box list!(
-                    AtomCell(SInt(0)),AtomCell(SInt(2))
+                    AtomCell(SInt(1)),AtomCell(SInt(2))
                     )
                 )
             ),
