@@ -12,7 +12,6 @@ use super::ForkTable;
 use std::fmt;
 use std::iter::FromIterator;
 use std::convert::Into;
-use std::cmp::max;
 use std::hash::Hash;
 
 #[cfg(test)]

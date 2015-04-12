@@ -3,7 +3,7 @@ use std::collections::hash_map::{Keys,Values};
 use std::hash::Hash;
 use std::cmp::max;
 
-use super::ast::{Scope,CompileResult};
+use super::ast::Scope;
 
 /// An associative map data structure for representing scopes.
 ///
