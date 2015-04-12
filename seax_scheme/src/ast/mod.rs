@@ -357,7 +357,14 @@ impl SExprNode {
             _               => false
         }
     }
-    /// Returns the depth of a nested lambda expression
+    /// Returns the depth of a nested lambda expression.
+    ///
+    /// This is used for generating indices into the VM's environment.
+    /// Since the environment is treated as a stack, it is necessary to
+    /// produce compile-time estimates of the size of a call stack for a
+    /// closure with nested clsures, since we want to associate the names bound
+    /// in the top level of the closure with the lowest level of the stack at
+    /// evaluation time.
     #[stable(feature = "compile",since = "0.1.0")]
     fn depth(&self)     -> usize {
             self.operands.iter().fold(
