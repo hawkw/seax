@@ -122,12 +122,8 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
     /// level_1.insert(1isize, "One");
     ///
     /// let mut level_2: ForkTable<isize,&str> = level_1.fork();
-    /// assert_eq!(level_2.get_mut(&1isize), Some(&mut "One"));
+    /// assert_eq!(level_2.get_mut(&1isize), None);
     /// ```
-    /// TODO: consider only allowing `get_mut()` from the current
-    ///       level, to remove the need to keep a mutable borrow
-    ///       on the parent level. We could allow an overwrite here
-    ///       instead.
    #[unstable(feature = "forktable")]
    pub fn get_mut<'b>(&'b mut self, key: &K) -> Option<&'b mut V> {
         self.table.get_mut(key)
