@@ -43,7 +43,7 @@
     <section id='main' class="content fn">
 <h1 class='fqn'><span class='in-band'>Function <a href='index.html'>parser_combinators</a>::<wbr><a class='fn' href=''>satisfy</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-7248' href='../src/parser_combinators/char.rs.html#60-63'>[src]</a></span></h1>
+        </span><a id='src-7256' href='../src/parser_combinators/char.rs.html#60-63'>[src]</a></span></h1>
 <pre class='rust fn'>pub fn satisfy&lt;I, Pred&gt;(pred: Pred) -&gt; <a class='struct' href='../parser_combinators/char/struct.Satisfy.html' title='parser_combinators::char::Satisfy'>Satisfy</a>&lt;I, Pred&gt; <span class='where'>where I: <a class='trait' href='../parser_combinators/primitives/trait.Stream.html' title='parser_combinators::primitives::Stream'>Stream</a>&lt;Item=<a href='http://doc.rust-lang.org/nightly/std/primitive.char.html'>char</a>&gt;, Pred: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(<a href='http://doc.rust-lang.org/nightly/std/primitive.char.html'>char</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></span></pre><div class='docblock'><p>Parses a character and succeeds depending on the result of <code>pred</code></p>
 <pre id='rust-example-rendered' class='rust '>
  <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;!&#39;</span>)

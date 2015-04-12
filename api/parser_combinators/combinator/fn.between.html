@@ -43,7 +43,7 @@
     <section id='main' class="content fn">
 <h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>parser_combinators</a>::<wbr><a href='index.html'>combinator</a>::<wbr><a class='fn' href=''>between</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-5218' href='../../src/parser_combinators/combinator.rs.html#480-486'>[src]</a></span></h1>
+        </span><a id='src-5226' href='../../src/parser_combinators/combinator.rs.html#480-486'>[src]</a></span></h1>
 <pre class='rust fn'>pub fn between&lt;I, L, R, P&gt;(open: L, close: R, parser: P) -&gt; <a class='struct' href='../../parser_combinators/combinator/struct.Between.html' title='parser_combinators::combinator::Between'>Between</a>&lt;L, R, P&gt; <span class='where'>where I: <a class='trait' href='../../parser_combinators/primitives/trait.Stream.html' title='parser_combinators::primitives::Stream'>Stream</a>, L: <a class='trait' href='../../parser_combinators/trait.Parser.html' title='parser_combinators::Parser'>Parser</a>&lt;Input=I&gt;, R: <a class='trait' href='../../parser_combinators/trait.Parser.html' title='parser_combinators::Parser'>Parser</a>&lt;Input=I&gt;, P: <a class='trait' href='../../parser_combinators/trait.Parser.html' title='parser_combinators::Parser'>Parser</a>&lt;Input=I&gt;</span></pre><div class='docblock'><p>Parses <code>open</code> followed by <code>parser</code> followed by <code>close</code>
 Returns the value of <code>parser</code></p>
 <pre id='rust-example-rendered' class='rust '>

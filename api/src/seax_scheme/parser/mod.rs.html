@@ -508,6 +508,7 @@
 <span id="466">466</span>
 <span id="467">467</span>
 <span id="468">468</span>
+<span id="469">469</span>
 </pre><pre class='rust '>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>parser_combinators</span>;
 
@@ -925,11 +926,11 @@
         <span class='ident'>between</span>(
             <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;(&#39;</span>),
             <span class='ident'>satisfy</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> <span class='ident'>c</span> <span class='op'>==</span> <span class='string'>&#39;)&#39;</span>),
-            <span class='ident'>parser</span>(<span class='ident'>name</span>)
+            <span class='ident'>parser</span>(<span class='ident'>expr</span>)
                 .<span class='ident'>and</span>(<span class='ident'>many</span>(<span class='ident'>parser</span>(<span class='ident'>expr</span>)))
                 .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
                     <span class='ident'>SExpr</span>(<span class='ident'>SExprNode</span> {
-                        <span class='ident'>operator</span>: <span class='ident'>x</span>.<span class='number'>0</span>,
+                        <span class='ident'>operator</span>: <span class='kw'>box</span> <span class='ident'>x</span>.<span class='number'>0</span>,
                         <span class='ident'>operands</span>: <span class='ident'>x</span>.<span class='number'>1</span>
                     })
                 })
@@ -953,6 +954,7 @@
         <span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>number</span>).<span class='ident'>map</span>(<span class='ident'>NumConst</span>))
             .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>character</span>).<span class='ident'>map</span>(<span class='ident'>CharConst</span>)))
             .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>string_const</span>).<span class='ident'>map</span>(<span class='ident'>StringConst</span>)))
+            .<span class='ident'>or</span>(<span class='ident'>try</span>(<span class='ident'>parser</span>(<span class='ident'>bool_const</span>).<span class='ident'>map</span>(<span class='ident'>BoolConst</span>)))
             .<span class='ident'>parse_state</span>(<span class='ident'>input</span>)
     }
 

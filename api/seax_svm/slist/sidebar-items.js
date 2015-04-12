@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ListIterator","Wraps a List<T> to allow it to be used as an Iterator<T>"]],"enum":[["List","Singly-linked cons list."]],"trait":[["Stack","Common functions for an immutable Stack abstract data type."]]});
+initSidebarItems({"enum":[["List","Singly-linked cons list."]],"trait":[["Stack","Common functions for an immutable Stack abstract data type."]],"struct":[["ListIterator","Wraps a List<T> to allow it to be used as an Iterator<T>"]]});

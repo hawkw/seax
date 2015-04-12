@@ -43,7 +43,7 @@
     <section id='main' class="content fn">
 <h1 class='fqn'><span class='in-band'>Function <a href='index.html'>parser_combinators</a>::<wbr><a class='fn' href=''>skip_many</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-4304' href='../src/parser_combinators/combinator.rs.html#263-269'>[src]</a></span></h1>
+        </span><a id='src-4312' href='../src/parser_combinators/combinator.rs.html#263-269'>[src]</a></span></h1>
 <pre class='rust fn'>pub fn skip_many&lt;P&gt;(p: P) -&gt; <a class='struct' href='../parser_combinators/combinator/struct.SkipMany.html' title='parser_combinators::combinator::SkipMany'>SkipMany</a>&lt;P&gt; <span class='where'>where P: <a class='trait' href='../parser_combinators/trait.Parser.html' title='parser_combinators::Parser'>Parser</a></span></pre><div class='docblock'><p>Parses <code>p</code> zero or more times ignoring the result</p>
 <pre id='rust-example-rendered' class='rust '>
  <span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>skip_many</span>(<span class='ident'>digit</span>())

@@ -43,7 +43,7 @@
     <section id='main' class="content fn">
 <h1 class='fqn'><span class='in-band'>Function <a href='index.html'>parser_combinators</a>::<wbr><a class='fn' href=''>parser</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-4871' href='../src/parser_combinators/combinator.rs.html#410-414'>[src]</a></span></h1>
+        </span><a id='src-4879' href='../src/parser_combinators/combinator.rs.html#410-414'>[src]</a></span></h1>
 <pre class='rust fn'>pub fn parser&lt;I, O, F&gt;(f: F) -&gt; <a class='struct' href='../parser_combinators/combinator/struct.FnParser.html' title='parser_combinators::combinator::FnParser'>FnParser</a>&lt;I, F&gt; <span class='where'>where I: <a class='trait' href='../parser_combinators/primitives/trait.Stream.html' title='parser_combinators::primitives::Stream'>Stream</a>, F: <a class='trait' href='http://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(<a class='struct' href='../parser_combinators/primitives/struct.State.html' title='parser_combinators::primitives::State'>State</a>&lt;I&gt;) -&gt; <a class='type' href='../parser_combinators/type.ParseResult.html' title='parser_combinators::ParseResult'>ParseResult</a>&lt;O, I&gt;</span></pre><div class='docblock'><p>Wraps a function, turning it into a parser
 Mainly needed to turn closures into parsers as function types can be casted to function pointers
 to make them usable as a parser</p>

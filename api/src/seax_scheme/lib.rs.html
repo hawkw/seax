@@ -117,6 +117,7 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
+<span id="78">78</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;seax_scheme&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;scheme&quot;</span>)]</span>
@@ -156,7 +157,8 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// This parser is based on the</span>
 <span class='doccomment'>/// [Scheme grammar](final/html/r6rs/r6rs-Z-H-7.html) given in the</span>
-<span class='doccomment'>/// [Revised&lt;sup&gt;6&lt;/sup&gt; Report on Scheme](http://www.r6rs.org/) (R&lt;sup&gt;6&lt;/sup&gt;RS).</span>
+<span class='doccomment'>/// [Revised&lt;sup&gt;6&lt;/sup&gt; Report on Scheme](http://www.r6rs.org/)</span>
+<span class='doccomment'>/// (R&lt;sup&gt;6&lt;/sup&gt;RS).</span>
 <span class='doccomment'>/// Any deviations from the R6RS standard, especially those with an impact</span>
 <span class='doccomment'>/// on the valid programs accepted by the parser, will be noted in the</span>
 <span class='doccomment'>/// parser&#39;s RustDoc.</span>
@@ -168,8 +170,10 @@
 <span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;forktable&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>forktab</span>::<span class='ident'>ForkTable</span>;
 
-<span class='kw'>use</span> <span class='ident'>svm</span>::<span class='ident'>slist</span>::{<span class='ident'>List</span>,<span class='ident'>Stack</span>};
+<span class='kw'>use</span> <span class='ident'>svm</span>::<span class='ident'>slist</span>::<span class='ident'>List</span>;
 <span class='kw'>use</span> <span class='ident'>svm</span>::<span class='ident'>cell</span>::<span class='ident'>SVMCell</span>;
+
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>FromIterator</span>;
 
 <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>ast</span>::{<span class='ident'>ASTNode</span>,<span class='ident'>ExprNode</span>};
 
@@ -190,10 +194,8 @@
 <span class='attribute'>#[<span class='ident'>unstable</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;compile&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>compile</span>(<span class='ident'>program</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> {
     <span class='ident'>parser</span>::<span class='ident'>parse</span>(<span class='ident'>program</span>)
-        .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>tree</span>: <span class='ident'>ExprNode</span>      <span class='op'>|</span> <span class='ident'>tree</span>.<span class='ident'>compile</span>(<span class='kw-2'>&amp;</span><span class='ident'>ForkTable</span>::<span class='ident'>new</span>()) )
-        .<span class='ident'>map</span>(     <span class='op'>|</span><span class='ident'>insts</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span> <span class='op'>|</span> <span class='ident'>insts</span>.<span class='ident'>into_iter</span>().<span class='ident'>rev</span>().<span class='ident'>fold</span>(<span class='ident'>List</span>::<span class='ident'>new</span>(),
-                  <span class='op'>|</span><span class='ident'>st</span>: <span class='ident'>List</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span>, <span class='ident'>i</span><span class='op'>|</span> <span class='ident'>st</span>.<span class='ident'>push</span>(<span class='ident'>i</span>)
-            ))
+        .<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>tree</span>: <span class='ident'>ExprNode</span>     <span class='op'>|</span> <span class='ident'>tree</span>.<span class='ident'>compile</span>(<span class='kw-2'>&amp;</span><span class='ident'>ForkTable</span>::<span class='ident'>new</span>()) )
+        .<span class='ident'>map</span>(     <span class='op'>|</span><span class='ident'>prog</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>SVMCell</span><span class='op'>&gt;</span> <span class='op'>|</span> <span class='ident'>List</span>::<span class='ident'>from_iter</span>(<span class='ident'>prog</span>) )
 }
 </pre>
 </section>
