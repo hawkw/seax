@@ -86,7 +86,7 @@ impl State {
     ///  - `outp`: an output stream implementing `io::Write`
     ///  - `debug`: whether or not to snapshot the state before evaluating. This provides more detailed debugging information on errors, but can have a significant impact on performance.
     ///
-    #[stable(feature="vm_core", since="0.2.0")]
+    #[stable(feature="vm_core", since="0.2.1")]
     pub fn eval(self,
                 inp: &mut io::Read,
                 outp: &mut io::Write,

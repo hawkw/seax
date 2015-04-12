@@ -267,7 +267,7 @@ pub enum Inst {
     ///  Takes one list argument representing a function and constructs
     ///  a closure (a pair containing the function and the current
     ///  environment) and pusizehes that onto the stack.
-    #[stable(feature="vm_core", since="0.1.0")]
+    #[stable(feature="vm_core", since="0.2.4")]
     LDF,
     /// `join`
     ///
