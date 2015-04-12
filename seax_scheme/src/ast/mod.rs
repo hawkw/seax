@@ -23,7 +23,7 @@ mod tests;
 /// representing the location in the `$e` stack storing the value
 /// bound to that name.
 #[stable(feature = "forktable", since = "0.0.6")]
-pub type SymTable<'a>   = ForkTable<'a, &'a str, usize>;
+pub type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
 
 /// A `CompileResult` is either `Ok(SVMCell)` or `Err(&str)`
 #[stable(feature = "compile", since = "0.0.3")]
@@ -36,12 +36,12 @@ pub trait Scope<K> where K: Eq + Hash {
     /// Bind a name to a scope.
     ///
     /// Returnsthe indices for that name in the SVM environment.
-    fn bind(&mut self, name: K)         -> (usize,usize);
+    fn bind(&mut self, name: K, lvl: usize) -> (usize,usize);
     /// Look up a name against a scope.
     ///
     /// Returns the indices for that name in the SVM environment,
     /// or None if that name is unbound.
-    fn lookup(&self, name: &K)          -> Option<(usize,usize)>;
+    fn lookup(&self, name: &K)              -> Option<(usize,usize)>;
 }
 
 /// Trait for AST nodes.
@@ -238,12 +238,13 @@ impl ASTNode for SExprNode {
                                 operator: box Name(ref param_a),
                                 operands: ref param_bs}), SExpr(ref body)] => {
                         let mut sym = state.fork(); // fork the symbol table
+                        let depth = self.depth(); // cache the depth for binds
 
-                        sym.bind(param_a.name.as_ref());
+                        sym.bind(param_a.name.as_ref(),depth);
 
                         for b in param_bs {
                             if let &Name(ref node) = b {
-                                sym.bind(node.name.as_ref());
+                                sym.bind(node.name.as_ref(),depth);
                             } // todo: make errors otherwise
                         }
 
@@ -289,8 +290,9 @@ impl ASTNode for SExprNode {
                     ref other if other.len() == 1 => { // just an optimization
                         result.push(InstCell(NIL));
                         result.push_all( &try!(other[0].compile(state)) );
+                        result.push(InstCell(CONS));
                         result.push_all( &try!(op.compile(state)) );
-                        result.push(InstCell(LDF));
+                        result.push(InstCell(AP));
                     },
                     _       => {
                         let mut it = self.operands.iter().rev();
@@ -337,6 +339,36 @@ impl ASTNode for SExprNode {
     }
 
 }
+
+impl SExprNode {
+    /// Tests to see if this node is a lambda expression
+    fn is_lambda(&self) -> bool {
+        match *self.operator {
+            // I wish I didn't have to do it this way, there's an apparent
+            // Rust issue (rust-lang/rust#23762) that makes it impossible
+            // to use `as_ref()` in a pattern guard.
+            Name(ref node)  => match node.name.as_ref() {
+                "lambda"    => true,
+                _           => false
+            },
+            _               => false
+        }
+    }
+    /// Returns the depth of a nested lambda expression
+    fn depth(&self)     -> usize {
+            self.operands.iter().fold(
+                match *self.operator {
+                    SExpr(ref node) => node.depth(),
+                    Name(_)         => if self.is_lambda() {1} else {0},
+                    _               => 0
+                },
+            |acc, op| acc + match op {
+                &SExpr(ref node)    => node.depth(),
+                _                   => 0
+            } )
+    }
+}
+
 #[stable(feature = "ast", since = "0.0.4")]
 impl fmt::Debug for SExprNode {
     #[stable(feature = "ast", since = "0.0.2")]

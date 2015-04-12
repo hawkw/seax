@@ -386,31 +386,24 @@ impl<'a, K,V> ForkTable<'a, K, V> where K: Eq + Hash {
 /// representing the location in the `$e` stack storing the value
 /// bound to that name.
 #[unstable(feature="forktable")]
-impl<'a> Scope<&'a str> for ForkTable<'a, &'a str, usize> {
+impl<'a> Scope<&'a str> for ForkTable<'a, &'a str, (usize,usize)> {
     /// Bind a name to a scope.
     ///
     /// Returns the indices for that name in the SVM environment.
     #[unstable(feature="forktable")]
-    fn bind(&mut self,name: &'a str)            -> (usize,usize) {
-        let idx = self.values().fold(0, |a,i| max(a,*i)) + 1;
-        self.insert(name, idx);
+    fn bind(&mut self,name: &'a str, lvl: usize) -> (usize,usize) {
+        let idx = self.values().fold(0, |a,i| max(a,i.1)) + 1;
+        self.insert(name, (lvl,idx));
         (self.level, idx)
     }
     /// Look up a name against a scope.
     ///
     /// Returns the indices for that name in the SVM environment,
     /// or None if that name is unbound.
-    fn lookup(&self, name: &&'a str)            -> Option<(usize,usize)> {
-         if self.whiteouts.contains(name) {
-            None
-        } else {
-            self.table
-                .get(name)
-                .map(|idx| (self.level, idx.clone()) )
-                .or(self.parent.and_then(
-                    |parent| parent.lookup(name)
-                    )
-                )
+    fn lookup(&self, name: &&'a str)             -> Option<(usize,usize)> {
+        match self.get(name) {
+            Some(&(lvl,idx)) => Some((lvl.clone(), idx.clone())),
+            None             => None
         }
     }
 
