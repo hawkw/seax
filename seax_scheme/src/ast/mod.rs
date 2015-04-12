@@ -11,6 +11,8 @@ use super::ForkTable;
 
 use std::fmt;
 use std::iter::FromIterator;
+use std::convert::Into;
+use std::hash::Hash;
 
 #[cfg(test)]
 mod tests;
@@ -19,14 +21,30 @@ mod tests;
 /// `ForkTable` mapping `&str` (names) to `(uint,uint)` tuples,
 /// representing the location in the `$e` stack storing the value
 /// bound to that name.
-
-#[stable(feature = "forktable", since = "0.0.3")]
+#[stable(feature = "forktable", since = "0.0.6")]
 pub type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
+
 /// A `CompileResult` is either `Ok(SVMCell)` or `Err(&str)`
 #[stable(feature = "compile", since = "0.0.3")]
 pub type CompileResult  = Result<Vec<SVMCell>, String>;
 
 static INDENT: &'static str = "\t";
+
+/// Trait for a symbol table
+#[stable(feature = "compile",since = "0.1.0")]
+pub trait Scope<K> where K: Eq + Hash {
+    /// Bind a name to a scope.
+    ///
+    /// Returnsthe indices for that name in the SVM environment.
+    #[stable(feature = "compile",since = "0.1.0")]
+    fn bind(&mut self, name: K, lvl: usize) -> (usize,usize);
+    /// Look up a name against a scope.
+    ///
+    /// Returns the indices for that name in the SVM environment,
+    /// or None if that name is unbound.
+    #[stable(feature = "compile",since = "0.1.0")]
+    fn lookup(&self, name: &K)              -> Option<(usize,usize)>;
+}
 
 /// Trait for AST nodes.
 #[stable(feature = "ast", since = "0.0.2")]
@@ -185,7 +203,7 @@ impl ASTNode for RootNode {
 #[stable(feature = "ast", since = "0.0.2")]
 pub struct SExprNode {
     #[stable(feature = "ast", since = "0.0.2")]
-    pub operator: NameNode,
+    pub operator: Box<ExprNode>,
     #[stable(feature = "ast", since = "0.0.2")]
     pub operands: Vec<ExprNode>,
 }
@@ -193,51 +211,110 @@ pub struct SExprNode {
 impl ASTNode for SExprNode {
     #[unstable(feature="compile")]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        match self.operator.name.as_ref() {
-            "if" => match self.operands.as_slice() {
-                [ref condition,ref true_case,ref false_case] => {
-                    let mut result = Vec::new();
+        // TODO: break this monster apart into sub-functions
+        // because this is a wretched abomination of cyclomatic complexity
+        match self.operator {
+            box Name(ref node) => match node.name.as_ref() {
+                "if" => match self.operands.as_slice() {
+                    [ref condition,ref true_case,ref false_case] => {
+                        let mut result = Vec::new();
 
-                    result.push_all(&try!(condition.compile(state)));
-                    result.push(InstCell(SEL));
+                        result.push_all(&try!(condition.compile(state)));
+                        result.push(InstCell(SEL));
 
-                    let mut false_code = try!(false_case.compile(state));
-                    false_code.push(InstCell(JOIN));
+                        let mut false_code = try!(false_case.compile(state));
+                        false_code.push(InstCell(JOIN));
 
-                    let mut true_code = try!(true_case.compile(state));
-                    true_code.push(InstCell(JOIN));
+                        let mut true_code = try!(true_case.compile(state));
+                        true_code.push(InstCell(JOIN));
 
-                    result.push(ListCell(box List::from_iter(true_code)));
-                    result.push(ListCell(box List::from_iter(false_code)));
+                        result.push(ListCell(box List::from_iter(true_code)));
+                        result.push(ListCell(box List::from_iter(false_code)));
 
-                    Ok(result)
+                        Ok(result)
+                    },
+                    _ => Err("[error]: malformed if expression".to_string())
                 },
-                _ => Err("[error]: malformed if-expression".to_string())
+                "lambda" => match self.operands.as_slice() {
+                    [SExpr(SExprNode{
+                                operator: box Name(ref param_a),
+                                operands: ref param_bs}), SExpr(ref body)] => {
+                        let mut sym = state.fork(); // fork the symbol table
+                        let depth = self.depth(); // cache the depth for binds
+
+                        sym.bind(param_a.name.as_ref(),depth);
+
+                        for b in param_bs {
+                            if let &Name(ref node) = b {
+                                sym.bind(node.name.as_ref(),depth);
+                            } // todo: make errors otherwise
+                        }
+
+                        let mut result = Vec::new();
+                        let mut func = try!(body.compile(&sym));
+                        func.push(InstCell(RET));
+
+                        result.push_all(&vec![
+                            InstCell(LDF),
+                            ListCell(box List::from_iter(func))
+                        ]);
+
+                        Ok(result)
+                    },
+                    _ => Err("[error]: malformed lambda expression".to_string())
+                },
+                _ => { // TODO: this is basically a duplicate of the general case
+                       // I feel bad for doing it this way but nothing else worked
+                    let ref op = self.operator;
+                    let mut result = Vec::new();
+                    match self.operands {
+                        ref other if other.len() == 1 => {
+                            result.push_all( &try!(other[0].compile(state)) );
+                            result.push_all( &try!(op.compile(state)) );
+                        },
+                        _       => {
+                            let mut it = self.operands.iter().rev();
+                            // TODO: can thsi be represented with a reduce/fold?
+                            result.push_all(&try!(
+                                it.next().unwrap().compile(state)));
+                            for ref operand in it {
+                                result.push_all(&try!(operand.compile(state)));
+                                result.push_all(&try!(op.compile(state)));
+                            }
+                        }
+                    }
+                    Ok(result)
+                }
             },
-            _    => {
-                let ref op = self.operator;
+            box ref op  => {
                 let mut result = Vec::new();
                 match self.operands {
-                    ref other if other.len() == 1 => {
-                        result.push_all(&try!(other[0].compile(state)));
-                        result.push_all(&try!(op.compile(state)));
+                    ref other if other.len() == 1 => { // just an optimization
+                        result.push(InstCell(NIL));
+                        result.push_all( &try!(other[0].compile(state)) );
+                        result.push(InstCell(CONS));
+                        result.push_all( &try!(op.compile(state)) );
+                        result.push(InstCell(AP));
                     },
                     _       => {
                         let mut it = self.operands.iter().rev();
                         // TODO: can thsi be represented with a reduce/fold?
+                        result.push(InstCell(NIL));
                         result.push_all(&try!(
                             it.next().unwrap().compile(state)));
                         for ref operand in it {
+                            result.push(InstCell(CONS));
                             result.push_all(&try!(operand.compile(state)));
+                            result.push(InstCell(CONS));
                             result.push_all(&try!(op.compile(state)));
+                            result.push(InstCell(AP));
                         }
                     }
                 }
-
                 Ok(result)
-
             }
         }
+
     }
 
     #[stable(feature = "ast", since = "0.0.6")]
@@ -264,6 +341,45 @@ impl ASTNode for SExprNode {
     }
 
 }
+
+impl SExprNode {
+    /// Tests to see if this node is a lambda expression
+    #[stable(feature = "compile",since = "0.1.0")]
+    fn is_lambda(&self) -> bool {
+        match *self.operator {
+            // I wish I didn't have to do it this way, there's an apparent
+            // Rust issue (rust-lang/rust#23762) that makes it impossible
+            // to use `as_ref()` in a pattern guard.
+            Name(ref node)  => match node.name.as_ref() {
+                "lambda"    => true,
+                _           => false
+            },
+            _               => false
+        }
+    }
+    /// Returns the depth of a nested lambda expression.
+    ///
+    /// This is used for generating indices into the VM's environment.
+    /// Since the environment is treated as a stack, it is necessary to
+    /// produce compile-time estimates of the size of a call stack for a
+    /// closure with nested clsures, since we want to associate the names bound
+    /// in the top level of the closure with the lowest level of the stack at
+    /// evaluation time.
+    #[stable(feature = "compile",since = "0.1.0")]
+    fn depth(&self)     -> usize {
+            self.operands.iter().fold(
+                match *self.operator {
+                    SExpr(ref node) => node.depth(),
+                    Name(_)         => if self.is_lambda() {1} else {0},
+                    _               => 0
+                },
+            |acc, op| acc + match op {
+                &SExpr(ref node)    => node.depth(),
+                _                   => 0
+            } )
+    }
+}
+
 #[stable(feature = "ast", since = "0.0.4")]
 impl fmt::Debug for SExprNode {
     #[stable(feature = "ast", since = "0.0.2")]
@@ -379,9 +495,14 @@ impl ASTNode for NameNode {
             ">="    => Ok(vec![InstCell(GTE)]),
             "<"     => Ok(vec![InstCell(LT)]),
             "<="    => Ok(vec![InstCell(LTE)]),
-            ref name => match state.get(&name) {
-                Some(&(x,y)) =>  unimplemented!(),
-                None         => Err(format!(
+            ref name => match state.lookup(&name) {
+                Some((lvl,idx)) => Ok(vec![
+                    InstCell(LD),
+                    ListCell(box list!(
+                        AtomCell(UInt(lvl)),
+                        AtomCell(UInt(idx)))
+                    )]),
+                None            => Err(format!(
                     "[error] Unknown identifier `{}`", name))
             }
         }
@@ -515,10 +636,10 @@ pub struct CharNode {
 }
 
 impl ASTNode for CharNode {
-    #[unstable(feature="compile")]
+    #[stable(feature="compile", since="0.0.7")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED".to_string())
+        Ok(vec![AtomCell(Char(self.value))])
     }
     #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
@@ -544,7 +665,11 @@ impl ASTNode for StringNode {
     #[unstable(feature="compile")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
-        Err("UNINPLEMENTED".to_string())
+        let chars: Vec<u8> = self.value.clone().into();
+        Ok(vec![
+            ListCell(box List::from_iter(
+                chars.into_iter().map(|c| AtomCell(Char(c as char)))
+                )) ])
     }
     #[stable(feature = "ast", since = "0.0.2")]
     fn print_level(&self, level: usize) -> String {
