@@ -296,6 +296,29 @@ impl<T> List<T> {
             Nil => panic!("Last called on empty list")
         }
     }
+    #[unstable(feature="list")]
+    pub fn get<'a>(&'a self, index: usize) -> Option<&'a T> {
+        match index {
+            0usize => match *self {
+                Cons(ref car, _) => Some(&car),
+                Nil => None
+            },
+            1usize => match *self {
+                Cons(_, box Cons(ref cdr, _)) => Some(&cdr),
+                _ => None
+            },
+            i if i == self.length() => Some(self.last()),
+            i if i > self.length()  => None,
+            i if i > 1usize => {
+                let mut it = self.iter();
+                for _ in 0usize .. i{
+                    it.next();
+                }
+                it.next()
+            },
+            _ => None
+        }
+    }
 }
 
 #[stable(feature="list", since="0.2.1")]
@@ -408,6 +431,7 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
         }
     }
 }
+
 #[stable(feature="list", since="0.1.0")]
 impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
     fn len(&self) -> usize {
