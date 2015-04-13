@@ -168,7 +168,12 @@ impl State {
 
             // LDF: load function
             Some((InstCell(LDF), new_control)) => {
-                let (func, newer_control) = new_control.pop().unwrap();
+                let (func, newer_control) = match new_control.pop() {
+                    Some(thing) => thing,
+                    None        => panic!(
+                        "[fatal][LDF]: pop on empty control stack\n{}",
+                        prev.map_or(String::new(), |x| x.dump_state("fatal") ))
+                };
                 State {
                     stack: self.stack.push(ListCell((if self.env.length() != 0 { box list!(func,self.env[0usize].clone()) } else { box list!(func, ListCell(box Nil))} ))),
                     env: self.env,
@@ -178,7 +183,12 @@ impl State {
             },
 
             Some((InstCell(JOIN), new_control)) => {
-                let (top, new_dump) = self.dump.pop().unwrap();
+                let (top, new_dump) = match self.dump.pop() {
+                    Some(thing) => thing,
+                    None        => panic!(
+                        "[fatal][JOIN]: pop on empty dump stack\n{}",
+                        prev.map_or(String::new(), |x| x.dump_state("fatal") ))
+                };
                 State {
                     stack: self.stack,
                     env: self.env,
@@ -192,54 +202,57 @@ impl State {
                     dump: new_dump
                 }
             },
-            Some((InstCell(ADD), new_control)) => {
-                let (op1, new_stack) = self.stack.pop().unwrap();
-                match op1 {
-                    AtomCell(a) => {
-                        let (op2, newer_stack) = new_stack.pop().unwrap();
-                        match op2 {
-                            AtomCell(b) => State {
-                                stack: newer_stack.push(AtomCell(a + b)),
-                                env: self.env,
-                                control: new_control,
-                                dump: self.dump
-                            },
-                            b => panic!(
-                                "[fatal][ADD]: TypeError: expected compatible operands, found (ADD {:?} {:?})\n{}",
-                                a, b, prev.map_or(String::new(), |x| x.dump_state("fatal") ))
-                        }
+            Some((InstCell(ADD), new_control)) => match self.stack.pop() {
+                Some((AtomCell(op1), new_stack)) => match new_stack.pop() {
+                    Some((AtomCell(op2), newer_stack)) => State {
+                            stack: newer_stack.push(AtomCell(op1 + op2)),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                    any => panic!(
+                        "[fatal][ADD]: expected second operand, found {:?}\n{}",
+                        any,
+                        prev.map_or(String::new(), |x| x.dump_state("fatal") ))
                     },
-                    _ => panic!(
-                        "[fatal][ADD]: Expected first operand to be atom, found list or instruction\n{}",
-                        prev.map_or(String::new(), |x| x.dump_state("fatal") )),
-                }
+                any => panic!(
+                    "[fatal][ADD]: expected first operand, found {:?}\n{}",
+                    any,
+                    prev.map_or(String::new(), |x| x.dump_state("fatal") ))
             },
-            Some((InstCell(SUB), new_control)) => {
-                let (op1, new_stack) = self.stack.pop().unwrap();
-                match op1 {
-                    AtomCell(a) => {
-                        let (op2, newer_stack) = new_stack.pop().unwrap();
-                        match op2 {
-                            AtomCell(b) => State {
-                                stack: newer_stack.push(AtomCell(a - b)),
-                                env: self.env,
-                                control: new_control,
-                                dump: self.dump
-                            },
-                            b => panic!(
-                                "[fatal][SUB]: TypeError: expected compatible operands, found (SUB {:?} {:?})\n{}", a, b, prev.map_or(String::new(), |x| x.dump_state("fatal") ))
-                        }
+            Some((InstCell(SUB), new_control)) => match self.stack.pop() {
+                Some((AtomCell(op1), new_stack)) => match new_stack.pop() {
+                    Some((AtomCell(op2), newer_stack)) => State {
+                            stack: newer_stack.push(AtomCell(op1 - op2)),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                    any => panic!(
+                        "[fatal][SUB]: expected second operand, found {:?}\n{}",
+                        any,
+                        prev.map_or(String::new(), |x| x.dump_state("fatal") ))
                     },
-                    _ => panic!(
-                        "[fatal][SUB]: Expected first operand to be atom, found list or instruction\n{}",
-                        prev.map_or(String::new(), |x| x.dump_state("fatal") )),
-                }
+                any => panic!(
+                    "[fatal][SUB]: expected first operand, found {:?}\n{}",
+                    any,
+                    prev.map_or(String::new(), |x| x.dump_state("fatal") ))
             },
             Some((InstCell(FDIV), new_control)) => {
-                let (op1, new_stack) = self.stack.pop().unwrap();
+                let (op1, new_stack) = match self.stack.pop() {
+                    Some(thing) => thing,
+                    None        => panic!(
+                        "[fatal][FDIV]: pop on empty stack\n{}",
+                        prev.map_or(String::new(), |x| x.dump_state("fatal") ))
+                };
                 match op1 {
                     AtomCell(a) => {
-                        let (op2, newer_stack) = new_stack.pop().unwrap();
+                        let (op2, newer_stack) = match new_stack.pop() {
+                            Some(thing) => thing,
+                            None        => panic!(
+                                "[fatal][FDIV]: pop on empty stack\n{}",
+                                prev.map_or(String::new(), |x| x.dump_state("fatal") ))
+                        };
                         match op2 {
                             AtomCell(b) => State {
                                 stack: newer_stack.push(AtomCell(
@@ -281,69 +294,59 @@ impl State {
                             prev.map_or(String::new(), |x| x.dump_state("fatal") )),
                 }
             },
-            Some((InstCell(DIV), new_control)) => {
-                let (op1, new_stack) = self.stack.pop().unwrap();
-                match op1 {
-                    AtomCell(a) => {
-                        let (op2, newer_stack) = new_stack.pop().unwrap();
-                        match op2 {
-                            AtomCell(b) => State {
-                                stack: newer_stack.push(AtomCell(a / b)),
-                                env: self.env,
-                                control: new_control,
-                                dump: self.dump
-                            },
-                            b => panic!(
-                                "[fatal][DIV]: TypeError: expected compatible operands, found (DIV {:?} {:?})\n{}",
-                                 a, b, prev.map_or(String::new(), |x| x.dump_state("fatal") ))
-                        }
+            Some((InstCell(DIV), new_control)) => match self.stack.pop() {
+                Some((AtomCell(op1), new_stack)) => match new_stack.pop() {
+                    Some((AtomCell(op2), newer_stack)) => State {
+                            stack: newer_stack.push(AtomCell(op1 / op2)),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                    any => panic!(
+                        "[fatal][DIV]: expected second operand, found {:?}\n{}",
+                        any,
+                        prev.map_or(String::new(), |x| x.dump_state("fatal") ))
                     },
-                    _ => panic!(
-                            "[fatal][DIV]: Expected first operand to be atom, found list or instruction\n{}",
-                            prev.map_or(String::new(), |x| x.dump_state("fatal") )),
-                }
+                any => panic!(
+                    "[fatal][DIV]: expected first operand, found {:?}\n{}",
+                    any,
+                    prev.map_or(String::new(), |x| x.dump_state("fatal") ))
             },
-            Some((InstCell(MUL), new_control)) => {
-                let (op1, new_stack) = self.stack.pop().unwrap();
-                match op1 {
-                    AtomCell(a) => {
-                        let (op2, newer_stack) = new_stack.pop().unwrap();
-                        match op2 {
-                            AtomCell(b) => State {
-                                stack: newer_stack.push(AtomCell(a * b)),
-                                env: self.env,
-                                control: new_control,
-                                dump: self.dump
-                            },
-                            b => panic!(
-                                "[fatal][MUL]: TypeError: expected compatible operands, found (MUL {:?} {:?})\n{}", a, b, prev.map_or(String::new(), |x| x.dump_state("fatal") ))
-                        }
+            Some((InstCell(MUL), new_control)) => match self.stack.pop() {
+                Some((AtomCell(op1), new_stack)) => match new_stack.pop() {
+                    Some((AtomCell(op2), newer_stack)) => State {
+                            stack: newer_stack.push(AtomCell(op1 * op2)),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                    any => panic!(
+                        "[fatal][MUL]: expected second operand, found {:?}\n{}",
+                        any,
+                        prev.map_or(String::new(), |x| x.dump_state("fatal") ))
                     },
-                    _ => panic!(
-                        "[fatal][MUL]: Expected first operand to be atom, found list or instruction\n{}", prev.map_or(String::new(), |x| x.dump_state("fatal") )),
-                }
+                any => panic!(
+                    "[fatal][MUL]: expected first operand, found {:?}\n{}",
+                    any,
+                    prev.map_or(String::new(), |x| x.dump_state("fatal") ))
             },
-            Some((InstCell(MOD), new_control)) => {
-                let (op1, new_stack) = self.stack.pop().unwrap();
-                match op1 {
-                    AtomCell(a) => {
-                        let (op2, newer_stack) = new_stack.pop().unwrap();
-                        match op2 {
-                            AtomCell(b) => State {
-                                stack: newer_stack.push(AtomCell(a % b)),
-                                env: self.env,
-                                control: new_control,
-                                dump: self.dump
-                            },
-                            b => panic!(
-                                "[fatal][MOD]: TypeError: expected compatible operands, found (MOD {:?} {:?})\n{}",
-                                 a, b, prev.map_or(String::new(), |x| x.dump_state("fatal") ))
-                        }
+            Some((InstCell(MOD), new_control)) => match self.stack.pop() {
+                Some((AtomCell(op1), new_stack)) => match new_stack.pop() {
+                    Some((AtomCell(op2), newer_stack)) => State {
+                            stack: newer_stack.push(AtomCell(op1 % op2)),
+                            env: self.env,
+                            control: new_control,
+                            dump: self.dump
+                        },
+                    any => panic!(
+                        "[fatal][MOD]: expected second operand, found {:?}\n{}",
+                        any,
+                        prev.map_or(String::new(), |x| x.dump_state("fatal") ))
                     },
-                    _ => panic!(
-                        "[fatal][MOD]: Expected first operand to be atom.\n{}",
-                        prev.map_or(String::new(), |x| x.dump_state("fatal") )),
-                }
+                any => panic!(
+                    "[fatal][MOD]: expected first operand, found {:?}\n{}",
+                    any,
+                    prev.map_or(String::new(), |x| x.dump_state("fatal") ))
             },
             Some((InstCell(EQ), new_control)) => {
                 let (op1, new_stack) = self.stack.pop().unwrap();
