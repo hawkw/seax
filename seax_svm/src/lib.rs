@@ -86,7 +86,7 @@ impl State {
     ///  - `outp`: an output stream implementing `io::Write`
     ///  - `debug`: whether or not to snapshot the state before evaluating. This provides more detailed debugging information on errors, but can have a significant impact on performance.
     ///
-    #[stable(feature="vm_core", since="0.2.1")]
+    #[stable(feature="vm_core", since="0.2.4")]
     pub fn eval(self,
                 inp: &mut io::Read,
                 outp: &mut io::Write,
@@ -116,27 +116,50 @@ impl State {
             // LD: load variable
             Some((InstCell(LD), new_control)) => {
                 match new_control.pop() {
-                   Some((ListCell(
-                        box Cons(AtomCell(SInt(level)),
-                        box Cons(AtomCell(SInt(pos)),
+                    Some((ListCell(
+                        box Cons(AtomCell(UInt(lvl)),
+                        box Cons(AtomCell(UInt(idx)),
                         box Nil))
-                    ), newer_control)) => {
-                        let environment = match self.env[(level-1)] {
+                        ), newer_control)) => {
+                        let environment = match self.env[(lvl-1)] {
                             SVMCell::ListCell(ref l) => l.clone(),
                             _ => panic!(
                                 "[fatal][LD]: expected list in $e, found {:?}\n{}",
-                                self.env[level-1], prev.map_or(String::new(), |x| x.dump_state("fatal") ))
+                                self.env[lvl-1], prev.map_or(String::new(), |x| x.dump_state("fatal") ))
                         };
                         State {
-                            stack: self.stack.push(environment[(pos-1)].clone()),
+                            stack: self.stack.push(environment[(idx-1)].clone()),
                             env: self.env,
                             control: newer_control,
                             dump: self.dump
                         }
                     },
-                   anything => panic!(
-                        "[fatal][LD]: expected pair, found {:?}\n{}",
-                        anything, prev.map_or(String::new(), |x| x.dump_state("fatal") ))
+                   Some((ListCell( // TODO: this uses deprecated signed int indexing, remove
+                        box Cons(AtomCell(SInt(lvl)),
+                        box Cons(AtomCell(SInt(idx)),
+                        box Nil))
+                        ), newer_control)) => {
+                        let environment = match self.env[(lvl-1)] {
+                            SVMCell::ListCell(ref l) => l.clone(),
+                            _ => panic!(
+                                "[fatal][LD]: expected list in $e, found {:?}\n{}",
+                                self.env[lvl-1], prev.map_or(String::new(), |x| x.dump_state("fatal") ))
+                        };
+                        State {
+                            stack: self.stack.push(environment[(idx-1)].clone()),
+                            env: self.env,
+                            control: newer_control,
+                            dump: self.dump
+                        }
+                    },
+                   Some((thing,newer_control)) => panic!(
+                        "[fatal][LD]: expected pair, found {:?}\n[fatal] new control: {:?}\n{}",
+                        thing,
+                        newer_control,
+                        prev.map_or(String::new(), |x| x.dump_state("fatal") )),
+                   None => panic!(
+                        "[fatal][LD]: expected pair, found empty stack\n{}",
+                        prev.map_or(String::new(), |x| x.dump_state("fatal") ))
                 }
             },
 
@@ -144,7 +167,7 @@ impl State {
             Some((InstCell(LDF), new_control)) => {
                 let (func, newer_control) = new_control.pop().unwrap();
                 State {
-                    stack: self.stack.push(ListCell(box list!(func,self.env[0usize].clone()))),
+                    stack: self.stack.push(ListCell((if self.env.length() != 0 { box list!(func,self.env[0usize].clone()) } else { box list!(func, ListCell(box Nil))} ))),
                     env: self.env,
                     control: newer_control,
                     dump: self.dump
@@ -425,11 +448,34 @@ impl State {
             },
             Some((InstCell(AP), new_control @ _)) => {
                 match self.stack.pop().unwrap() {
-                    (ListCell(box Cons(ListCell(box func), box Cons(ListCell(box params), box Nil))), new_stack) => State {
-                        stack: new_stack,
-                        env: params,
-                        control: func,
-                        dump: self.dump.push(ListCell(box self.env)).push(ListCell(box new_control))
+                    (ListCell(box Cons(ListCell(box func), box Cons(params @ ListCell(_), box Nil))), new_stack) => {
+                            match new_stack.pop() {
+                                Some((v, newer_stack)) => State {
+                                    stack: Stack::empty(),
+                                    env: list!(params,v),
+                                    control: func,
+                                    dump: self.dump
+                                        .push(ListCell(box newer_stack))
+                                        .push(ListCell(box self.env))
+                                        .push(ListCell(box new_control))
+                                },/*
+                                Some((v @ AtomCell(_), newer_stack)) => State {
+                                    stack: Stack::empty(),
+                                    env: list!( params,ListCell(box list!(v)) ),
+                                    control: func,
+                                    dump: self.dump
+                                        .push(ListCell(box newer_stack))
+                                        .push(ListCell(box self.env))
+                                        .push(ListCell(box new_control))
+                                },
+                                Some((thing, _)) => panic!(
+                                    "[fatal][AP]: Expected closure on stack, got:\n[fatal]\t{:?}\n{}",
+                                    thing,
+                                    prev.map_or(String::new(), |x| x.dump_state("fatal") )),*/
+                                None => panic!(
+                                    "[fatal][AP]: expected non-empty stack\n{}",
+                                    prev.map_or(String::new(), |x| x.dump_state("fatal") ))
+                            }
                     },
                     (_, thing) => panic!(
                         "[fatal][AP]: Expected closure on stack, got:\n[fatal]\t{:?}\n{}",
