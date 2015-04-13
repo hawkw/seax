@@ -68,7 +68,7 @@ impl State {
     #[stable(feature="debug", since="0.2.0")]
     pub fn dump_state(&self, tag: &str) -> String {
         format!(
-            "[{t}] State dump:\n[{t}]\tStack:{s:?}\n[{t}]\tEnv:{e:?}\n[{t}]\tControl:{c:?}\n[{t}]\tDump:{d:?}\n",
+            "[{t}] State dump:\n[{t}]\t\tStack:]\t{s:?}\n[{t}]\t\tEnv:\t{e:?}\n[{t}]\t\tControl:\t{c:?}\n[{t}]\t\tDump:\t{d:?}\n",
                 t = tag,
                 s = &self.stack,
                 e = &self.env,
