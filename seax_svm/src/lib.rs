@@ -454,11 +454,11 @@ impl State {
             },
             Some((InstCell(AP), new_control @ _)) => {
                 match self.stack.pop().unwrap() {
-                    (ListCell(box Cons(ListCell(box func), box Cons(params @ ListCell(_), box Nil))), new_stack) => {
+                    (ListCell(box Cons(ListCell(box func), box Cons(ListCell(params), box Nil))), new_stack) => {
                             match new_stack.pop() {
                                 Some((v, newer_stack)) => State {
                                     stack: Stack::empty(),
-                                    env: list!(params,v),
+                                    env: params.push(v),
                                     control: func,
                                     dump: self.dump
                                         .push(ListCell(box newer_stack))
