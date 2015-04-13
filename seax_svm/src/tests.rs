@@ -1176,7 +1176,7 @@ fn test_eval_ap() {
                         ))
                     ))
                 )),
-            AtomCell(Char('Q'))
+            ListCell(box list!( AtomCell(Char('Q')) ))
             ),
         env: list!(ListCell(
             box Cons(AtomCell(Char('D')), box Nil)
@@ -1184,10 +1184,13 @@ fn test_eval_ap() {
         control: list!(InstCell(AP), InstCell(DUM)),
         dump: Stack::empty()
     }.eval(&mut io::stdin(), &mut io::stdout(), true);
-    assert_eq!(state.stack.peek(), Some(&AtomCell(Char('Q'))));
+    assert_eq!(state.stack.peek(), None );
     assert_eq!(state.control, list!(InstCell(RET), InstCell(ADD), AtomCell(SInt(1)), InstCell(LDC), ListCell(box list!(AtomCell(UInt(0)), AtomCell(UInt(0)))),InstCell(LD)));
-    assert_eq!(state.env, list!(ListCell(box list!(AtomCell(SInt(1))))));
-    assert_eq!(state.dump, list!(ListCell(box list!(InstCell(DUM))),ListCell(box list!(ListCell(box list!(AtomCell(Char('D'))))))));
+    assert_eq!(state.env, list!(
+        ListCell(box list!(AtomCell(Char('Q')))),
+        ListCell(box list!(AtomCell(SInt(1))))
+        ));
+    //assert_eq!(state.dump, list!(ListCell(box list!(InstCell(DUM))),ListCell(box list!(ListCell(box list!(AtomCell(Char('D'))))))));
 }
 
 #[test]
