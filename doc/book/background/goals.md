@@ -1,1 +1,10 @@
 % Goals
+
+While the Seax project was undertaken primarily for purposes of education and exploration, I have endeavoured to create a platform that could be used for the execution of non-trivial programs in the 'real world' or, barring that, a prototype that can easily be scaled up to such a system. This objective has informed Seax design and development at every possible occasion, and a majority of the project's more specific goals are extrapolated from it.
+
+Seax VM as a general-purpose platform for program execution
+-----------------------------------------------------------
+
+Although the Seax Scheme compiler is the only extant programming language targeting the Seax Virtual Machine, an emphasis has been placed on ensuring that it may eventually be used as a platform for multiple programming languages. If the Seax VM is only capable of effectively executing Scheme programs, then it is not a runtime environment for programming languages as much as it is an unnecessarily complex Scheme interpreter, so it is important that an effort be made to ensure compatibility.
+
+One of the greatest lessons taught to us by Java, in my opinion, is that a simple VM performs excellently as a common runtime environment for programs written in a variety of languages. Programmers may complain about the wordiness and general inelegance of the Java language's syntax, but the Java _platform_ plays host to a wide range of excellent languages, including Scala, Groovy, and Clojure. Oracle and Sun have both poured a great deal of engineering effort into [optimizing the JVM's performance](http://en.wikipedia.org/wiki/Java_performance#Virtual_machine_optimization_techniques) to the extent that it is comparable to native code in many cases, and (amazingly), occasionally even [better](http://benchmarksgame.alioth.debian.org/u64q/java.html#faster-programs-measurements), and all of the languages that run on the Java platform can benefit from these improvements. Furthermore, all of these languages may take advantage of the JVM's cross-platform capabilities, and of the very large ecosystem of Java libraries and frameworks.
