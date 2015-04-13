@@ -68,6 +68,7 @@ impl<T> Stack<T> for List<T> {
     /// s = s.push(6);
     /// assert_eq!(s.peek(), Some(&6));
     /// ```
+    #[inline]
     #[stable(feature="stack", since="0.1.0")]
     fn push(self, item: T) -> List<T> {
         Cons(item, box self)
@@ -92,6 +93,7 @@ impl<T> Stack<T> for List<T> {
     /// assert_eq!(s.peek(), Some(&2));
     /// assert_eq!(pop_result.0, 1);
     /// ```
+    #[inline]
     #[stable(feature="stack", since="0.1.0")]
     fn pop(self) -> Option<(T,List<T>)> {
         match self {
@@ -100,6 +102,7 @@ impl<T> Stack<T> for List<T> {
         }
     }
 
+    #[inline]
     #[stable(feature="stack", since="0.1.0")]
     fn empty() -> List<T> {
         Nil
@@ -124,6 +127,7 @@ impl<T> Stack<T> for List<T> {
     /// assert_eq!(s.peek(), Some(&2));
     /// assert_eq!(pop_result.0, 1);
     /// ```
+    #[inline]
     #[stable(feature="stack", since="0.1.0")]
     fn peek(&self) -> Option<&T> {
         match self {
@@ -156,6 +160,7 @@ impl<T> List<T> {
 
     /// Creates a new empty list
     #[stable(feature="list", since="0.1.0")]
+    #[inline]
     pub fn new() -> List<T> {
         Nil
     }
@@ -186,6 +191,7 @@ impl<T> List<T> {
     /// assert_eq!(a_list, list![2,1]);
     /// # }
     /// ```
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
     pub fn prepend(self, it: T) -> List<T> {
         Cons(it, box self)
@@ -214,6 +220,7 @@ impl<T> List<T> {
     /// assert_eq!(a_list, list![1,2]);
     /// # }
     /// ```
+    #[inline]
     #[stable(feature="list", since="0.2.3")]
     pub fn append(&mut self, it: T) {
         match *self {
@@ -230,6 +237,7 @@ impl<T> List<T> {
     /// of the list for every append while folding.
     ///
     /// This is an O(_n_) operation.
+    #[inline]
     #[stable(feature="list", since="0.2.3")]
     fn append_chain(&mut self, it: T) -> &mut List<T> {
         match *self {
@@ -251,6 +259,7 @@ impl<T> List<T> {
     /// assert_eq!(a_list.length(), 4)
     /// # }
     /// ```
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
     pub fn length (&self) -> usize {
         match *self {
@@ -278,6 +287,7 @@ impl<T> List<T> {
     /// assert_eq!(a_list.last(), &4)
     /// # }
     /// ```
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
     pub fn last(&self) -> &T {
         match *self {
@@ -319,8 +329,8 @@ impl<T> FromIterator<T> for List<T> {
     ///     assert_eq!(a_list[i], another_vec[i])
     /// }
     /// ```
-    #[stable(feature="list", since="0.2.3")]
     #[inline]
+    #[stable(feature="list", since="0.2.3")]
     fn from_iter<I>(iterable: I) -> List<T> where I: IntoIterator<Item=T> {
             let mut result  = List::new();
             iterable
@@ -389,6 +399,7 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
     /// assert_eq!(string, "1, 2, 3, 4, 5, 6, ".to_string())
     /// # }
     /// ```
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
     fn next(&mut self) -> Option<&'a T> {
         match self.current {
@@ -420,6 +431,8 @@ impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
 impl<T> Index<usize> for List<T> {
     #[stable(feature="list", since="0.1.0")]
     type Output = T;
+
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
     fn index<'a>(&'a self, _index: usize) -> &'a T {
         match _index {
@@ -458,12 +471,16 @@ impl<T> Index<usize> for List<T> {
 /// assert_eq!(list[0is], 1);
 /// # }
 /// ```
-#[stable(feature="list", since="0.1.0")]
+    #[stable(feature="list", since="0.1.0")]
+#[deprecated(since="0.2.5", reason="use unsigned indices instead")]
 impl<T> Index<isize> for List<T> {
     #[stable(feature="list", since="0.1.0")]
+    #[deprecated(since="0.2.5", reason="use unsigned indices instead")]
     type Output = T;
 
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
+    #[deprecated(since="0.2.5", reason="use unsigned indices instead")]
     fn index<'a>(&'a self, _index: isize) -> &'a T {
         match _index {
             0isize => match *self {
