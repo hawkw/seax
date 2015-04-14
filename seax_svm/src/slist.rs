@@ -142,6 +142,15 @@ impl<T> Stack<T> for List<T> {
 ///
 /// This is used internally to represent list primitives in the
 /// machine.
+///
+/// TODO: potentially, a pointer to the last itemof the list could be
+/// cached using a `RefCell` or something to speed up access for
+/// appends/tail access. We could also check the length and decide whether
+/// to link hop from the head or tail when indexing. It would be necessary
+/// to investigate whether the added overhead of caching (both in terms of
+/// space and in terms of time taken to update the cache) would be worth
+/// the performance benefits --- my guess is that caching is worth the added
+/// costs (as usual).
 #[derive(PartialEq,Clone)]
 #[stable(feature="list", since="0.1.0")]
 pub enum List<T> {
@@ -234,12 +243,38 @@ impl<T> List<T> {
     ///
     /// Returns the last element of the list to support 'append chaining'
     /// of a large number of items; this allows you to omit a complete traversal
-    /// of the list for every append while folding.
+    /// of the list for every append and should be used in situations
+    /// such as `fold`s.
     ///
-    /// This is an O(_n_) operation.
+    /// The first append is still O(_n_), but long as you hang on to your
+    /// pointer to the tail, subsequent appends should all be O(1). However,
+    /// this requires you to keep a `&mut` pointer to the list, so use it
+    /// sparingly, especially in situations of concurrent access.
+    ///
+    /// # Arguments
+    ///
+    ///  + `item` - the item to append
+    ///
+    /// # Examples
+    /// ```
+    /// # #![feature(list)]
+    /// # #[macro_use] extern crate seax_svm;
+    /// # use seax_svm::slist::List;
+    /// # use seax_svm::slist::List::{Cons,Nil};
+    /// # fn main() {
+    /// let mut a_list: List<isize> = List::new();
+    ///
+    ///     // this is a function so that the `&mut` borrow is released.
+    ///     fn append_two_items<T>(l: &mut List<T>, first: T, second: T) {
+    ///         l.append_chain(first).append_chain(second);
+    ///     }
+    ///
+    /// append_two_items(&mut a_list, 1, 2);
+    /// assert_eq!(a_list, list![1,2]);
+    /// # }
     #[inline]
     #[stable(feature="list", since="0.2.3")]
-    fn append_chain(&mut self, it: T) -> &mut List<T> {
+    pub fn append_chain(&mut self, it: T) -> &mut List<T> {
         match *self {
             Cons(_, box ref mut tail) => tail.append_chain(it),
             Nil => { *self = Cons(it, box Nil); self }
@@ -296,7 +331,36 @@ impl<T> List<T> {
             Nil => panic!("Last called on empty list")
         }
     }
-    #[unstable(feature="list")]
+
+    /// Optionally index the list.
+    ///
+    /// Unlike list indexing syntax (`list[i]`), this returns `None`
+    /// if the index is out of bound rather than panicking.
+    ///
+    /// Lists are zero-indexed, so just as when using list indexing syntax,
+    /// the head of the list is index 0 and the last element of the list is
+    /// index (length - 1).
+    ///
+    /// # Arguments
+    ///
+    ///  + `idx` - the index to attempt to access
+    ///
+    /// # Return Value
+    ///
+    ///   + `Some(&T)` if the index exists within the list, `None` otherwise.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate seax_svm;
+    /// # use seax_svm::slist::List::{Cons,Nil};
+    /// # fn main() {
+    /// let a_list = list!(1,2,3,4);
+    /// assert_eq!(a_list.get(1), Some(&2));
+    /// assert_eq!(a_list.get(3), Some(&4));
+    /// assert_eq!(a_list.get(10), None);
+    /// # }
+    /// ```
+    #[stable(feature="list",since="0.2.5")]
     pub fn get<'a>(&'a self, index: usize) -> Option<&'a T> {
         match index {
             0usize => match *self {
