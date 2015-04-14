@@ -93,6 +93,8 @@ impl State {
                 outp: &mut io::Write,
                 debug: bool)
                 -> State {
+        // TODO: this (by which I mean "the whole caching deal") could likely be made
+        // better and/or faster with some clever (mis?)use of RefCell; look into that.
         let prev = if debug { Some(self.clone()) } else { None };
         match self.control.pop() {
             // NIL: pop an empty list onto the stack
@@ -121,40 +123,42 @@ impl State {
                         box Cons(AtomCell(UInt(lvl)),
                         box Cons(AtomCell(UInt(idx)),
                         box Nil))
-                        ), newer_control)) => {
-                        let environment = match self.env.get(lvl-1) {
-                            Some(&SVMCell::ListCell(ref l)) => l.clone(),
+                        ), newer_control)) => match self.env[(lvl-1)] {
+                            ListCell(ref level) => State {
+                                stack: match level.get(idx-1) {
+                                    Some(thing) => self.stack.push(thing.clone()),
+                                    None        => self.stack
+                                },
+                                env: self.env.clone(),
+                                control: newer_control,
+                                dump: self.dump
+                            },
+                            // This is a special case for something that, as far as I know,
+                            // should never happen. But despite everything, it DOES happen.
+                            ref thing @ AtomCell(_) => State { // I give up. Have your special case.
+                                stack: self.stack.push(thing.clone()),
+                                env: self.env.clone(),
+                                control: newer_control,
+                                dump: self.dump
+                            },
                             _ => panic!(
                                 "[fatal][LD]: expected list in $e, found {:?}\n{}",
                                 self.env[lvl-1], prev.map_or(String::new(), |x| x.dump_state("fatal") ))
-                        };
-                        State {
-                            stack: match environment.get(idx-1) {
-                                Some(thing) => self.stack.push(thing.clone()),
-                                None        => self.stack
-                            },
-                            env: self.env,
-                            control: newer_control,
-                            dump: self.dump
-                        }
                     },
                    Some((ListCell( // TODO: this uses deprecated signed int indexing, remove
                         box Cons(AtomCell(SInt(lvl)),
                         box Cons(AtomCell(SInt(idx)),
                         box Nil))
-                        ), newer_control)) => {
-                        let environment = match self.env[(lvl-1)] {
-                            SVMCell::ListCell(ref l) => l.clone(),
+                        ), newer_control)) =>  match self.env[(lvl-1)] {
+                            SVMCell::ListCell(ref level) => State {
+                                stack: self.stack.push(level[(idx-1)].clone()),
+                                env: self.env.clone(),
+                                control: newer_control,
+                                dump: self.dump
+                            },
                             _ => panic!(
                                 "[fatal][LD]: expected list in $e, found {:?}\n{}",
                                 self.env[lvl-1], prev.map_or(String::new(), |x| x.dump_state("fatal") ))
-                        };
-                        State {
-                            stack: self.stack.push(environment[(idx-1)].clone()),
-                            env: self.env,
-                            control: newer_control,
-                            dump: self.dump
-                        }
                     },
                    Some((thing,newer_control)) => panic!(
                         "[fatal][LD]: expected pair, found {:?}\n[fatal] new control: {:?}\n{}",
@@ -459,7 +463,10 @@ impl State {
                             match new_stack.pop() {
                                 Some((v, newer_stack)) => State {
                                     stack: Stack::empty(),
-                                    env: params.push(v),
+                                    env: match v {
+                                        ListCell(_) => params.push(v),
+                                        _           => params.push(ListCell(box list!(v)))
+                                    },
                                     control: func,
                                     dump: self.dump
                                         .push(ListCell(box newer_stack))
