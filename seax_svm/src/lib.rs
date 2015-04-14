@@ -82,9 +82,10 @@ impl State {
     /// Evaluates an instruction against a state, returning a new state.
     ///
     /// # Arguments:
+    ///
     ///  - `inp`: an input stream implementing `io::Read`
     ///  - `outp`: an output stream implementing `io::Write`
-    ///  - `debug`: whether or not to snapshot the state before evaluating. This provides more detailed debugging information on errors, but can have a significant impact on performance.
+    ///  - `debug`: whether or not to snapshot the state before evaluating. This provides more detailed debugging information on errors, but may have a significant impact on performance.
     ///
     #[stable(feature="vm_core", since="0.2.4")]
     pub fn eval(self,
@@ -175,7 +176,7 @@ impl State {
                         prev.map_or(String::new(), |x| x.dump_state("fatal") ))
                 };
                 State {
-                    stack: self.stack.push(ListCell((if self.env.length() != 0 { box list!(func,self.env[0usize].clone()) } else { box list!(func, ListCell(box Nil))} ))),
+                    stack: self.stack.push(ListCell( box list!(func,self.env.get(0).map_or(ListCell(box Nil), |it| it.clone())) )),
                     env: self.env,
                     control: newer_control,
                     dump: self.dump
