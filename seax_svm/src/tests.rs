@@ -35,7 +35,7 @@ fn test_ld_unexpected_env_fail() {
 }
 
 #[test]
-#[should_panic(expected="fatal][LD]: expected pair, found (0, nil)\n[fatal] new control: nil")]
+#[should_panic(expected="fatal][LD]: expected pair, found (0 . nil)\n[fatal] new control: nil")]
 fn test_ld_arg_too_short_fail() {
     State {
         stack:      Stack::empty(),
@@ -45,7 +45,7 @@ fn test_ld_arg_too_short_fail() {
     }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 #[test]
-#[should_panic(expected="[fatal][LD]: expected pair, found (0, (1, (1, nil)))\n[fatal] new control: nil")]
+#[should_panic(expected="[fatal][LD]: expected pair, found (0 . (1 . (1 . nil)))\n[fatal] new control: nil")]
 fn test_ld_arg_too_long_fail() {
     State {
         stack:      Stack::empty(),
@@ -56,7 +56,7 @@ fn test_ld_arg_too_long_fail() {
 }
 
 #[test]
-#[should_panic(expected="[fatal][ADD]: expected first operand, found Some(((1, nil), nil))")]
+#[should_panic(expected="[fatal][ADD]: expected first operand, found Some(((1 . nil), nil))")]
 fn test_add_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
@@ -68,7 +68,7 @@ fn test_add_unexpected_first_arg_fail () {
 
 
 #[test]
-#[should_panic(expected="[fatal][SUB]: expected first operand, found Some(((1, nil), nil))")]
+#[should_panic(expected="[fatal][SUB]: expected first operand, found Some(((1 . nil), nil))")]
 fn test_sub_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
@@ -79,7 +79,7 @@ fn test_sub_unexpected_first_arg_fail () {
 }
 
 #[test]
-#[should_panic(expected="[fatal][DIV]: expected first operand, found Some(((1, nil), nil))")]
+#[should_panic(expected="[fatal][DIV]: expected first operand, found Some(((1 . nil), nil))")]
 fn test_div_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
@@ -101,7 +101,7 @@ fn test_fdiv_unexpected_first_arg_fail () {
 }
 
 #[test]
-#[should_panic(expected="[fatal][MUL]: expected first operand, found Some(((1, nil), nil))")]
+#[should_panic(expected="[fatal][MUL]: expected first operand, found Some(((1 . nil), nil))")]
 fn test_mul_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
