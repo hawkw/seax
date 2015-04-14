@@ -326,8 +326,8 @@ impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
     #[stable(feature="list", since="0.2.1")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Cons(ref head, ref tail) => write!(f, "({}, {})", head, tail),
-            Nil => write!(f,"nil")
+            Cons(ref head, ref tail) => write!(f, "{}, {}", head, tail),
+            Nil => write!(f,"")
         }
     }
 }
@@ -369,7 +369,7 @@ impl<'a, T> fmt::Debug for List<T> where T: fmt::Debug {
     #[stable(feature="debug", since="0.2.1")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Cons(ref head, ref tail) => write!(f, "({:?}, {:?})", head, tail),
+            Cons(ref head, ref tail) => write!(f, "({:?} . {:?})", head, tail),
             Nil => write!(f,"nil")
         }
     }
