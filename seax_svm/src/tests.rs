@@ -9,7 +9,7 @@ use std::io;
 #[test]
 #[should_panic(expected="[fatal]: expected an instruction on control stack")]
 fn test_empty_eval_fail() {
-    State::new().eval(&mut io::stdin(), &mut io::stdout(),true);
+    State::new().eval(&mut io::stdin(), &mut io::stdout(),false);
 }
 
 #[test]
@@ -20,7 +20,7 @@ fn test_ld_empty_env_fail() {
         env:        Stack::empty(),
         control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(1)), AtomCell(SInt(0))))),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
@@ -31,62 +31,62 @@ fn test_ld_unexpected_env_fail() {
         env:        list!(AtomCell(Char('w'))),
         control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(1)), AtomCell(SInt(1))))),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
-#[should_panic(expected="[fatal][LD]: expected pair, found Some(((0, nil), nil))")]
+#[should_panic(expected="fatal][LD]: expected pair, found (0, nil)\n[fatal] new control: nil")]
 fn test_ld_arg_too_short_fail() {
     State {
         stack:      Stack::empty(),
         env:        Stack::empty(),
         control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0))))),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 #[test]
-#[should_panic(expected="[fatal][LD]: expected pair, found Some(((0, (1, (1, nil))), nil))")]
+#[should_panic(expected="[fatal][LD]: expected pair, found (0, (1, (1, nil)))\n[fatal] new control: nil")]
 fn test_ld_arg_too_long_fail() {
     State {
         stack:      Stack::empty(),
         env:        Stack::empty(),
         control:    list!(InstCell(LD),ListCell(box list!(AtomCell(SInt(0)), AtomCell(SInt(1)), AtomCell(SInt(1))))),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
-#[should_panic(expected="[fatal][ADD]: Expected first operand to be atom, found list or instruction")]
+#[should_panic(expected="[fatal][ADD]: expected first operand, found Some(((1, nil), nil))")]
 fn test_add_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
         env:        Stack::empty(),
         control:    list!(InstCell(ADD)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 
 #[test]
-#[should_panic(expected="[fatal][SUB]: Expected first operand to be atom, found list or instruction")]
+#[should_panic(expected="[fatal][SUB]: expected first operand, found Some(((1, nil), nil))")]
 fn test_sub_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
         env:        Stack::empty(),
         control:    list!(InstCell(SUB)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
-#[should_panic(expected="[fatal][DIV]: Expected first operand to be atom, found list or instruction")]
+#[should_panic(expected="[fatal][DIV]: expected first operand, found Some(((1, nil), nil))")]
 fn test_div_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
         env:        Stack::empty(),
         control:    list!(InstCell(DIV)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
@@ -97,50 +97,50 @@ fn test_fdiv_unexpected_first_arg_fail () {
         env:        Stack::empty(),
         control:    list!(InstCell(FDIV)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
-#[should_panic(expected="[fatal][MUL]: Expected first operand to be atom, found list or instruction")]
+#[should_panic(expected="[fatal][MUL]: expected first operand, found Some(((1, nil), nil))")]
 fn test_mul_unexpected_first_arg_fail () {
     State {
         stack:      list!(ListCell(box list!(AtomCell(SInt(1))))),
         env:        Stack::empty(),
         control:    list!(InstCell(MUL)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
-#[should_panic(expected="[fatal][ADD]: TypeError: expected compatible operands, found (ADD 1 nil)")]
+#[should_panic(expected="[fatal][ADD]: expected second operand, found Some((nil, nil))")]
 fn test_add_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
         env:        Stack::empty(),
         control:    list!(InstCell(ADD)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 #[test]
-#[should_panic(expected="[fatal][SUB]: TypeError: expected compatible operands, found (SUB 1 nil)")]
+#[should_panic(expected="[fatal][SUB]: expected second operand, found Some((nil, nil))")]
 fn test_sub_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
         env:        Stack::empty(),
         control:    list!(InstCell(SUB)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
-#[should_panic(expected="[fatal][DIV]: TypeError: expected compatible operands, found (DIV 1 nil)")]
+#[should_panic(expected="[fatal][DIV]: expected second operand, found Some((nil, nil))")]
 fn test_div_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
         env:        Stack::empty(),
         control:    list!(InstCell(DIV)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
@@ -151,18 +151,18 @@ fn test_fdiv_type_error () {
         env:        Stack::empty(),
         control:    list!(InstCell(FDIV)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
-#[should_panic(expected="[fatal][MUL]: TypeError: expected compatible operands, found (MUL 1 nil)")]
+#[should_panic(expected="[fatal][MUL]: expected second operand, found Some((nil, nil))")]
 fn test_mul_type_error () {
     State {
         stack:      list!(AtomCell(SInt(1)), ListCell(box Nil)),
         env:        Stack::empty(),
         control:    list!(InstCell(MUL)),
         dump:       Stack::empty(),
-    }.eval(&mut io::stdin(), &mut io::stdout(), true);
+    }.eval(&mut io::stdin(), &mut io::stdout(), false);
 }
 
 #[test]
