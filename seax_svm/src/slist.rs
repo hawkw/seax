@@ -321,15 +321,28 @@ impl<T> List<T> {
     }
 }
 
-#[stable(feature="list", since="0.2.1")]
+#[stable(feature="list", since="0.2.5")]
 impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
-    #[stable(feature="list", since="0.2.1")]
+    #[stable(feature="list", since="0.2.5")]
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut it = self.iter();
+        write!(f, "({}{})", it.next().unwrap(), it.fold(
+            String::new(),
+            |mut a, i| { a.push_str(format!(", {}", i).as_ref()); a} )
+        )
+    }
+}
+
+#[stable(feature="list", since="0.2.5")]
+impl<'a, T> fmt::Debug for List<T> where T: fmt::Debug {
+    #[stable(feature="debug", since="0.2.5")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Cons(ref head, ref tail) => write!(f, "{}, {}", head, tail),
-            Nil => write!(f,"")
+            Cons(ref head, ref tail) => write!(f, "({:?} . {:?})", head, tail),
+            Nil => write!(f,"nil")
         }
     }
+
 }
 
 
@@ -360,18 +373,6 @@ impl<T> FromIterator<T> for List<T> {
                 .into_iter()
                 .fold(&mut result, |l, it| l.append_chain(it));
             result
-    }
-
-}
-
-#[stable(feature="list", since="0.2.1")]
-impl<'a, T> fmt::Debug for List<T> where T: fmt::Debug {
-    #[stable(feature="debug", since="0.2.1")]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Cons(ref head, ref tail) => write!(f, "({:?} . {:?})", head, tail),
-            Nil => write!(f,"nil")
-        }
     }
 
 }
@@ -546,7 +547,7 @@ mod tests {
     #[test]
     fn test_list_to_string() {
         let l: List<i32> = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
-        assert_eq!(l.to_string(), "(1, (2, (3, nil)))");
+        assert_eq!(l.to_string(), "(1, 2, 3)");
     }
 
     #[test]
@@ -614,7 +615,7 @@ mod tests {
     #[test]
     fn test_list_macro() {
         let l: List<i32> = list!(1i32, 2i32, 3i32);
-        assert_eq!(l.to_string(), "(1, (2, (3, nil)))")
+        assert_eq!(l.to_string(), "(1, 2, 3)")
     }
 
     #[test]
