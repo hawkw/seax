@@ -242,24 +242,37 @@ impl ops::Rem for Atom {
 
 }
 
-/// SVM instruction types
+/// SVM instruction types.
+///
+/// Each SVM instruction will be described using operational
+/// semantics through the use of the following notation:
+///
+///  + a state is written `(s, e, c, d)`
+///  + `(x.y)` is `Cons(x, y)`. The empty list is `nil`.
+///  + each instruction is described as a state transition `(s, e, c, d) → (s´, e´, c´, d´)`
 #[derive(Debug,Copy,Clone,PartialEq)]
 #[stable(feature="vm_core", since="0.1.0")]
 pub enum Inst {
     /// `nil`
     ///
-    /// Pusizehes an empty list (nil) onto the stack
+    /// Pushes an empty list (nil) onto the stack.
+    ///
+    /// __Operational semantics__: `(s, e, (NIL.c), d) → ( (nil.s), e, c, d )`
+    ///
     #[stable(feature="vm_core", since="0.1.0")]
     NIL,
     /// `ldc`: `L`oa`d` `C`onstant. Loads a constant (atom)
     #[stable(feature="vm_core", since="0.1.0")]
     LDC,
-    /// `ld`: `L`oa`d`. Pusizehes a variable onto the stack.
+    /// `ld`: `L`oa`d`. Pushes a variable onto the stack.
     ///
     /// The variable is indicated by the argument, a pair.
     /// The pair's `car` specifies the level, the `cdr` the position.
     /// So `(1 . 3)` gives the current function's (level 1) third
     /// parameter.
+    ///
+    /// __Operational semantics__: `(s, e, LDC.v.c, d) → (v.s, e, c, d)`
+    ///
     #[stable(feature="vm_core", since="0.1.0")]
     LD,
     /// `ldf`: `L`oa`d` `F`unction.
@@ -267,13 +280,19 @@ pub enum Inst {
     ///  Takes one list argument representing a function and constructs
     ///  a closure (a pair containing the function and the current
     ///  environment) and pusizehes that onto the stack.
-    #[stable(feature="vm_core", since="0.1.0")]
+    ///
+    /// _Operational semantics_: `(s, e, (LDF f.c), d) → ( ([f e].s), e, c, d)`
+    ///
+    #[stable(feature="vm_core", since="0.2.4")]
     LDF,
     /// `join`
     ///
     /// Pops a list reference from the dump and makes thisize the new value
     /// of `C`. This instruction occurs at the end of both alternatives of
     ///  a `sel`.
+    ///
+    /// __Operational semantics__: `(s, e, JOIN.c, c´.d) → (s, e, c´, d)`
+    ///
     #[stable(feature="vm_core", since="0.1.0")]
     JOIN,
     /// `ap`: `Ap`ply.
@@ -281,9 +300,12 @@ pub enum Inst {
     /// Pops a closure and a list of parameter values from the stack.
     /// The closure is applied to the parameters by installing its
     /// environment as the current one, pushing the parameter list
-    /// in front of that, clearing the stack, and setting `C` to the
-    /// closure's function pointer. The previous values of `S`, `E`,
-    ///  and the next value of `C` are saved on the dump.
+    /// in front of that, clearing the stack, and setting `c` to the
+    /// closure's function pointer. The previous values of `s`, `e`,
+    ///  and the next value of `c` are saved on the dump.
+    ///
+    /// __Operational semantics__: `(([f e´] v.s), e, (AP.c), d) → (nil, (v.e&prime), f, (s e c.d))`
+    ///
     #[stable(feature="vm_core", since="0.1.0")]
     AP,
     /// `ret`: `Ret`urn.
@@ -309,8 +331,11 @@ pub enum Inst {
     /// Expects two list arguments on the control stack, and pops a value
     /// from the stack. The first list is executed if the popped value
     /// was non-nil, the second list otherwise. Before one of these list
-    /// pointers is made the new `C`, a pointer to the instruction
+    /// pointers is made the new `c`, a pointer to the instruction
     /// following `sel` is saved on the dump.
+    ///
+    /// __Operational semantics__: `(v.s, e, SEL.true.false.c, d) → (s, e, (if v then true else false), c.d)`
+    ///
     #[stable(feature="vm_core", since="0.1.0")]
     SEL,
     /// `add`

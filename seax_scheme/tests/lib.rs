@@ -217,13 +217,13 @@ fn compile_lambda_ap() {
 /// ```
 ///
 /// ```seax
-///   (NIL LDC 6 CONS LDF
-///               (NIL LDC 5 CONS LDC 3 CONS
-///                 LDF
-///                  (LD (2.1) LD (1.2) LD (1.1) SUB ADD RTN)
-///                 AP
-///                 RTN)
-///               AP
+/// (NIL LDC 6 CONS LDF
+///     (NIL LDC 5 CONS LDC 3 CONS
+///         LDF
+///             (LD (2.1) LD (1.2) LD (1.1) SUB ADD RTN)
+///         AP
+///         RTN)
+///     AP
 /// ```
 #[test]
 fn compile_nested_lambda() {

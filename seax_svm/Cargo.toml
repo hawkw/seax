@@ -1,7 +1,7 @@
 [package]
 
 name = "seax_svm"
-version = "0.2.3"
+version = "0.2.5"
 authors = ["Hawk Weisman <hi@hawkweisman.me>"]
 description = "SECD virtual machine for interpreting programs in FP languages"
 license = "MIT"

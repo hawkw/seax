@@ -68,6 +68,7 @@ impl<T> Stack<T> for List<T> {
     /// s = s.push(6);
     /// assert_eq!(s.peek(), Some(&6));
     /// ```
+    #[inline]
     #[stable(feature="stack", since="0.1.0")]
     fn push(self, item: T) -> List<T> {
         Cons(item, box self)
@@ -92,6 +93,7 @@ impl<T> Stack<T> for List<T> {
     /// assert_eq!(s.peek(), Some(&2));
     /// assert_eq!(pop_result.0, 1);
     /// ```
+    #[inline]
     #[stable(feature="stack", since="0.1.0")]
     fn pop(self) -> Option<(T,List<T>)> {
         match self {
@@ -100,6 +102,7 @@ impl<T> Stack<T> for List<T> {
         }
     }
 
+    #[inline]
     #[stable(feature="stack", since="0.1.0")]
     fn empty() -> List<T> {
         Nil
@@ -124,6 +127,7 @@ impl<T> Stack<T> for List<T> {
     /// assert_eq!(s.peek(), Some(&2));
     /// assert_eq!(pop_result.0, 1);
     /// ```
+    #[inline]
     #[stable(feature="stack", since="0.1.0")]
     fn peek(&self) -> Option<&T> {
         match self {
@@ -138,6 +142,15 @@ impl<T> Stack<T> for List<T> {
 ///
 /// This is used internally to represent list primitives in the
 /// machine.
+///
+/// TODO: potentially, a pointer to the last itemof the list could be
+/// cached using a `RefCell` or something to speed up access for
+/// appends/tail access. We could also check the length and decide whether
+/// to link hop from the head or tail when indexing. It would be necessary
+/// to investigate whether the added overhead of caching (both in terms of
+/// space and in terms of time taken to update the cache) would be worth
+/// the performance benefits --- my guess is that caching is worth the added
+/// costs (as usual).
 #[derive(PartialEq,Clone)]
 #[stable(feature="list", since="0.1.0")]
 pub enum List<T> {
@@ -156,6 +169,7 @@ impl<T> List<T> {
 
     /// Creates a new empty list
     #[stable(feature="list", since="0.1.0")]
+    #[inline]
     pub fn new() -> List<T> {
         Nil
     }
@@ -186,6 +200,7 @@ impl<T> List<T> {
     /// assert_eq!(a_list, list![2,1]);
     /// # }
     /// ```
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
     pub fn prepend(self, it: T) -> List<T> {
         Cons(it, box self)
@@ -214,6 +229,7 @@ impl<T> List<T> {
     /// assert_eq!(a_list, list![1,2]);
     /// # }
     /// ```
+    #[inline]
     #[stable(feature="list", since="0.2.3")]
     pub fn append(&mut self, it: T) {
         match *self {
@@ -227,11 +243,38 @@ impl<T> List<T> {
     ///
     /// Returns the last element of the list to support 'append chaining'
     /// of a large number of items; this allows you to omit a complete traversal
-    /// of the list for every append while folding.
+    /// of the list for every append and should be used in situations
+    /// such as `fold`s.
     ///
-    /// This is an O(_n_) operation.
+    /// The first append is still O(_n_), but long as you hang on to your
+    /// pointer to the tail, subsequent appends should all be O(1). However,
+    /// this requires you to keep a `&mut` pointer to the list, so use it
+    /// sparingly, especially in situations of concurrent access.
+    ///
+    /// # Arguments
+    ///
+    ///  + `item` - the item to append
+    ///
+    /// # Examples
+    /// ```
+    /// # #![feature(list)]
+    /// # #[macro_use] extern crate seax_svm;
+    /// # use seax_svm::slist::List;
+    /// # use seax_svm::slist::List::{Cons,Nil};
+    /// # fn main() {
+    /// let mut a_list: List<isize> = List::new();
+    ///
+    ///     // this is a function so that the `&mut` borrow is released.
+    ///     fn append_two_items<T>(l: &mut List<T>, first: T, second: T) {
+    ///         l.append_chain(first).append_chain(second);
+    ///     }
+    ///
+    /// append_two_items(&mut a_list, 1, 2);
+    /// assert_eq!(a_list, list![1,2]);
+    /// # }
+    #[inline]
     #[stable(feature="list", since="0.2.3")]
-    fn append_chain(&mut self, it: T) -> &mut List<T> {
+    pub fn append_chain(&mut self, it: T) -> &mut List<T> {
         match *self {
             Cons(_, box ref mut tail) => tail.append_chain(it),
             Nil => { *self = Cons(it, box Nil); self }
@@ -251,6 +294,7 @@ impl<T> List<T> {
     /// assert_eq!(a_list.length(), 4)
     /// # }
     /// ```
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
     pub fn length (&self) -> usize {
         match *self {
@@ -278,6 +322,7 @@ impl<T> List<T> {
     /// assert_eq!(a_list.last(), &4)
     /// # }
     /// ```
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
     pub fn last(&self) -> &T {
         match *self {
@@ -286,17 +331,82 @@ impl<T> List<T> {
             Nil => panic!("Last called on empty list")
         }
     }
+
+    /// Optionally index the list.
+    ///
+    /// Unlike list indexing syntax (`list[i]`), this returns `None`
+    /// if the index is out of bound rather than panicking.
+    ///
+    /// Lists are zero-indexed, so just as when using list indexing syntax,
+    /// the head of the list is index 0 and the last element of the list is
+    /// index (length - 1).
+    ///
+    /// # Arguments
+    ///
+    ///  + `idx` - the index to attempt to access
+    ///
+    /// # Return Value
+    ///
+    ///   + `Some(&T)` if the index exists within the list, `None` otherwise.
+    ///
+    /// # Examples
+    /// ```
+    /// # #[macro_use] extern crate seax_svm;
+    /// # use seax_svm::slist::List::{Cons,Nil};
+    /// # fn main() {
+    /// let a_list = list!(1,2,3,4);
+    /// assert_eq!(a_list.get(1), Some(&2));
+    /// assert_eq!(a_list.get(3), Some(&4));
+    /// assert_eq!(a_list.get(10), None);
+    /// # }
+    /// ```
+    #[stable(feature="list",since="0.2.5")]
+    pub fn get<'a>(&'a self, index: usize) -> Option<&'a T> {
+        match index {
+            0usize => match *self {
+                Cons(ref car, _) => Some(&car),
+                Nil => None
+            },
+            1usize => match *self {
+                Cons(_, box Cons(ref cdr, _)) => Some(&cdr),
+                _ => None
+            },
+            i if i == self.length() => Some(self.last()),
+            i if i > self.length()  => None,
+            i if i > 1usize => {
+                let mut it = self.iter();
+                for _ in 0usize .. i{
+                    it.next();
+                }
+                it.next()
+            },
+            _ => None
+        }
+    }
 }
 
-#[stable(feature="list", since="0.2.1")]
+#[stable(feature="list", since="0.2.5")]
 impl<'a, T> fmt::Display for List<T> where T: fmt::Display{
-    #[stable(feature="list", since="0.2.1")]
+    #[stable(feature="list", since="0.2.5")]
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut it = self.iter();
+        write!(f, "({}{})", it.next().unwrap(), it.fold(
+            String::new(),
+            |mut a, i| { a.push_str(format!(", {}", i).as_ref()); a} )
+        )
+    }
+}
+
+#[stable(feature="list", since="0.2.5")]
+impl<'a, T> fmt::Debug for List<T> where T: fmt::Debug {
+    #[stable(feature="debug", since="0.2.5")]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Cons(ref head, ref tail) => write!(f, "({}, {})", head, tail),
+            Cons(ref head, ref tail) => write!(f, "({:?} . {:?})", head, tail),
             Nil => write!(f,"nil")
         }
     }
+
 }
 
 
@@ -319,26 +429,14 @@ impl<T> FromIterator<T> for List<T> {
     ///     assert_eq!(a_list[i], another_vec[i])
     /// }
     /// ```
-    #[stable(feature="list", since="0.2.3")]
     #[inline]
+    #[stable(feature="list", since="0.2.3")]
     fn from_iter<I>(iterable: I) -> List<T> where I: IntoIterator<Item=T> {
             let mut result  = List::new();
             iterable
                 .into_iter()
                 .fold(&mut result, |l, it| l.append_chain(it));
             result
-    }
-
-}
-
-#[stable(feature="list", since="0.2.1")]
-impl<'a, T> fmt::Debug for List<T> where T: fmt::Debug {
-    #[stable(feature="debug", since="0.2.1")]
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Cons(ref head, ref tail) => write!(f, "({:?}, {:?})", head, tail),
-            Nil => write!(f,"nil")
-        }
     }
 
 }
@@ -389,6 +487,7 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
     /// assert_eq!(string, "1, 2, 3, 4, 5, 6, ".to_string())
     /// # }
     /// ```
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
     fn next(&mut self) -> Option<&'a T> {
         match self.current {
@@ -397,6 +496,7 @@ impl<'a, T> Iterator for ListIterator<'a, T> {
         }
     }
 }
+
 #[stable(feature="list", since="0.1.0")]
 impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
     fn len(&self) -> usize {
@@ -420,6 +520,8 @@ impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
 impl<T> Index<usize> for List<T> {
     #[stable(feature="list", since="0.1.0")]
     type Output = T;
+
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
     fn index<'a>(&'a self, _index: usize) -> &'a T {
         match _index {
@@ -458,12 +560,16 @@ impl<T> Index<usize> for List<T> {
 /// assert_eq!(list[0is], 1);
 /// # }
 /// ```
-#[stable(feature="list", since="0.1.0")]
+    #[stable(feature="list", since="0.1.0")]
+#[deprecated(since="0.2.5", reason="use unsigned indices instead")]
 impl<T> Index<isize> for List<T> {
     #[stable(feature="list", since="0.1.0")]
+    #[deprecated(since="0.2.5", reason="use unsigned indices instead")]
     type Output = T;
 
+    #[inline]
     #[stable(feature="list", since="0.1.0")]
+    #[deprecated(since="0.2.5", reason="use unsigned indices instead")]
     fn index<'a>(&'a self, _index: isize) -> &'a T {
         match _index {
             0isize => match *self {
@@ -505,7 +611,7 @@ mod tests {
     #[test]
     fn test_list_to_string() {
         let l: List<i32> = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
-        assert_eq!(l.to_string(), "(1, (2, (3, nil)))");
+        assert_eq!(l.to_string(), "(1, 2, 3)");
     }
 
     #[test]
@@ -573,7 +679,7 @@ mod tests {
     #[test]
     fn test_list_macro() {
         let l: List<i32> = list!(1i32, 2i32, 3i32);
-        assert_eq!(l.to_string(), "(1, (2, (3, nil)))")
+        assert_eq!(l.to_string(), "(1, 2, 3)")
     }
 
     #[test]

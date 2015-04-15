@@ -27,7 +27,7 @@ fn test_list_creation() {
             InstCell(NIL),
             InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS)
-        )).peek(),
+        ), true).peek(),
         Some(&ListCell( box list!(AtomCell(SInt(10)), AtomCell(SInt(20)))))
     );
 }
@@ -45,7 +45,7 @@ fn test_list_car() {
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
             InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
             InstCell(CAR)
-        )).peek(),
+        ), true).peek(),
         Some(&AtomCell(SInt(20)))
     );
 }
@@ -62,7 +62,7 @@ fn test_list_cdr() {
             InstCell(LDC), AtomCell(SInt(10)), InstCell(CONS),
             InstCell(LDC), AtomCell(SInt(20)), InstCell(CONS),
             InstCell(CDR)
-        )).peek(),
+        ), true).peek(),
         Some(&ListCell(box list!(AtomCell(SInt(10)))))
     );
 }
@@ -79,7 +79,7 @@ fn test_simple_add() {
             InstCell(LDC), AtomCell(SInt(10)),
             InstCell(LDC), AtomCell(SInt(10)),
             InstCell(ADD)
-        )).peek(),
+        ), true).peek(),
         Some(&AtomCell(SInt(20)))
     );
 }
@@ -98,7 +98,7 @@ fn test_nested_arith() {
             InstCell(ADD),
             InstCell(LDC), AtomCell(SInt(20)),
             InstCell(SUB)
-        )).peek(),
+        ), true).peek(),
         Some(&AtomCell(SInt(10)))
     );
 }
@@ -125,7 +125,7 @@ fn test_basic_branching() {
                 ListCell(box list!(InstCell(LDC), AtomCell(SInt(1)), InstCell(JOIN))),
                 ListCell(box list!(InstCell(NIL), InstCell(JOIN))
             )
-        )).peek(),
+        ), true).peek(),
         Some(&AtomCell(SInt(1)))
     );
     assert_eq!(
@@ -136,7 +136,7 @@ fn test_basic_branching() {
                 ListCell(box list!(InstCell(LDC), AtomCell(SInt(20)), InstCell(JOIN))),
             InstCell(LDC), AtomCell(SInt(10)),
             InstCell(ADD)
-        )).peek(),
+        ), true).peek(),
         Some(&AtomCell(SInt(20)))
     );
 }
