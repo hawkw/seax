@@ -263,6 +263,9 @@ impl ASTNode for SExprNode {
                     },
                     _ => Err("[error]: malformed lambda expression".to_string())
                 },
+                "let" => match self.operands.as_slice() {
+                    _ => unimplemented!()
+                },
                 _ => { // TODO: this is basically a duplicate of the general case
                        // I feel bad for doing it this way but nothing else worked
                     let ref op = self.operator;
