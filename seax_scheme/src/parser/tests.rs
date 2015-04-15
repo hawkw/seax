@@ -48,6 +48,19 @@ fn test_basic_sexpr() {
         }), ""))
         );
 }
+#[test]
+fn test_square_bracket_sexpr() {
+    assert_eq!(
+        parser(expr).parse("[ident arg1 arg2]"),
+        Ok((SExpr(SExprNode {
+            operator: box Name(NameNode { name: "ident".to_string() }),
+            operands: vec![
+                Name(NameNode { name: "arg1".to_string() }),
+                Name(NameNode { name: "arg2".to_string() })
+            ]
+        }), ""))
+        );
+}
 
 #[test]
 fn test_lex_sint_pos() {
@@ -220,6 +233,35 @@ fn test_parse_cdr() {
                                     Name(NameNode { name: "nil".to_string() })
                                 ]
                             })
+                        ]
+                    })
+                ]
+            }),
+            ""))
+        );
+}
+
+/// This is the parsing component of nested arithmetic
+/// integration target with square brackets added
+/// (just to ensure that the parser handles them correctly)
+///
+/// ```lisp
+/// (- 20 [+ 5 5])
+/// ```
+#[test]
+fn test_parse_nested_arith_square_bracket() {
+    assert_eq!(
+        parser(expr).parse("(- 20 [+ 5 5])"),
+        Ok((
+            SExpr(SExprNode {
+                operator: box Name(NameNode { name: "-".to_string() }),
+                operands: vec![
+                    NumConst(IntConst(IntNode{ value: 20 })),
+                    SExpr(SExprNode {
+                        operator: box Name(NameNode { name: "+".to_string() }),
+                        operands: vec![
+                            NumConst(IntConst(IntNode{ value: 5 })),
+                            NumConst(IntConst(IntNode{ value: 5 }))
                         ]
                     })
                 ]

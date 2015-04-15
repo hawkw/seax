@@ -407,21 +407,31 @@ pub fn string_const(input: State<&str>) -> ParseResult<StringNode, &str> {
 
 /// Parses Scheme expressions.
 #[allow(unconditional_recursion)]
-#[stable(feature="parser",since="0.0.2")]
+#[stable(feature="parser",since="0.1.1")]
 pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
+    fn sexpr_inner(input: State<&str>) -> ParseResult<ExprNode, &str> {
+        parser(expr)
+            .and(many(parser(expr)))
+            .map(|x| {
+                SExpr(SExprNode {
+                    operator: box x.0,
+                    operands: x.1
+                })
+            })
+            .parse_state(input)
+    }
 
     fn sexpr(input: State<&str>) -> ParseResult<ExprNode, &str> {
         between(
             satisfy(|c| c == '('),
             satisfy(|c| c == ')'),
-            parser(expr)
-                .and(many(parser(expr)))
-                .map(|x| {
-                    SExpr(SExprNode {
-                        operator: box x.0,
-                        operands: x.1
-                    })
-                })
+            parser(sexpr_inner)
+        ).or(
+            between(
+                satisfy(|c| c == '['),
+                satisfy(|c| c == ']'),
+                parser(sexpr_inner)
+            )
         ).parse_state(input)
     }
 
