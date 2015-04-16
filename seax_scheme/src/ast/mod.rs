@@ -279,11 +279,15 @@ impl ASTNode for SExprNode {
                                 operator: box Name(ref node),
                                 operands: ref param_body
                             } => {
+
                                 sym.bind(node.name.as_ref(),depth);
+
                                 for exp in param_body {
                                     result.push_all(&try!(exp.compile(&sym)));
                                 }
+
                                 result.push(InstCell(CONS));
+
                                 Ok(result)
                             },
                             _ => Err("[error]: malformed let expression".to_string())
@@ -293,22 +297,28 @@ impl ASTNode for SExprNode {
                                     operator: box Name(ref node),
                                     operands: ref param_body
                                 }) = param_b {
+
                                     sym.bind(node.name.as_ref(),depth);
+
                                     for ref exp in param_body {
                                         result.push_all(&try!(exp.compile(&sym)));
                                     }
+
                                     result.push(InstCell(CONS));
                                 }
                             }
                             Ok(result)
                         }).and_then(|mut result: Vec<SVMCell> | {
-                            result.push(InstCell(LDF));
 
                             let mut body_code = Vec::new();
                             body_code.push_all(&try!(body_exp.compile(&sym)));
                             body_code.push(InstCell(RET));
 
-                            result.push(ListCell(box List::from_iter(body_code)));
+                            result.push_all(&[
+                                InstCell(LDF),
+                                ListCell(box List::from_iter(body_code)),
+                                InstCell(AP)
+                            ]);
 
                             Ok(result)
 
