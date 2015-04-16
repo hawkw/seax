@@ -266,7 +266,7 @@ impl ASTNode for SExprNode {
                 "let" => match self.operands.as_slice() {
                     [SExpr(SExprNode{
                         operator: box SExpr(ref param_a),
-                        operands: ref param_bs}), SExpr(ref body_exp)] => {
+                        operands: ref param_bs}), ref body_exp] => {
 
                         let mut sym = state.fork();
                         let mut result = Vec::new();
@@ -314,7 +314,7 @@ impl ASTNode for SExprNode {
 
                         })
                     },
-                    _ => Err("[error]: malformed let expression".to_string())
+                    _ => Err(format!("[error]: malformed let expression:\n{:?}",self))
                 },
                 _ => { // TODO: this is basically a duplicate of the general case
                        // I feel bad for doing it this way but nothing else worked
@@ -570,7 +570,7 @@ impl ASTNode for NameNode {
         result.push_str(tab.as_ref());
         result.push_str("Name: ");
         result.push_str(self.name.as_ref());
-        result.push_str("\n");
+        result.push('\n');
 
         result
     }
@@ -615,15 +615,15 @@ impl ASTNode for NumNode {
         match *self {
             NumNode::UIntConst(ref node) => {
                 result.push_str(format!("{}u", node.value).as_ref());
-                result.push_str("\n");
+                result.push('\n');
             },
             NumNode::IntConst(ref node) => {
                 result.push_str(format!("{}", node.value).as_ref());
-                result.push_str("\n");
+                result.push('\n');
             },
             NumNode::FloatConst(ref node) => {
                 result.push_str(format!("{}f", node.value).as_ref());
-                result.push_str("\n");
+                result.push('\n');
             }
         }
         result
@@ -674,7 +674,7 @@ impl ASTNode for BoolNode {
         result.push_str(tab.as_ref());
         result.push_str("Boolean: ");
         result.push_str(format!("{}", self.value).as_ref());
-        result.push_str("\n");
+        result.push('\n');
         result
     }
 }
