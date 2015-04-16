@@ -237,8 +237,8 @@ impl ASTNode for SExprNode {
                 },
                 "lambda" => match self.operands.as_slice() {
                     [SExpr(SExprNode{
-                                operator: box Name(ref param_a),
-                                operands: ref param_bs}), SExpr(ref body)] => {
+                            operator: box Name(ref param_a),
+                            operands: ref param_bs}), SExpr(ref body)] => {
                         let mut sym = state.fork(); // fork the symbol table
                         let depth = self.depth(); // cache the depth for binds
 
@@ -264,7 +264,67 @@ impl ASTNode for SExprNode {
                     _ => Err("[error]: malformed lambda expression".to_string())
                 },
                 "let" => match self.operands.as_slice() {
-                    _ => unimplemented!()
+                    [SExpr(SExprNode{
+                        operator: box SExpr(ref param_a),
+                        operands: ref param_bs}), ref body_exp] => {
+
+                        let mut sym = state.fork();
+                        let mut result = Vec::new();
+                        let depth = self.depth();
+
+                        result.push(InstCell(NIL));
+
+                        (match param_a {
+                            &SExprNode{
+                                operator: box Name(ref node),
+                                operands: ref param_body
+                            } => {
+
+                                sym.bind(node.name.as_ref(),depth);
+
+                                for exp in param_body {
+                                    result.push_all(&try!(exp.compile(&sym)));
+                                }
+
+                                result.push(InstCell(CONS));
+
+                                Ok(result)
+                            },
+                            _ => Err("[error]: malformed let expression".to_string())
+                        }).and_then(|mut result: Vec<SVMCell> | {
+                            for param_b in param_bs {
+                                if let &SExpr(SExprNode{
+                                    operator: box Name(ref node),
+                                    operands: ref param_body
+                                }) = param_b {
+
+                                    sym.bind(node.name.as_ref(),depth);
+
+                                    for ref exp in param_body {
+                                        result.push_all(&try!(exp.compile(&sym)));
+                                    }
+
+                                    result.push(InstCell(CONS));
+                                }
+                            }
+                            Ok(result)
+                        }).and_then(|mut result: Vec<SVMCell> | {
+
+                            let mut body_code = Vec::new();
+                            body_code.push_all(&try!(body_exp.compile(&sym)));
+                            body_code.push(InstCell(RET));
+
+                            result.push_all(&[
+                                InstCell(LDF),
+                                ListCell(box List::from_iter(body_code)),
+                                InstCell(AP)
+                            ]);
+
+                            Ok(result)
+
+                        })
+                    },
+                    _ => Err(format!("[error]: malformed let expression:\n{:?}",self))
                 },
                 _ => { // TODO: this is basically a duplicate of the general case
                        // I feel bad for doing it this way but nothing else worked
@@ -346,16 +406,16 @@ impl ASTNode for SExprNode {
 }
 
 impl SExprNode {
-    /// Tests to see if this node is a lambda expression
-    #[stable(feature = "compile",since = "0.1.0")]
-    fn is_lambda(&self) -> bool {
+    /// Tests to see if this node is a binding expression
+    #[stable(feature = "compile",since = "0.1.1")]
+    fn is_bind(&self) -> bool {
         match *self.operator {
             // I wish I didn't have to do it this way, there's an apparent
             // Rust issue (rust-lang/rust#23762) that makes it impossible
             // to use `as_ref()` in a pattern guard.
             Name(ref node)  => match node.name.as_ref() {
-                "lambda"    => true,
-                _           => false
+                "lambda" | "let" | "letrec" => true,
+                _                           => false
             },
             _               => false
         }
@@ -373,7 +433,7 @@ impl SExprNode {
             self.operands.iter().fold(
                 match *self.operator {
                     SExpr(ref node) => node.depth(),
-                    Name(_)         => if self.is_lambda() {1} else {0},
+                    Name(_)         => if self.is_bind() {1} else {0},
                     _               => 0
                 },
             |acc, op| acc + match op {
@@ -520,7 +580,7 @@ impl ASTNode for NameNode {
         result.push_str(tab.as_ref());
         result.push_str("Name: ");
         result.push_str(self.name.as_ref());
-        result.push_str("\n");
+        result.push('\n');
 
         result
     }
@@ -565,15 +625,15 @@ impl ASTNode for NumNode {
         match *self {
             NumNode::UIntConst(ref node) => {
                 result.push_str(format!("{}u", node.value).as_ref());
-                result.push_str("\n");
+                result.push('\n');
             },
             NumNode::IntConst(ref node) => {
                 result.push_str(format!("{}", node.value).as_ref());
-                result.push_str("\n");
+                result.push('\n');
             },
             NumNode::FloatConst(ref node) => {
                 result.push_str(format!("{}f", node.value).as_ref());
-                result.push_str("\n");
+                result.push('\n');
             }
         }
         result
@@ -624,7 +684,7 @@ impl ASTNode for BoolNode {
         result.push_str(tab.as_ref());
         result.push_str("Boolean: ");
         result.push_str(format!("{}", self.value).as_ref());
-        result.push_str("\n");
+        result.push('\n');
         result
     }
 }
