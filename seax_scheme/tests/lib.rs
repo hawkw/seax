@@ -353,3 +353,41 @@ fn compile_expr_let() {
         ))
     );
 }
+
+/// Test for the compilation of a `let` binding with name shadowing
+///
+/// ```lisp
+/// (let ([x 1])
+///     (let ([x 2]) x)
+///     )
+/// ```
+#[test]
+fn compile_name_shadowing_let() {
+    assert_eq!(
+        scheme::compile("(let ([x 1])
+                            (let ([x 2]) x))"),
+        Ok(list!(
+            InstCell(NIL),
+            InstCell(LDC), AtomCell(SInt(1)),
+            InstCell(CONS),
+            InstCell(LDF),
+            ListCell(box list!(
+                InstCell(NIL),
+                InstCell(LDC), AtomCell(SInt(2)),
+                InstCell(CONS),
+                InstCell(LDF),
+                ListCell(box list!(
+                    InstCell(LD), ListCell(box list!(
+                            AtomCell(UInt(1)),AtomCell(UInt(1))
+                        )),
+                InstCell(RET)
+                )),
+            InstCell(AP),
+            InstCell(RET)
+            )),
+            InstCell(AP)
+        ))
+    );
+}
+
+
