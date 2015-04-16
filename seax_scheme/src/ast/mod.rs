@@ -265,8 +265,8 @@ impl ASTNode for SExprNode {
                 },
                 "let" => match self.operands.as_slice() {
                     [SExpr(SExprNode{
-                        operator: SExpr(ref param_a),
-                        operands: ref param_bs}), SExpr(ref body)] => {
+                        operator: box SExpr(ref param_a),
+                        operands: ref param_bs}), SExpr(ref body_exp)] => {
 
                         let mut sym = state.fork();
                         let mut result = Vec::new();
@@ -274,39 +274,47 @@ impl ASTNode for SExprNode {
 
                         result.push(InstCell(NIL));
 
-                        match param_a {
-                            SExprNode{
-                                operator: Name(ref node),
-                                operands: [ref exp]
+                        (match param_a {
+                            &SExprNode{
+                                operator: box Name(ref node),
+                                operands: ref param_body
                             } => {
                                 sym.bind(node.name.as_ref(),depth);
-                                result.push_all(&try!(exp.compile(&sym)));
+                                for exp in param_body {
+                                    result.push_all(&try!(exp.compile(&sym)));
+                                }
                                 result.push(InstCell(CONS));
+                                Ok(result)
                             },
                             _ => Err("[error]: malformed let expression".to_string())
-                        }
+                        }).and_then(|mut result: Vec<SVMCell> | {
+                            for param_b in param_bs {
+                                if let &SExpr(SExprNode{
+                                    operator: box Name(ref node),
+                                    operands: ref param_body
+                                }) = param_b {
+                                    sym.bind(node.name.as_ref(),depth);
+                                    for ref exp in param_body {
+                                        result.push_all(&try!(exp.compile(&sym)));
+                                    }
+                                    result.push(InstCell(CONS));
+                                }
+                            }
+                            Ok(result)
+                        }).and_then(|mut result: Vec<SVMCell> | {
+                            result.push(InstCell(LDF));
 
-                        for param_b in param_bs {
-                            if let SExpr(SExprNode{
-                                operator: Name(ref node),
-                                operands: [ref exp]
-                            }) = param_b {
-                                sym.bind(node.name.as_ref(),depth);
-                                result.push_all(&try!(exp.compile(&sym)));
-                                result.push(InstCell(CONS));
-                            } // todo: make errors otherwise
-                        }
+                            let mut body_code = Vec::new();
+                            body_code.push_all(&try!(body_exp.compile(&sym)));
+                            body_code.push(InstCell(RET));
 
-                        result.push(InstCell(LDF));
+                            result.push(ListCell(box List::from_iter(body_code)));
 
-                        let body = Vec::new();
-                        body.push_all(&try!(body.compile(&sym)));
-                        body.push(InstCell(RET));
+                            Ok(result)
 
-                        result.push(ListCell(box List::from_iter(body)));
-
-                        Ok(result)
-                    }
+                        })
+                    },
+                    _ => Err("[error]: malformed let expression".to_string())
                 },
                 _ => { // TODO: this is basically a duplicate of the general case
                        // I feel bad for doing it this way but nothing else worked
