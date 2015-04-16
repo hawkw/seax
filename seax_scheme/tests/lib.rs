@@ -259,3 +259,27 @@ fn compile_nested_lambda() {
         ))
     )
 }
+
+/// Test for the compilation of a single simple `let` binding.
+///
+/// ```lisp
+/// (let ([x 5]) x)
+/// ```
+#[test]
+fn compile_single_let() {
+    assert_eq!(
+        scheme::compile("(let ([x 5]) x)"),
+        Ok(list!(
+            InstCell(NIL),
+            InstCell(LDC), AtomCell(SInt(5)), InstCell(CONS),
+            InstCell(LDF),
+            ListCell(box list!(
+                InstCell(LD), ListCell(box list!(
+                        AtomCell(UInt(1)),AtomCell(UInt(1))
+                    )),
+                InstCell(RET)
+            )),
+            InstCell(AP)
+        ))
+    );
+}
