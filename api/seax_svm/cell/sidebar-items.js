@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Atom","SVM atom types."],["Inst","SVM instruction types"],["SVMCell",""]]});
+initSidebarItems({"enum":[["Atom","SVM atom types."],["Inst","SVM instruction types."],["SVMCell",""]]});

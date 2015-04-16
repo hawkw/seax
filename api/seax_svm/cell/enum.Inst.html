@@ -43,7 +43,7 @@
     <section id='main' class="content enum">
 <h1 class='fqn'><span class='in-band'>Enum <a href='../index.html'>seax_svm</a>::<wbr><a href='index.html'>cell</a>::<wbr><a class='enum' href=''>Inst</a><wbr><a class='stability Stable' title=''>Stable</a></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-4671' href='../../src/seax_svm/cell.rs.html#248-440'>[src]</a></span></h1>
+        </span><a id='src-4671' href='../../src/seax_svm/cell.rs.html#255-465'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Inst {
     NIL,
     LDC,
@@ -74,36 +74,55 @@
     STOP,
     READC,
     WRITEC,
-}</pre><div class='docblock'><p>SVM instruction types</p>
+}</pre><div class='docblock'><p>SVM instruction types.</p>
+
+<p>Each SVM instruction will be described using operational
+semantics through the use of the following notation:</p>
+
+<ul>
+<li>a state is written <code>(s, e, c, d)</code></li>
+<li><code>(x.y)</code> is <code>Cons(x, y)</code>. The empty list is <code>nil</code>.</li>
+<li>each instruction is described as a state transition <code>(s, e, c, d) → (s´, e´, c´, d´)</code></li>
+</ul>
 </div><h2 class='variants'>Variants</h2>
 <table><tr><td id='variant.NIL'><a class='stability Stable' title='Stable'></a><code>NIL</code></td><td><div class='docblock'><p><code>nil</code></p>
 
-<p>Pusizehes an empty list (nil) onto the stack</p>
+<p>Pushes an empty list (nil) onto the stack.</p>
+
+<p><strong>Operational semantics</strong>: <code>(s, e, (NIL.c), d) → ( (nil.s), e, c, d )</code></p>
 </div></td></tr><tr><td id='variant.LDC'><a class='stability Stable' title='Stable'></a><code>LDC</code></td><td><div class='docblock'><p><code>ldc</code>: <code>L</code>oa<code>d</code> <code>C</code>onstant. Loads a constant (atom)</p>
-</div></td></tr><tr><td id='variant.LD'><a class='stability Stable' title='Stable'></a><code>LD</code></td><td><div class='docblock'><p><code>ld</code>: <code>L</code>oa<code>d</code>. Pusizehes a variable onto the stack.</p>
+</div></td></tr><tr><td id='variant.LD'><a class='stability Stable' title='Stable'></a><code>LD</code></td><td><div class='docblock'><p><code>ld</code>: <code>L</code>oa<code>d</code>. Pushes a variable onto the stack.</p>
 
 <p>The variable is indicated by the argument, a pair.
 The pair&#39;s <code>car</code> specifies the level, the <code>cdr</code> the position.
 So <code>(1 . 3)</code> gives the current function&#39;s (level 1) third
 parameter.</p>
+
+<p><strong>Operational semantics</strong>: <code>(s, e, LDC.v.c, d) → (v.s, e, c, d)</code></p>
 </div></td></tr><tr><td id='variant.LDF'><a class='stability Stable' title='Stable'></a><code>LDF</code></td><td><div class='docblock'><p><code>ldf</code>: <code>L</code>oa<code>d</code> <code>F</code>unction.</p>
 
 <p>Takes one list argument representing a function and constructs
  a closure (a pair containing the function and the current
  environment) and pusizehes that onto the stack.</p>
+
+<p><em>Operational semantics</em>: <code>(s, e, (LDF f.c), d) → ( ([f e].s), e, c, d)</code></p>
 </div></td></tr><tr><td id='variant.JOIN'><a class='stability Stable' title='Stable'></a><code>JOIN</code></td><td><div class='docblock'><p><code>join</code></p>
 
 <p>Pops a list reference from the dump and makes thisize the new value
 of <code>C</code>. This instruction occurs at the end of both alternatives of
  a <code>sel</code>.</p>
+
+<p><strong>Operational semantics</strong>: <code>(s, e, JOIN.c, c´.d) → (s, e, c´, d)</code></p>
 </div></td></tr><tr><td id='variant.AP'><a class='stability Stable' title='Stable'></a><code>AP</code></td><td><div class='docblock'><p><code>ap</code>: <code>Ap</code>ply.</p>
 
 <p>Pops a closure and a list of parameter values from the stack.
 The closure is applied to the parameters by installing its
 environment as the current one, pushing the parameter list
-in front of that, clearing the stack, and setting <code>C</code> to the
-closure&#39;s function pointer. The previous values of <code>S</code>, <code>E</code>,
- and the next value of <code>C</code> are saved on the dump.</p>
+in front of that, clearing the stack, and setting <code>c</code> to the
+closure&#39;s function pointer. The previous values of <code>s</code>, <code>e</code>,
+ and the next value of <code>c</code> are saved on the dump.</p>
+
+<p><strong>Operational semantics</strong>: <code>(([f e´] v.s), e, (AP.c), d) → (nil, (v.e&amp;prime), f, (s e c.d))</code></p>
 </div></td></tr><tr><td id='variant.RET'><a class='stability Stable' title='Stable'></a><code>RET</code></td><td><div class='docblock'><p><code>ret</code>: <code>Ret</code>urn.</p>
 
 <p>Pops one return value from the stack, restores
@@ -121,8 +140,10 @@ dummy environment with the current one, thusize making recursive
 <p>Expects two list arguments on the control stack, and pops a value
 from the stack. The first list is executed if the popped value
 was non-nil, the second list otherwise. Before one of these list
-pointers is made the new <code>C</code>, a pointer to the instruction
+pointers is made the new <code>c</code>, a pointer to the instruction
 following <code>sel</code> is saved on the dump.</p>
+
+<p><strong>Operational semantics</strong>: <code>(v.s, e, SEL.true.false.c, d) → (s, e, (if v then true else false), c.d)</code></p>
 </div></td></tr><tr><td id='variant.ADD'><a class='stability Stable' title='Stable'></a><code>ADD</code></td><td><div class='docblock'><p><code>add</code></p>
 
 <p>Pops two numbers off of the stack and adds them, pusizehing the
