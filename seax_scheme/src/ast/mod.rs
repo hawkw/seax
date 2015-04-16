@@ -237,8 +237,8 @@ impl ASTNode for SExprNode {
                 },
                 "lambda" => match self.operands.as_slice() {
                     [SExpr(SExprNode{
-                                operator: box Name(ref param_a),
-                                operands: ref param_bs}), SExpr(ref body)] => {
+                            operator: box Name(ref param_a),
+                            operands: ref param_bs}), SExpr(ref body)] => {
                         let mut sym = state.fork(); // fork the symbol table
                         let depth = self.depth(); // cache the depth for binds
 
@@ -264,7 +264,49 @@ impl ASTNode for SExprNode {
                     _ => Err("[error]: malformed lambda expression".to_string())
                 },
                 "let" => match self.operands.as_slice() {
-                    _ => unimplemented!()
+                    [SExpr(SExprNode{
+                        operator: SExpr(ref param_a),
+                        operands: ref param_bs}), SExpr(ref body)] => {
+
+                        let mut sym = state.fork();
+                        let mut result = Vec::new();
+                        let depth = self.depth();
+
+                        result.push(InstCell(NIL));
+
+                        match param_a {
+                            SExprNode{
+                                operator: Name(ref node),
+                                operands: [ref exp]
+                            } => {
+                                sym.bind(node.name.as_ref(),depth);
+                                result.push_all(&try!(exp.compile(&sym)));
+                                result.push(InstCell(CONS));
+                            },
+                            _ => Err("[error]: malformed let expression".to_string())
+                        }
+
+                        for param_b in param_bs {
+                            if let SExpr(SExprNode{
+                                operator: Name(ref node),
+                                operands: [ref exp]
+                            }) = param_b {
+                                sym.bind(node.name.as_ref(),depth);
+                                result.push_all(&try!(exp.compile(&sym)));
+                                result.push(InstCell(CONS));
+                            } // todo: make errors otherwise
+                        }
+
+                        result.push(InstCell(LDF));
+
+                        let body = Vec::new();
+                        body.push_all(&try!(body.compile(&sym)));
+                        body.push(InstCell(RET));
+
+                        result.push(ListCell(box List::from_iter(body)));
+
+                        Ok(result)
+                    }
                 },
                 _ => { // TODO: this is basically a duplicate of the general case
                        // I feel bad for doing it this way but nothing else worked
@@ -346,16 +388,16 @@ impl ASTNode for SExprNode {
 }
 
 impl SExprNode {
-    /// Tests to see if this node is a lambda expression
-    #[stable(feature = "compile",since = "0.1.0")]
-    fn is_lambda(&self) -> bool {
+    /// Tests to see if this node is a binding expression
+    #[stable(feature = "compile",since = "0.1.1")]
+    fn is_bind(&self) -> bool {
         match *self.operator {
             // I wish I didn't have to do it this way, there's an apparent
             // Rust issue (rust-lang/rust#23762) that makes it impossible
             // to use `as_ref()` in a pattern guard.
             Name(ref node)  => match node.name.as_ref() {
-                "lambda"    => true,
-                _           => false
+                "lambda" | "let" | "letrec" => true,
+                _                           => false
             },
             _               => false
         }
@@ -373,7 +415,7 @@ impl SExprNode {
             self.operands.iter().fold(
                 match *self.operator {
                     SExpr(ref node) => node.depth(),
-                    Name(_)         => if self.is_lambda() {1} else {0},
+                    Name(_)         => if self.is_bind() {1} else {0},
                     _               => 0
                 },
             |acc, op| acc + match op {
