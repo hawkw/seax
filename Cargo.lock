@@ -2,19 +2,19 @@
 name = "seax"
 version = "0.0.2"
 dependencies = [
- "docopt 0.6.60 (registry+https://github.com/rust-lang/crates.io-index)",
- "regex 0.1.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "docopt 0.6.62 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.1.28 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
- "seax_scheme 0.1.1",
+ "seax_scheme 0.2.0",
  "seax_svm 0.2.5",
 ]
 
 [[package]]
 name = "docopt"
-version = "0.6.60"
+version = "0.6.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "regex 0.1.27 (registry+https://github.com/rust-lang/crates.io-index)",
+ "regex 0.1.28 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.12 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -25,7 +25,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "regex"
-version = "0.1.27"
+version = "0.1.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -35,7 +35,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "seax_scheme"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "parser-combinators 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "seax_svm 0.2.5",
