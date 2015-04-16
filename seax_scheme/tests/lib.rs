@@ -283,3 +283,45 @@ fn compile_single_let() {
         ))
     );
 }
+
+
+/// Test for the compilation of multiple simple `let` bindings.
+///
+/// ```lisp
+/// (let ([x 1]
+///       [y 2]
+///       [z 3])
+///      (+ x y z))
+/// ```
+#[test]
+fn compile_multiple_let() {
+    assert_eq!(
+        scheme::compile(
+            "(let ([x 1]
+                   [y 2]
+                   [z 3])
+                (+ x y z))"),
+        Ok(list!(
+            InstCell(NIL),
+            InstCell(LDC), AtomCell(SInt(1)), InstCell(CONS),
+            InstCell(LDC), AtomCell(SInt(2)), InstCell(CONS),
+            InstCell(LDC), AtomCell(SInt(3)), InstCell(CONS),
+            InstCell(LDF),
+            ListCell(box list!(
+                InstCell(LD), ListCell(box list!(
+                        AtomCell(UInt(1)),AtomCell(UInt(3))
+                    )),
+                InstCell(LD), ListCell(box list!(
+                        AtomCell(UInt(1)),AtomCell(UInt(2))
+                    )),
+                InstCell(ADD),
+                InstCell(LD), ListCell(box list!(
+                        AtomCell(UInt(1)),AtomCell(UInt(1))
+                    )),
+                InstCell(ADD),
+                InstCell(RET)
+            )),
+            InstCell(AP)
+        ))
+    );
+}
