@@ -325,3 +325,31 @@ fn compile_multiple_let() {
         ))
     );
 }
+
+/// Test for the compilation of a `let` binding to the result of
+/// an expression.
+///
+/// ```lisp
+/// (let ([x (+ 1 1)]) x
+/// ```
+#[test]
+fn compile_expr_let() {
+    assert_eq!(
+        scheme::compile("(let ([x (+ 1 1)]) x)"),
+        Ok(list!(
+            InstCell(NIL),
+            InstCell(LDC), AtomCell(SInt(1)),
+            InstCell(LDC), AtomCell(SInt(1)),
+            InstCell(ADD),
+            InstCell(CONS),
+            InstCell(LDF),
+            ListCell(box list!(
+                InstCell(LD), ListCell(box list!(
+                        AtomCell(UInt(1)),AtomCell(UInt(1))
+                    )),
+                InstCell(RET)
+            )),
+            InstCell(AP)
+        ))
+    );
+}
