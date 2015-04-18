@@ -209,6 +209,14 @@ pub struct SExprNode {
 }
 
 impl ASTNode for SExprNode {
+
+    /// Compile method for S-expression nodes.
+    ///
+    /// Since almost all of Scheme syntax is S-expressions,
+    /// that means that this is responsible for compiling approximately
+    /// ... everything.
+    ///
+    /// Abandon all hope, ye who enter here.
     #[unstable(feature="compile")]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         // TODO: break this monster apart into sub-functions
@@ -409,10 +417,12 @@ impl SExprNode {
     /// Tests to see if this node is a binding expression
     #[stable(feature = "compile",since = "0.1.1")]
     fn is_bind(&self) -> bool {
+        // I wish I didn't have to do it this way, there's an apparent
+        // Rust issue (rust-lang/rust#23762) that makes it impossible
+        // to use `as_ref()` in a pattern guard.
         match *self.operator {
-            // I wish I didn't have to do it this way, there's an apparent
-            // Rust issue (rust-lang/rust#23762) that makes it impossible
-            // to use `as_ref()` in a pattern guard.
+            // If you understand why it must be this way, then you have
+            // achieved true enlightenment.
             Name(ref node)  => match node.name.as_ref() {
                 "lambda" | "let" | "letrec" => true,
                 _                           => false
@@ -725,6 +735,10 @@ impl ASTNode for CharNode {
 pub struct StringNode { pub value: String }
 
 impl ASTNode for StringNode {
+    /// Method to compile a String.
+    ///
+    /// For now, this compiles strings into lists of characters.
+    /// Eventually this may change.
     #[unstable(feature="compile")]
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
