@@ -1,6 +1,5 @@
 #![feature(scheme)]
 #![feature(compile)]
-#![feature(convert)]
 extern crate rustc_serialize;
 extern crate docopt;
 
@@ -9,7 +8,7 @@ extern crate seax_scheme as scheme;
 
 use docopt::Docopt;
 use std::io;
-use std::io::{Read, BufRead};
+use std::io::{Write, Read, BufRead,BufReader};
 
 static USAGE: &'static str = "
 Usage:
@@ -35,18 +34,22 @@ fn main() {
                 .and_then(|d| d.decode())
                 .unwrap_or_else(|e| e.exit());
     if args.cmd_repl {
-        let mut console = io::stdin();
-        let lock = console.lock();
-        for line in lock.lines() {
-            println!(">");
+        let mut stdin = BufReader::new(io::stdin());
+        let mut stdout = io::stdout();
+        print!("scheme> ");
+        stdout.flush();
+        for line in stdin.lines() {
+
             match line {
                 Ok(line) => { scheme::compile(line.as_ref())
                                 .and_then(  |p| Ok(svm::eval_program(p, args.flag_debug)) )
                                 .map(       |r| println!("{}", r) )
                                 .map_err(   |e| println!("{}", e) ); },
                 Err(why) => println!("{}", why)
-
             }
+
+            print!("scheme> ");
+            stdout.flush();
         }
     }
 }
