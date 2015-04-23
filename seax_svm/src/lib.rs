@@ -46,7 +46,8 @@ pub struct State {
     dump:  List<SVMCell>
 }
 
-type EvalResult = Result<(State,Option<u8>), String>;
+#[unstable(feature="eval")]
+pub type EvalResult = Result<(State,Option<u8>), String>;
 
 #[stable(feature="vm_core", since="0.1.0")]
 impl State {
@@ -97,7 +98,7 @@ impl State {
                 -> EvalResult {
         // TODO: this (by which I mean "the whole caching deal") could likely be made
         // better and/or faster with some clever (mis?)use of RefCell; look into that.
-        let prev = if debug { Some(self.clone()) } else { None };
+        let mut prev = if debug { Some(self.clone()) } else { None };
         // in ths pattern match, we begin The Great Work
         match self.control.pop().unwrap() {
             // NIL: pop an empty list onto the stack
@@ -109,7 +110,9 @@ impl State {
             }, None)),
             // LDC: load constant
             (InstCell(LDC), new_control) => {
-                let (atom,newer_control) = try!(new_control.pop());
+                let (atom,newer_control) = try!(new_control.pop().ok_or(
+                    format!("[fatal][LDC]: pop on empty stack\n{}",
+                        prev.take().map_or(String::new(), |x| x.dump_state("fatal") ))) );
                 Ok((State {
                     stack: self.stack.push(atom),
                     env: self.env,
@@ -195,8 +198,7 @@ impl State {
                 let (top, new_dump) = try!(match self.dump.pop() {
                     Some(thing) => Ok(thing),
                     None        => Err(format!(
-                        "[fatal][JOIN]: pop on empty dump stack\n{}",
-                        prev.map_or(String::new(), |x| x.dump_state("fatal") )) )
+                        "[fatal][JOIN]: pop on empty dump stack") )
                 });
                 match top {
                     ListCell(box Nil) => Ok((State {
@@ -213,7 +215,7 @@ impl State {
                     }, None)),
                     anything          => Err(format!(
                         "[fatal][JOIN]: expected list on dump, found {:?}\n{}",
-                        anything,prev.map_or(String::new(), |x| x.dump_state("fatal") )) )
+                        anything, prev.map_or(String::new(), |x| x.dump_state("fatal") )) )
                 }
             },
             (InstCell(ADD), new_control) => match self.stack.pop() {
@@ -263,9 +265,7 @@ impl State {
                     AtomCell(a) => {
                         let (op2, newer_stack) = try!(match new_stack.pop() {
                             Some(thing) => Ok(thing),
-                            None        => Err(format!(
-                                "[fatal][FDIV]: pop on empty stack\n{}",
-                                prev.map_or(String::new(), |x| x.dump_state("fatal") )) )
+                            None        => Err("[fatal][FDIV]: pop on empty stack")
                         });
                         match op2 {
                             AtomCell(b) => Ok((State {
@@ -299,13 +299,11 @@ impl State {
                                 dump: self.dump
                             }, None)),
                             b => Err(format!(
-                                "[fatal][FDIV]: TypeError: expected compatible operands, found (FDIV {:?} {:?})\n{}",
-                                a, b,prev.map_or(String::new(), |x| x.dump_state("fatal") )) )
+                                "[fatal][FDIV]: TypeError: expected compatible operands, found (FDIV {:?} {:?})", a, b) )
                         }
                     },
                     _ => Err(format!(
-                            "[fatal][FDIV]: Expected first operand to be atom, found list or instruction\n{}",
-                            prev.map_or(String::new(), |x| x.dump_state("fatal") )) ),
+                            "[fatal][FDIV]: Expected first operand to be atom, found list or instruction" )),
                 }
             },
             (InstCell(DIV), new_control) => match self.stack.pop() {
@@ -528,24 +526,21 @@ impl State {
             (InstCell(RET), _) => {
                 let (head, _) = self.stack.pop().unwrap();
                 let (new_stack, new_dump) = try!(match self.dump.pop()  {
-                    (ListCell(s), d @ _)    => Ok((*s, d)),
-                    it @ (AtomCell(_),_)    => Ok((list!(it.0), it.1)),
-                    _                       => Err(format!(
-                        "[fatal][RET]: Expected non-empty stack\n{}",
-                        prev.map_or(String::new(), |x| x.dump_state("fatal") )) )
+                    Some((ListCell(s), d))      => Ok((*s, d)),
+                    Some(it @ (AtomCell(_),_))  => Ok((list!(it.0), it.1)),
+                    _                           => Err(
+                        "[fatal][RET]: Expected non-empty stack")
                 });
-                let (new_env, newer_dump) = try!(match new_dump.pop().unwrap() {
-                    (ListCell(e), d @ _)    => Ok((*e, d)),
-                    _                       => Err(format!(
-                        "[fatal][RET]: Expected new environment on dump stack\n{}",
-                        prev.map_or(String::new(), |x| x.dump_state("fatal") )) )
+                let (new_env, newer_dump) = try!(match new_dump.pop() {
+                    Some((ListCell(e), d))  => Ok((*e, d)),
+                    _                       => Err(
+                        "[fatal][RET]: Expected new environment on dump stack")
                 });
-                let (newer_control, newest_dump) = try!(match newer_dump.pop().unwrap() {
-                    (ListCell(c), d @ _)    => Ok((*c, d)),
-                    it @ (InstCell(_),_)    => Ok((list!(it.0), it.1)),
-                    _                       => Err(format!(
-                        "[fatal][RET]: Expected new control stack on dump stack\n{}",
-                        prev.map_or(String::new(), |x| x.dump_state("fatal") )) )
+                let (newer_control, newest_dump) = try!(match newer_dump.pop() {
+                    Some((ListCell(c), d))      => Ok((*c, d)),
+                    Some(it @ (InstCell(_),_))  => Ok((list!(it.0), it.1)),
+                    _                           => Err(
+                        "[fatal][RET]: Expected new control stack on dump stack")
                 });
                 Ok((State {
                     stack: new_stack.push(head),
