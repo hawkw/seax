@@ -34,7 +34,6 @@ pub use self::cell::{SVMCell,Atom,Inst};
 use self::cell::SVMCell::*;
 use self::cell::Atom::*;
 use self::cell::Inst::*;
-use std::io;
 
 /// Represents a SVM machine state
 #[derive(PartialEq,Clone,Debug)]
