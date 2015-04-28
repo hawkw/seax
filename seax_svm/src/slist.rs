@@ -557,7 +557,7 @@ impl<T> Index<usize> for List<T> {
 /// # use seax_svm::slist::List::{Cons, Nil};
 /// # fn main () {
 /// let list = list!(1,2,3,4,5,6);
-/// assert_eq!(list[0is], 1);
+/// assert_eq!(list[0], 1);
 /// # }
 /// ```
     #[stable(feature="list", since="0.1.0")]

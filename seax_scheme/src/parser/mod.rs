@@ -1,7 +1,10 @@
 extern crate parser_combinators;
 
-use self::parser_combinators::{try, between, spaces, string, parser, many, many1, digit, any_char, optional, hex_digit, not_followed_by, skip_many, satisfy, newline, Parser, ParserExt, ParseResult};
-use self::parser_combinators::primitives::State;
+use self::parser_combinators::{try, between, parser, many, many1, any_char,
+    optional, hex_digit, not_followed_by, skip_many, newline,ParserExt,};
+use self::parser_combinators::combinator::With;
+use self::parser_combinators::primitives::{Parser, ParseResult, State};
+use self::parser_combinators::char::{space,spaces,Spaces,digit,satisfy,string};
 
 use super::ast::*;
 use super::ast::ExprNode::*;
@@ -12,6 +15,11 @@ use std::error::Error;
 
 #[cfg(test)]
 mod tests;
+
+fn lex<'a, P>(p: P) -> With<Spaces<&'a str>, P>
+    where P: Parser<Input=&'a str> {
+    spaces().with(p)
+}
 
 #[stable(feature="parser",since="0.0.2")]
 fn hex_scalar(input: State<&str>) -> ParseResult<String, &str> {
@@ -36,7 +44,6 @@ pub fn sint_const(input: State<&str>) -> ParseResult<NumNode, &str> {
                     .map(|x| isize::from_str_radix(x.as_ref(), 16).unwrap()) )
             .parse_state(input)
     }
-
 
     fn dec_int(input: State<&str>) -> ParseResult<isize, &str> {
         optional(satisfy(|c| c == '#')
@@ -217,8 +224,7 @@ pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
         }
 
         fn subsequent(input: State<&str>) -> ParseResult<char, &str> {
-            satisfy(|c|
-                    c.is_alphanumeric()
+            satisfy(|c| c.is_alphanumeric()
                     // R6RS 'special initial' characters
                     || c == '!' || c == '$' || c == '%' || c == ':' || c == '^'
                     || c == '<' || c == '>' || c == '_' || c == '~' || c == '\\'
@@ -411,7 +417,7 @@ pub fn string_const(input: State<&str>) -> ParseResult<StringNode, &str> {
 pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
     fn sexpr_inner(input: State<&str>) -> ParseResult<ExprNode, &str> {
         parser(expr)
-            .and(many(parser(expr)))
+            .and(lex(many(parser(expr))))
             .map(|x| {
                 SExpr(SExprNode {
                     operator: box x.0,
@@ -424,13 +430,13 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
     fn sexpr(input: State<&str>) -> ParseResult<ExprNode, &str> {
         between(
             satisfy(|c| c == '('),
-            satisfy(|c| c == ')'),
-            parser(sexpr_inner)
+            lex(string(")").or(string(" )"))),
+            lex(parser(sexpr_inner))
         ).or(
             between(
                 satisfy(|c| c == '['),
-                satisfy(|c| c == ']'),
-                parser(sexpr_inner)
+                lex(satisfy(|c| c == ']')),
+                lex(parser(sexpr_inner))
             )
         ).parse_state(input)
     }
@@ -438,17 +444,18 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
     fn list(input: State<&str>) -> ParseResult<ExprNode, &str>{
         between(
             satisfy(|c| c == '('),
-            satisfy(|c| c == ')'),
-            many(parser(expr))
+            lex(string(")").or(string(" )"))),
+            lex(many(parser(expr))
                 .map(|x| {
                     ListConst(ListNode {
                         elements: x
                     })
-                })
+                }))
         ).parse_state(input)
     }
 
     fn constant(input: State<&str>) -> ParseResult<ExprNode, &str>{
+
         try(parser(number).map(NumConst))
             .or(try(parser(character).map(CharConst)))
             .or(try(parser(string_const).map(StringConst)))
@@ -457,18 +464,17 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
     }
 
     fn non_constant(input: State<&str>) -> ParseResult<ExprNode, &str>{
-        try(parser(sexpr))
-            .or(try(parser(list)))
-            .or(try(parser(name).map(Name)))
+        parser(sexpr)
+            .or(parser(list))
+            .or(parser(name).map(Name))
             .parse_state(input)
     }
 
-    spaces().with(
-        try(optional(parser(line_comment))).with(
-            parser(non_constant)
+    lex(try(optional(parser(line_comment))).with(
+            lex(parser(non_constant))
                 .or(parser(constant))
-            )
-        ).parse_state(input)
+            ))
+        .parse_state(input)
 }
 #[unstable(feature="parser")]
 pub fn parse(program: &str) -> Result<ExprNode, String> {

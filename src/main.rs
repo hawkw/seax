@@ -38,16 +38,16 @@ fn main() {
         let mut stdout = io::stdout();
         print!("scheme> ");
         stdout.flush();
-        for line in stdin.lines() {
+        for line in stdin.lines() {/*
 
             match line {
                 Ok(line) => { scheme::compile(line.as_ref())
-                                .and_then(  |p| Ok(svm::eval_program(p, args.flag_debug)) )
+                                .and_then(  |p| Ok(svm::eval(p, args.flag_debug)) )
                                 .map(       |r| println!("{}", r) )
                                 .map_err(   |e| println!("{}", e) ); },
                 Err(why) => println!("{}", why)
             }
-
+            */
             print!("scheme> ");
             stdout.flush();
         }
