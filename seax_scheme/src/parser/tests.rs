@@ -478,30 +478,3 @@ fn test_lex_string() {
     );
 }
 
-#[test]
-fn test_space_sexpr() {
- assert_eq!(parser(expr).parse("(+ 10 (if (nil? nil) 10 20) )"),
-        Ok((
-            SExpr(SExprNode {
-                operator: box Name(NameNode::new("+".to_string())),
-                operands: vec![
-                    NumConst(IntConst(IntNode{value:10})),
-                    SExpr(SExprNode{
-                        operator: box Name(NameNode::new("if".to_string())),
-                        operands: vec![
-                            SExpr(SExprNode{
-                                operator: box Name(NameNode::new("nil?".to_string())),
-                                operands: vec![Name(NameNode::new("nil".to_string()))]
-
-                            }),
-                            NumConst(IntConst(IntNode{value:10})),
-                            NumConst(IntConst(IntNode{value:20}))
-                        ]
-                    })
-                ]
-            }
-            ),
-            "")
-        )
-    )
-}
