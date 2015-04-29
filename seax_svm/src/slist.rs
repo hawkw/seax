@@ -432,10 +432,15 @@ impl<T> FromIterator<T> for List<T> {
     #[inline]
     #[stable(feature="list", since="0.2.3")]
     fn from_iter<I>(iterable: I) -> List<T> where I: IntoIterator<Item=T> {
-            let mut result  = List::new();
+            debug!("started `from_iter`");
+            let mut result: List<T>  = List::new();
+            debug!("made new list");
             iterable
                 .into_iter()
-                .fold(&mut result, |l, it| l.append_chain(it));
+                .fold(&mut result, |l, it| {
+                    debug!("appending");
+                    l.append_chain(it) });
+            debug!("help i'm trapped in a List<T> factory!");
             result
     }
 
@@ -513,7 +518,7 @@ impl<'a, T> ExactSizeIterator for ListIterator<'a, T> {
 /// # use seax_svm::slist::List::{Cons, Nil};
 /// # fn main () {
 /// let list = list!(1,2,3,4,5,6);
-/// assert_eq!(list[0us], 1);
+/// assert_eq!(list[0usize], 1);
 /// # }
 /// ```
 #[stable(feature="list", since="0.1.0")]
@@ -557,7 +562,7 @@ impl<T> Index<usize> for List<T> {
 /// # use seax_svm::slist::List::{Cons, Nil};
 /// # fn main () {
 /// let list = list!(1,2,3,4,5,6);
-/// assert_eq!(list[0], 1);
+/// assert_eq!(list[0isize], 1);
 /// # }
 /// ```
     #[stable(feature="list", since="0.1.0")]
