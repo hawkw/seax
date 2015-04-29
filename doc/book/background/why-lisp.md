@@ -1,6 +1,7 @@
 % Why SECD and Lisp? 
 
 > "Lisp is Lego for adults."
+> 
 > &mdash; [Paul Graham](https://twitter.com/paulg/status/588511912331055104)
 
 The SECD machine is deeply linked with the [Lisp](http://en.wikipedia.org/wiki/Lisp_(programming_language)) family of programming languages. Lisp is among the oldest programming languages still in use today; originating in 1958, it predates C by 14 years. Lisp's syntax is significantly different from most popular programming languages, and many programmers consider it arcane or confusing. 
