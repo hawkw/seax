@@ -4,6 +4,10 @@ At the core of the Seax runtime environment is an implementation of the SECD abs
 
 Each of these registers contains, at any given time, either a [`cons`](/cons-list.md) cell or the empty list (`nil`). These `car` parts of these `cons` cells may point to any of the [SVM memory cell types](svm.html#svm-primitive-data-types) --- either atoms, lists, or SVM instructions. The SECD machine treats each of these lists as a stack, dealing only with the head element of each list at any given time.
 
+## The Stack
+
+The `$s` register is used for temprary data storage. Not unlike the temporary registers in a register machine architecture, it stores data that is currently being manipulated. When data is loaded from the environment or from main memory, it is pushed to the stack; and function calls and instructions that require operands expect to find their arguments on the stack.
+
 ## The Control Stack and SECD Control Flow
 
 The `$c` (control) register plays a role similar to that of the program counter on other hardware architectures. It contains a list of SVM instructions corresponding to the code of the program currently under execution. Since these instructions are stored in a list, the control stack may be permuted using the same list and stack operations as the program's data. To those readers who recall our discussion of Lisp's quality of [homoiconicity](why-lisp.html#homoiconicity), this concept should seem familiar. The SECD machine can, therefore, perfrom control-flow operations by modifying the contents of the control stack. 
