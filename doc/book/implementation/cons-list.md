@@ -30,7 +30,7 @@ pub enum List<T> {
 
 Do note that the Rust implementation is somewhat more complicated due to Rust's memory management and typing discipline. In Scheme, we can say, even more simply:
 
-```scheme
+```lisp
 (define (cons a b) (lambda (x) (x a b)))
 ```
 

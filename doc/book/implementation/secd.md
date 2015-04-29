@@ -1,3 +1,11 @@
 % The SECD Abstract Machine
 
-At the core of the Seax runtime environment is an implementation of the SECD abstract machine. The SECD machine is so named for the four registers that make up the machine's architecture `$s`, the stack; `$e`, the environment stack; `$c`, the control stack; and `$d`, the dump stack. Each of these registers contains, at any given time, either a `CONS` cell or the empty list (`nil`). These `CONS`
+At the core of the Seax runtime environment is an implementation of the SECD abstract machine. The SECD machine is so named for the four registers that make up the machine's architecture `$s`, the stack; `$e`, the environment stack; `$c`, the control stack; and `$d`, the dump stack. 
+
+Each of these registers contains, at any given time, either a [`cons`](/cons-list.md) cell or the empty list (`nil`). These `car` parts of these `cons` cells may point to any of the [SVM memory cell types](svm.html#svm-primitive-data-types) --- either atoms, lists, or SVM instructions. The SECD machine treats each of these lists as a stack, dealing only with the head element of each list at any given time.
+
+## The Control Stack and SECD Control Flow
+
+The `$c` (control) register plays a role similar to that of the program counter on other hardware architectures. It contains a list of SVM instructions corresponding to the code of the program currently under execution. Since these instructions are stored in a list, the control stack may be permuted using the same list and stack operations as the program's data. To those readers who recall our discussion of Lisp's quality of [homoiconicity](why-lisp.html#homoiconicity), this concept should seem familiar. The SECD machine can, therefore, perfrom control-flow operations by modifying the contents of the control stack. 
+
+For example, consider the case of function calls (a primary control-flow primitive in Lisp and other functional-programming languages). In the SECD machine, functions are stored as lists of SVM instructions and data, either on the control stack as anonymous functions or on the environment stack as functions bound to names. Function calls can then be performed qhite simply, by setting the `$c` register to point at the head `cons` cell of the list corresponding to the function being called. The dump stack (`$d`) is used to store the current contents of the control stack so that they may be restored when control is returned to the calling function.
