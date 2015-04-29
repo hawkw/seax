@@ -34,4 +34,8 @@ Do note that the Rust implementation is somewhat more complicated due to Rust's 
 (define (cons a b) (lambda (x) (x a b)))
 ```
 
-Therefore, by repeatedly `cons`ing 
+Therefore, by repeatedly `cons`ing together a series of items, a singly linked list is created. Each `cons` cell in the list contains as its `car` a pointer to an item, while its `cdr` is a pointer to the remainder (or _tail_) of the list, and the list may be traversed by following the `cdr`s from the head element down. The `cdr` of the last item in the list points to `nil`, the empty-list symbol. 
+
+For example, a list of numbers 1 through 4 could be represented by the list `(1 . (2 . (3 . (4 . nil ))))`. Since typing out such expressions will quickly become rather time-consuming (and may lead to a national perentheses shortage), we may use the shorthands `(1,2,3,4)` or `(1 2 3 4)` to refer to such a list.
+
+For more information on the singly-linked `cons` list as used in Seax, please consult the [API documentation](http://hawkweisman.me/seax/api/seax_svm/slist/index.html) for `seax_svm::slist`.
