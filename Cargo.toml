@@ -14,6 +14,7 @@ keywords = ["vm","lisp","languages"]
 docopt = "*"
 regex = "*"
 rustc-serialize = "*"
+log = "0.3.1"
 
 [dependencies.seax_svm]
 path = "seax_svm"

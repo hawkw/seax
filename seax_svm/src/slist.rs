@@ -52,7 +52,7 @@ pub trait Stack<T> {
     fn empty()              -> Self;
 }
 
-/// Stack implementation using a cons list
+/// Stack implementation using a `cons` list
 impl<T> Stack<T> for List<T> {
 
     /// Push an item to the top of the stack, returning a new stack.
@@ -138,19 +138,19 @@ impl<T> Stack<T> for List<T> {
 
 }
 
-/// Singly-linked cons list.
+/// Singly-linked `cons` list.
 ///
 /// This is used internally to represent list primitives in the
-/// machine.
+/// Seax virtual machine.
 ///
-/// TODO: potentially, a pointer to the last itemof the list could be
-/// cached using a `RefCell` or something to speed up access for
-/// appends/tail access. We could also check the length and decide whether
-/// to link hop from the head or tail when indexing. It would be necessary
-/// to investigate whether the added overhead of caching (both in terms of
-/// space and in terms of time taken to update the cache) would be worth
-/// the performance benefits --- my guess is that caching is worth the added
-/// costs (as usual).
+// TODO: potentially, a pointer to the last itemof the list could be
+// cached using a `RefCell` or something to speed up access for
+// appends/tail access. We could also check the length and decide whether
+// to link hop from the head or tail when indexing. It would be necessary
+// to investigate whether the added overhead of caching (both in terms of
+// space and in terms of time taken to update the cache) would be worth
+// the performance benefits --- my guess is that caching is worth the added
+// costs (as usual).
 #[derive(PartialEq,Clone)]
 #[stable(feature="list", since="0.1.0")]
 pub enum List<T> {

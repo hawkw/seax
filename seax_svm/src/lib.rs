@@ -7,9 +7,9 @@
 
 /// Singly-linked list and stack implementations.
 ///
-/// `List<T>` is a singly-linked cons list with boxed items. `Stack<T>` is
-///  defined as a trait providing stack operations(`push()`, `pop()`, and
-///  `peek()`), and an implementation for `List`.
+/// `List<T>` is a singly-linked `cons` list.
+/// `Stack<T>` is a trait providing stack operations(`push()`, `pop()`, and
+/// `peek()`), and an implementation for `List`.
 #[macro_use]
 #[stable(feature="list", since="0.1.0")]
 pub mod slist;
@@ -45,8 +45,23 @@ pub struct State {
     dump:  List<SVMCell>
 }
 
+/// A VM state's IO action
+///
+/// Take note that this will eventually be replaced with memory-mapped IO
+/// when the main memory management scheme is done; therefore, it should
+/// never be marked as stable. Consider this struct and anything that depends
+/// on it to be an ugly hack.
+#[derive(PartialEq,Clone,Debug)]
 #[unstable(feature="eval")]
-pub type EvalResult = Result<(State,Option<u8>), String>;
+pub enum IOEvent {
+    /// A character was requested from the buffer
+    Req,
+    /// A character was buffered
+    Buf(char)
+}
+
+#[unstable(feature="eval")]
+pub type EvalResult = Result<(State,Option<IOEvent>), String>;
 
 #[stable(feature="vm_core", since="0.1.0")]
 impl State {
@@ -675,7 +690,7 @@ impl State {
                         env: self.env,
                         control: new_control,
                         dump: self.dump
-                    }, Some(ch as u8)) )
+                    }, Some(IOEvent::Buf(ch))) )
                 },
                 Some((thing_else,_)) => panic!(
                     "[fatal][WRITEC]: expected char, found {:?}\n{}",

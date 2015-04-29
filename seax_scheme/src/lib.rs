@@ -23,6 +23,9 @@
 #[macro_use]
 extern crate seax_svm as svm;
 
+#[macro_use]
+extern crate log;
+
 /// Contains the Scheme abstract syntax tree (AST).
 ///
 /// The AST stores the semantic structure of a parsed Scheme
@@ -73,6 +76,8 @@ use self::ast::{ASTNode,ExprNode};
 #[unstable(feature="compile")]
 pub fn compile(program: &str) -> Result<List<SVMCell>, String> {
     parser::parse(program)
+        .map(     |p|{debug!("parsed:\n{:?}",p); p} )
         .and_then(|tree: ExprNode     | tree.compile(&ForkTable::new()) )
+        .map(     |p|{debug!("compiled: {}",p); p} )
         .map(     |prog: Vec<SVMCell> | List::from_iter(prog) )
 }
