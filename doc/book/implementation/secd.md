@@ -1,0 +1,3 @@
+% The SECD Abstract Machine
+
+At the core of the Seax runtime environment is an implementation of the SECD abstract machine. The SECD machine is so named for the four registers that make up the machine's architecture `$s`, the stack; `$e`, the environment stack; `$c`, the control stack; and `$d`, the dump stack. Each of these registers contains, at any given time, either a `CONS` cell or the empty list (`nil`). These `CONS`
