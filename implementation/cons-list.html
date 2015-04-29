@@ -104,7 +104,7 @@
 
 <p>Do note that the Rust implementation is somewhat more complicated due to Rust&#39;s memory management and typing discipline. In Scheme, we can say, even more simply:</p>
 
-<pre><code class="language-scheme">(define (cons a b) (lambda (x) (x a b)))
+<pre><code class="language-lisp">(define (cons a b) (lambda (x) (x a b)))
 </code></pre>
 
 <p>Therefore, by repeatedly <code>cons</code>ing together a series of items, a singly linked list is created. Each <code>cons</code> cell in the list contains as its <code>car</code> a pointer to an item, while its <code>cdr</code> is a pointer to the remainder (or <em>tail</em>) of the list, and the list may be traversed by following the <code>cdr</code>s from the head element down. The <code>cdr</code> of the last item in the list points to <code>nil</code>, the empty-list symbol. </p>
