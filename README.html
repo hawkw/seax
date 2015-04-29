@@ -38,9 +38,7 @@
 </li>
 <li><a href='./background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
 </li>
-<li><a href='./background/secd.html'><b>2.4.</b> The SECD Architecture</a>
-</li>
-<li><a href='./background/influences.html'><b>2.5.</b> Influences</a>
+<li><a href='./background/influences.html'><b>2.4.</b> Influences</a>
 </li>
 </ul>
 </li>
@@ -50,9 +48,13 @@
 </li>
 <li><a href='./implementation/overview.html'><b>3.2.</b> Overview</a>
 </li>
-<li><a href='./implementation/svm.html'><b>3.3.</b> Seax Virtual Machine</a>
+<li><a href='./implementation/cons-list.html'><b>3.3.</b> The Singly-Linked List</a>
 </li>
-<li><a href='./implementation/scheme.html'><b>3.4.</b> Seax Scheme</a>
+<li><a href='./implementation/secd.html'><b>3.4.</b> The SECD Architecture</a>
+</li>
+<li><a href='./implementation/svm.html'><b>3.5.</b> Seax Virtual Machine</a>
+</li>
+<li><a href='./implementation/scheme.html'><b>3.6.</b> Seax Scheme</a>
 </li>
 </ul>
 </li>
@@ -97,7 +99,7 @@
 <p>This section contains information relevant to those who wish to use Seax in their projects. Information is provided on writing Seax bytecode, writing Scheme programs using the Seax Scheme compiler, using Seax as a library for embedded program execution, and Seax as a compilation target for compiler implementors.</p>
 
     <script type="text/javascript">
-        window.playgroundUrl = "";
+        window.playgroundUrl = "http://play.rust-lang.org";
     </script>
     
 <script type="text/javascript">
@@ -141,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   }
 
   for (var i = 0; i < toc.length; i++) {
-    if (toc[i].attributes['href'].value === href) {
+    if (toc[i].attributes['href'].value.split('/').pop() === href) {
       var nav = document.createElement('p');
       if (i > 0) {
         var prevNode = toc[i-1].cloneNode(true);
@@ -160,6 +162,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 });
 </script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="playpen.js"></script>
 </div></div>
 
 

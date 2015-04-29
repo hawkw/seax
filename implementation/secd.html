@@ -38,9 +38,7 @@
 </li>
 <li><a href='../background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
 </li>
-<li><a href='../background/secd.html'><b>2.4.</b> The SECD Architecture</a>
-</li>
-<li><a href='../background/influences.html'><b>2.5.</b> Influences</a>
+<li><a href='../background/influences.html'><b>2.4.</b> Influences</a>
 </li>
 </ul>
 </li>
@@ -50,9 +48,13 @@
 </li>
 <li><a href='../implementation/overview.html'><b>3.2.</b> Overview</a>
 </li>
-<li><a href='../implementation/svm.html'><b>3.3.</b> Seax Virtual Machine</a>
+<li><a href='../implementation/cons-list.html'><b>3.3.</b> The Singly-Linked List</a>
 </li>
-<li><a href='../implementation/scheme.html'><b>3.4.</b> Seax Scheme</a>
+<li><a href='../implementation/secd.html'><b>3.4.</b> The SECD Architecture</a>
+</li>
+<li><a href='../implementation/svm.html'><b>3.5.</b> Seax Virtual Machine</a>
+</li>
+<li><a href='../implementation/scheme.html'><b>3.6.</b> Seax Scheme</a>
 </li>
 </ul>
 </li>
@@ -63,10 +65,10 @@
 
 
     <h1 class="title">The SECD Abstract Machine</h1>
-    <p>At the core of the Seax runtime environment is an implementation of the SECD abstract machine.</p>
+    <p>At the core of the Seax runtime environment is an implementation of the SECD abstract machine. The SECD machine is so named for the four registers that make up the machine&#39;s architecture <code>$s</code>, the stack; <code>$e</code>, the environment stack; <code>$c</code>, the control stack; and <code>$d</code>, the dump stack. Each of these registers contains, at any given time, either a <code>CONS</code> cell or the empty list (<code>nil</code>). These <code>CONS</code></p>
 
     <script type="text/javascript">
-        window.playgroundUrl = "";
+        window.playgroundUrl = "http://play.rust-lang.org";
     </script>
     
 <script type="text/javascript">
@@ -110,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   }
 
   for (var i = 0; i < toc.length; i++) {
-    if (toc[i].attributes['href'].value === href) {
+    if (toc[i].attributes['href'].value.split('/').pop() === href) {
       var nav = document.createElement('p');
       if (i > 0) {
         var prevNode = toc[i-1].cloneNode(true);
@@ -129,6 +131,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 });
 </script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="playpen.js"></script>
 </div></div>
 
 
