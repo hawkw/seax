@@ -52,7 +52,8 @@ fn run_list_car() {
 #[test]
 fn run_list_cdr() {
     assert_eq!(
-        svm::eval_program(scheme::compile("(cdr (cons 20 (cons 10 nil)))").unwrap(), true)            .unwrap()
+        svm::eval_program(scheme::compile("(cdr (cons 20 (cons 10 nil)))").unwrap(), true)
+            .unwrap()
             .peek(),
         Some(&ListCell(box list!(AtomCell(SInt(10)))))
     )
@@ -67,7 +68,8 @@ fn run_list_cdr() {
 #[test]
 fn run_simple_add() {
     assert_eq!(
-        svm::eval_program(scheme::compile("(+ 10 10)").unwrap(), true)            .unwrap()
+        svm::eval_program(scheme::compile("(+ 10 10)").unwrap(), true)
+            .unwrap()
             .peek(),
         Some(&AtomCell(SInt(20)))
     )
@@ -82,7 +84,8 @@ fn run_simple_add() {
 #[test]
 fn run_nested_arith() {
     assert_eq!(
-        svm::eval_program(scheme::compile("(- 20 (+ 5 5))").unwrap(), true)            .unwrap()
+        svm::eval_program(scheme::compile("(- 20 (+ 5 5))").unwrap(), true)
+            .unwrap()
             .peek(),
         Some(&AtomCell(SInt(10)))
     )
@@ -97,7 +100,8 @@ fn run_nested_arith() {
 #[test]
 fn run_basic_branching_1() {
     assert_eq!(
-        svm::eval_program(scheme::compile("(if (= 0 (- 1 1)) #t #f)").unwrap(), true)            .unwrap()
+        svm::eval_program(scheme::compile("(if (= 0 (- 1 1)) #t #f)").unwrap(), true)
+            .unwrap()
             .peek(),
         Some(&AtomCell(SInt(1)))
     )
@@ -112,7 +116,8 @@ fn run_basic_branching_1() {
 #[test]
 fn run_basic_branching_2() {
     assert_eq!(
-        svm::eval_program(scheme::compile("(+ 10 (if (nil? nil) 10 20))").unwrap(), true)            .unwrap()
+        svm::eval_program(scheme::compile("(+ 10 (if (nil? nil) 10 20))").unwrap(), true)
+            .unwrap()
             .peek(),
         Some(&AtomCell(SInt(20)))
     )
@@ -127,7 +132,8 @@ fn run_basic_branching_2() {
 #[test]
 fn run_lambda_ap() {
     assert_eq!(
-        svm::eval_program(scheme::compile("((lambda (x y) (+ x y)) 2 3)").unwrap(), true)            .unwrap()
+        svm::eval_program(scheme::compile("((lambda (x y) (+ x y)) 2 3)").unwrap(), true)
+            .unwrap()
             .peek(),
         Some(&AtomCell(SInt(5)))
     )
@@ -142,7 +148,9 @@ fn run_lambda_ap() {
 #[test]
 fn run_nested_lambda() {
     assert_eq!(
-        svm::eval_program(scheme::compile("((lambda (z) ((lambda (x y) (+ (- x y) z)) 3 5)) 6)").unwrap(), true)            .unwrap()
+        svm::eval_program(
+            scheme::compile("((lambda (z) ((lambda (x y) (+ (- x y) z)) 3 5)) 6)").unwrap(), true)
+            .unwrap()
             .peek(),
         Some(&AtomCell(SInt(4)))
     )

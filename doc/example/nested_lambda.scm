@@ -1,0 +1,1 @@
+((lambda (z) ((lambda (x y) (+ (- x y) z)) 3 5)) 6)
