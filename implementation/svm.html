@@ -38,9 +38,7 @@
 </li>
 <li><a href='../background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
 </li>
-<li><a href='../background/secd.html'><b>2.4.</b> The SECD Architecture</a>
-</li>
-<li><a href='../background/influences.html'><b>2.5.</b> Influences</a>
+<li><a href='../background/influences.html'><b>2.4.</b> Influences</a>
 </li>
 </ul>
 </li>
@@ -50,9 +48,13 @@
 </li>
 <li><a href='../implementation/overview.html'><b>3.2.</b> Overview</a>
 </li>
-<li><a href='../implementation/svm.html'><b>3.3.</b> Seax Virtual Machine</a>
+<li><a href='../implementation/cons-list.html'><b>3.3.</b> The Singly-Linked List</a>
 </li>
-<li><a href='../implementation/scheme.html'><b>3.4.</b> Seax Scheme</a>
+<li><a href='../implementation/secd.html'><b>3.4.</b> The SECD Architecture</a>
+</li>
+<li><a href='../implementation/svm.html'><b>3.5.</b> Seax Virtual Machine</a>
+</li>
+<li><a href='../implementation/scheme.html'><b>3.6.</b> Seax Scheme</a>
 </li>
 </ul>
 </li>
@@ -64,8 +66,25 @@
 
     <h1 class="title">Seax Virtual Machine</h1>
     
+<h2 id="svm-primitive-data-types" class='section-header'><a
+                           href="#svm-primitive-data-types">SVM Primitive Data Types</a></h2>
+<p>A cell in the Seax virtual machine&#39;s memory may consist of any of the following types:</p>
+
+<ul>
+<li><strong>Atom</strong>: any of the following SVM <a href="/api/seax_svm/cell/enum.Atom.html">atomic types</a>:
+
+<ul>
+<li><code>UInt</code>: an unsigned machine-size integer</li>
+<li><code>SInt</code>: a signed machine-size integer</li>
+<li><code>Float</code>: a 64-bit double-precision floating-point number</li>
+<li><code>Char</code>: a UTF-8 character</li>
+</ul></li>
+<li><strong>Instruction</strong>: any of the Seax Virtual Machine <a href="/api/seax_svm/cell/enum.Inst.html">instructions</a></li>
+<li><strong>List</strong>: a <a href="cons-list.html#the-cons-cell"><code>cons</code> cell</a> or the empty list (<code>nil</code>)</li>
+</ul>
+
     <script type="text/javascript">
-        window.playgroundUrl = "";
+        window.playgroundUrl = "http://play.rust-lang.org";
     </script>
     
 <script type="text/javascript">
@@ -109,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   }
 
   for (var i = 0; i < toc.length; i++) {
-    if (toc[i].attributes['href'].value === href) {
+    if (toc[i].attributes['href'].value.split('/').pop() === href) {
       var nav = document.createElement('p');
       if (i > 0) {
         var prevNode = toc[i-1].cloneNode(true);
@@ -128,6 +147,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 });
 </script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="playpen.js"></script>
 </div></div>
 
 
