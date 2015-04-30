@@ -65,7 +65,29 @@
 
 
     <h1 class="title">The SECD Abstract Machine</h1>
-    <p>At the core of the Seax runtime environment is an implementation of the SECD abstract machine. The SECD machine is so named for the four registers that make up the machine&#39;s architecture <code>$s</code>, the stack; <code>$e</code>, the environment stack; <code>$c</code>, the control stack; and <code>$d</code>, the dump stack. Each of these registers contains, at any given time, either a <code>CONS</code> cell or the empty list (<code>nil</code>). These <code>CONS</code></p>
+    <p>At the core of the Seax runtime environment is an implementation of the SECD abstract machine. The SECD machine is so named for the four registers that make up the machine&#39;s architecture <code>$s</code>, the stack; <code>$e</code>, the environment stack; <code>$c</code>, the control stack; and <code>$d</code>, the dump stack. </p>
+
+<p>Each of these registers contains, at any given time, either a <a href="/cons-list.html"><code>cons</code></a> cell or the empty list (<code>nil</code>). These <code>car</code> parts of these <code>cons</code> cells may point to any of the <a href="svm.html#svm-primitive-data-types">SVM memory cell types</a> --- either atoms, lists, or SVM instructions. The SECD machine treats each of these lists as a stack, dealing only with the head element of each list at any given time.</p>
+
+<h2 id="the-stack" class='section-header'><a
+                           href="#the-stack">The Stack</a></h2>
+<p>The <code>$s</code> (stack) register is used for temprary data storage. Not unlike the temporary registers in a register machine architecture, it stores data that is currently being manipulated. When data is loaded from the environment or from main memory, it is pushed to the stack; and function calls and instructions that require operands expect to find their arguments on the stack.</p>
+
+<h2 id="the-control-and-dump-stacks" class='section-header'><a
+                           href="#the-control-and-dump-stacks">The Control and Dump Stacks</a></h2>
+<p>The <code>%c</code> (control) and <code>$d</code> (dump) registers are responsible for control flow. The <code>$c</code> register plays a role similar to that of the program counter on other hardware architectures. It points to the head of a list of SVM instructions corresponding to the code of the program currently under execution. Since these instructions are stored in a list, the control stack may be permuted using the same list and stack operations as the program&#39;s data. To those readers who recall our discussion of Lisp&#39;s quality of <a href="why-lisp.html#homoiconicity">homoiconicity</a>, this concept should seem familiar. The SECD machine can, therefore, perfrom control-flow operations by modifying the contents of the control stack. </p>
+
+<p>For example, consider the case of function calls (a primary control-flow primitive in Lisp and other functional-programming languages). In the SECD machine, functions are stored as lists of SVM instructions and data, either on the control stack as anonymous functions or on the environment stack as functions bound to names. Function calls can then be performed qhite simply, by setting the <code>$c</code> register to point at the head <code>cons</code> cell of the list corresponding to the function being called. </p>
+
+<p>The <code>$d</code> register is used to store the current contents of the control stack so that they may be restored when control is returned to the calling function. When a function is called, the current machine state (i.e. the stack, control stack, and current environment) are bundled together into a list and pushed to the dump stack. When control is returned to the caller, its registers are restored from the dump. In this role, the <code>$d</code> register performs a portion of the functionality of the call stack in other architectures; restoring the call-site state from a stack frame after a function returns.</p>
+
+<h2 id="the-environment-stack" class='section-header'><a
+                           href="#the-environment-stack">The Environment Stack</a></h2>
+<p>The <code>$e</code> (environment) register contains named data. If the <code>$d</code> register can be said to perform half of the work commonly assigned to a call stack in other architectures (<em>viz.</em> storing the state at the call site and restoring it when a function returns), the environment stack performs the remainder of the call stack&#39;s labor: it is used to pass arguments to function calls.</p>
+
+<p>The environment stack is structured as a list of lists. Each level in the list corresponds to the scope of a particular function, with the head of the stack containing the arguments passed to the function currently under execution. The names bound to those arguments are associated by the compiler or interpreter with pairs of integers corresponding to the level and index in the environment stack where that variable is stored. We can note that the environment stack is, therefore, the only one of the SECD machine&#39;s stacks which is commonly accessed through indexing rather than sequentially through stack operations.</p>
+
+<p>In addition to storing function arguments, the environment stack also contains local variables to a scope. We should acknowledge that in the Lisp programming language, the <code>let</code> expression, which binds local variables within a scope, is semantically equivalent to a function call; it is simply syntactic sugar for an anonymous function. This subject will be discussed in greater detail later on. That the binding of variables local to a scope takes place on the environment stack also provides us with a limited form of stack-based memory management for these variables.</p>
 
     <script type="text/javascript">
         window.playgroundUrl = "http://play.rust-lang.org";
