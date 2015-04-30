@@ -13,11 +13,7 @@ extern crate log;
 
 use docopt::Docopt;
 use std::io;
-use std::io::{Write, Read, BufRead,BufReader};
-use svm::slist::{List,Stack};
-use svm::cell::{SVMCell,Inst};
-use svm::State;
-use std::iter::FromIterator;
+use std::io::{Write, BufRead,BufReader};
 use std::error::Error;
 
 static USAGE: &'static str = "
@@ -46,32 +42,33 @@ fn main() {
                 .unwrap_or_else(|e| e.exit());
 
     if args.flag_verbose {
-        log::set_logger(|max_log_level| {
+        let _ = log::set_logger(|max_log_level| {
             max_log_level.set(log::LogLevelFilter::Debug);
             Box::new(loggers::DebugLogger)
         });
     } else {
-        log::set_logger(|max_log_level| {
+        let _ = log::set_logger(|max_log_level| {
             max_log_level.set(log::LogLevelFilter::Info);
             Box::new(loggers::DefaultLogger)
         });
     };
 
     if args.cmd_repl {
-        let mut stdin = BufReader::new(io::stdin());
+        let stdin = BufReader::new(io::stdin());
         let mut stdout = io::stdout();
 
         print!("scheme> ");
-        stdout.flush();
+        let _ = stdout.flush();
 
         for line in stdin.lines() {
-            line.map_err(   |error   | String::from_str(error.description()) )
+            match line.map_err(|error| String::from_str(error.description()) )
                 .and_then(  |ref code| scheme::compile(code) )
-                .map(       |program | svm::eval_program(program, true) )
-                .map(       |result  | println!(">> {:?}", result) )
-                .map_err(   |err     | error!("{}", err));
+                .map(       |program | svm::eval_program(program, true) ) {
+                    Ok(result)  => println!(">> {:?}",result),
+                    Err(why)    => error!("{:?}", why)
+                };
             print!("scheme> ");
-            stdout.flush();
+            let _ = stdout.flush();
         }
     }
 }
