@@ -743,7 +743,9 @@ impl State {
 /// Evaluates a program (control stack) and returns the final state.
 /// TODO: add (optional?) parameters for stdin and stdout
 #[stable(feature="vm_core",since="0.2.0")]
-pub fn eval_program(program: List<SVMCell>, debug: bool) -> List<SVMCell> {
+pub fn eval_program(program: List<SVMCell>,
+                    debug: bool)
+    -> Result<List<SVMCell>,String> {
     debug!("evaluating {}", program);
     let mut machine = State {
         stack:      Stack::empty(),
@@ -756,7 +758,7 @@ pub fn eval_program(program: List<SVMCell>, debug: bool) -> List<SVMCell> {
         machine.control.length() > 0usize &&
         machine.control.peek()!= Some(&InstCell(STOP))
     } {  //TODO: this is kinda heavyweight
-        machine = machine.eval(None,debug).unwrap().0 // continue evaling
+        machine = try!(machine.eval(None,debug)).0 // continue evaling
     };
-    machine.stack
+    Ok(machine.stack)
 }

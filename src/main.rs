@@ -63,9 +63,9 @@ fn main() {
         for line in stdin.lines() {
             match line.map_err(|error| String::from_str(error.description()) )
                 .and_then(  |ref code| scheme::compile(code) )
-                .map(       |program | svm::eval_program(program, true) ) {
+                .and_then(  |program | svm::eval_program(program, args.flag_debug) ) {
                     Ok(result)  => println!(">> {:?}",result),
-                    Err(why)    => error!("{:?}", why)
+                    Err(why)    => error!("{}", why)
                 };
             print!("scheme> ");
             let _ = stdout.flush();
