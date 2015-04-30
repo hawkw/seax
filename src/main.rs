@@ -2,6 +2,8 @@
 #![feature(scheme)]
 #![feature(compile)]
 #![feature(collections)]
+#![feature(convert)]
+
 extern crate rustc_serialize;
 extern crate docopt;
 extern crate regex;
@@ -16,8 +18,11 @@ use docopt::Docopt;
 use regex::Regex;
 
 use std::io;
-use std::io::{Write, BufRead,BufReader};
+use std::io::{Write, Read, BufRead,BufReader};
 use std::error::Error;
+use std::fs::File;
+use std::path::{PathBuf, Path};
+use std::convert::AsRef;
 
 static USAGE: &'static str = "
 Usage:
@@ -79,10 +84,21 @@ fn main() {
         match ext_re
             .captures(args.arg_file.as_ref())
             .and_then(|c| c.name("ext")) {
-            Some(".scm")   => {
+            Some(".scm")   => { // interpret scheme
                 debug!("Interpreting Scheme file {}", args.arg_file);
-                unimplemented!()
-                }, // interpret scheme
+                let path = PathBuf::from(args.arg_file.as_str());
+                match File::open(&path)
+                    .map_err(|error    | String::from_str(error.description()) )
+                    .and_then(|mut file| {
+                        let mut s = String::new();
+                        file.read_to_string(&mut s).map(|_| s)
+                            .map_err(|error| String::from_str(error.description()) ) })
+                    .and_then(  |ref code| scheme::compile(code) )
+                    .and_then(  |program | svm::eval_program(program, args.flag_debug) ) {
+                        Ok(result)  => println!(">> {:?}",result),
+                        Err(why)    => error!("{}", why)
+                };
+            },
             _              => {
                 debug!("Executing binary {}", args.arg_file);
                 unimplemented!()
