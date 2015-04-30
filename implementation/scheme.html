@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <title>Seax Scheme</title>
+
+    <link rel="stylesheet" type="text/css" href="../rust-book.css">
+
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    <div id="nav">
+                <button id="toggle-nav">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                  <span class="bar"></span>
+                </button>
+              </div>
+<div id='toc' class='mobile-hidden'>
+<ul class='chapter'>
+<li><a href='../README.html'><b>1.</b> Introduction</a>
+</li>
+<li><a href='../background/index.html'><b>2.</b> Background</a>
+<ul class='section'>
+<li><a href='../background/goals.html'><b>2.1.</b> Goals</a>
+</li>
+<li><a href='../background/why-vm.html'><b>2.2.</b> Why a virtual machine?</a>
+</li>
+<li><a href='../background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
+</li>
+<li><a href='../background/scheme.html'><b>2.4.</b> The Scheme Langauge</a>
+</li>
+<li><a href='../background/influences.html'><b>2.5.</b> Influences</a>
+</li>
+</ul>
+</li>
+<li><a href='../implementation/README.html'><b>3.</b> Implementation</a>
+<ul class='section'>
+<li><a href='../implementation/why-rust.html'><b>3.1.</b> Why Rust?</a>
+</li>
+<li><a href='../implementation/overview.html'><b>3.2.</b> Overview</a>
+</li>
+<li><a href='../implementation/cons-list.html'><b>3.3.</b> The Singly-Linked List</a>
+</li>
+<li><a href='../implementation/secd.html'><b>3.4.</b> The SECD Architecture</a>
+</li>
+<li><a href='../implementation/svm.html'><b>3.5.</b> Seax Virtual Machine</a>
+</li>
+<li><a href='../implementation/scheme.html'><b>3.6.</b> Seax Scheme</a>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id='page-wrapper'>
+<div id='page'>
+
+
+    <h1 class="title">Seax Scheme</h1>
+    <p>The Seax Scheme <a href="http://hawkweisman.me/seax/api/seax_scheme/index.html">crate</a> contains a library for generating SVM instructions from source code written in the Scheme programming language, <a href="background/scheme.html">as discussed previously</a>. </p>
+
+<p>The Scheme langauge is described fully in the <a href="http://www.r6rs.org">Revised<sup>6</sup> Report on the Algorithmic Language Scheme</a>, or R<sup>6</sup>RS. The Seax Scheme compiler aims to be a fully R<sup>6</sup>RS-compliant implementation of Scheme. However, it is important to note that, as Seax is still undergoing active development, a number of language features described in R<sup>6</sup>RS are not currently implemented. Instead, complete R<sup>6</sup>RS-compliance is the goal which will mark Seax Scheme as being feature-complete.</p>
+
+<h2 id="parsing" class='section-header'><a
+                           href="#parsing">Parsing</a></h2>
+<p>The first step in any compiler or interpreter is to parse the source code and convert it from text into a format understnadable by the compiler. The Seax Scheme parser does this using a technique called <a href="http://en.wikipedia.org/wiki/Parser_combinator">combinator parsing</a>, a method of implementing recursive-descent parsers based on the functional programming concept of higher-order functions.</p>
+
+<p>Unlike other commonly used methods of implementing compiler front-ends, combinator parsing has the significant advantage of not requiring the use of code-generation software such as <code>yacc</code> or <a href="https://www.gnu.org/software/bison/"><code>bison</code></a>. Instead, parsers may be written &#39;by hand&#39;, with relative ease.</p>
+
+<p>How does this approach work? In combinator parsing, a <em>parser</em> is defined as any function which takes a character or string of characters as input, and accepts or rejects that string as being a symbol of a certain type. A <em>parser combinator</em> is then a higher-order function that takes as input two or more parsers and returns a third parser function that combines the input parsers according to some rule. Common parser combinators include a repetition combinator that parses one or more repetitions of a character or string, a disjunction combinator which parses either one character or string or another, and a sequential combinator that parses one character or string followed by another. With a robust set of combinators, parsers for a wide variety of languages may be implemented with relative simplicity. </p>
+
+<p>Seax Scheme utilizes a Rust parser-combinators <a href="https://github.com/Marwes/parser-combinators">library</a> created by Markus Westerlind for this purpose. Readers interested in further details of how the Seax Scheme parser operates may wish to consult the <a href="http://hawkweisman.me/seax/api/seax_scheme/parser/index.html">API documentation</a> for the parsing module.</p>
+
+<h2 id="analysis-and-compilation" class='section-header'><a
+                           href="#analysis-and-compilation">Analysis and Compilation</a></h2>
+<p>The Scheme parser outputs an <a href="http://hawkweisman.me/seax/api/seax_scheme/ast/index.html">abstract syntax tree</a>, or AST, representing the structure of the program. This AST consists of a series of <a href="http://hawkweisman.me/seax/api/seax_scheme/ast/trait.ASTNode.html">nodes</a> of different types representing each potential expression in a Seax Scheme program. Each of these nodes must implement a <a href="http://hawkweisman.me/seax/api/seax_scheme/ast/trait.ASTNode.html#tymethod.compile"><code>compile</code></a> method for transforming the node into a list of SVM instructions. The compile methods for AST nodes with children typically call the compile methods of those nodes as appropriate, descending through the tree to the leaf nodes.</p>
+
+<p>To assist in compilation, a <a href="http://hawkweisman.me/seax/api/seax_scheme/ast/type.SymTable.html">symbol table</a> is passed from each parent node to its child nodes. This table associates the names of symbols with the ordered pairs of indices into the VM&#39;s <a href="secd.html#the-environment-stack">environment stack</a> to which those names are bound. </p>
+
+<p>This symbol table is represented through the use of a data structure called a <a href="http://hawkweisman.me/seax/api/seax_scheme/struct.ForkTable.html"><code>ForkTable</code></a>, which functions similarly to a standard associative map data structure (such as a <code>HashMap</code>), but with the added ability to fork children off of each level of the map. If a key exists in any of a child&#39;s parents, the child will &#39;pass through&#39; that key. If a new value is bound to a key in a child level, that child will overwrite the previous entry with the new one, but the previous key &rarr; value mapping will remain in the level it is defined. This means that the parent level will still provide the previous value for that key. This allows the <code>ForkTable</code> to represent scoped associative mappings with name shadowing, such as the scopes in a Seax Scheme program. The <code>ForkTable</code> implementation used in Seax Scheme is based on a <a href="https://github.com/hawkw/decaf/blob/master/src/main/scala/com/meteorcode/common/ForkTable.scala">Scala implementation</a> written by the author and his colleague <a href="http://arcticlight.me">Max Clive</a> for a compiler for the Decaf programming language. </p>
+
+<h2 id="optimization" class='section-header'><a
+                           href="#optimization">Optimization</a></h2>
+<p>The Seax Scheme compiler does not currently support any signficant compile-time optimizations, as these features are planned for future Seax releases. When compile-time optimizations are added, they will likely be implemented in a similar form to the current compilation method, by adding to the trait for AST nodes an additional method with the signature <code>fn optimize(self) -&gt; ASTNode</code>. This would allow AST nodes to transform themselves to optimized representations during a similar descent as the <code>compile</code> method. The transformed tree could then be compiled.</p>
+
+    <script type="text/javascript">
+        window.playgroundUrl = "http://play.rust-lang.org";
+    </script>
+    
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(event) {
+  document.getElementById("toggle-nav").onclick = toggleNav;
+  function toggleNav() {
+    var toc = document.getElementById("toc");
+    var pagewrapper = document.getElementById("page-wrapper");
+    toggleClass(toc, "mobile-hidden");
+    toggleClass(pagewrapper, "mobile-hidden");
+  };
+
+  function toggleClass(el, className) {
+     // from http://youmightnotneedjquery.com/
+     if (el.classList) {
+       el.classList.toggle(className);
+     } else {
+       var classes = el.className.split(' ');
+       var existingIndex = classes.indexOf(className);
+
+       if (existingIndex >= 0) {
+         classes.splice(existingIndex, 1);
+       } else {
+         classes.push(className);
+       }
+
+       el.className = classes.join(' ');
+     }
+  }
+
+  // The below code is used to add prev and next navigation links to the bottom
+  // of each of the sections.
+  // It works by extracting the current page based on the url and iterates over
+  // the menu links until it finds the menu item for the current page. We then
+  // create a copy of the preceding and following menu links and add the
+  // correct css class and insert them into the bottom of the page.
+  var toc = document.getElementById('toc').getElementsByTagName('a');
+  var href = document.location.pathname.split('/').pop();
+  if (href === 'index.html' || href === '') {
+    href = 'README.html';
+  }
+
+  for (var i = 0; i < toc.length; i++) {
+    if (toc[i].attributes['href'].value.split('/').pop() === href) {
+      var nav = document.createElement('p');
+      if (i > 0) {
+        var prevNode = toc[i-1].cloneNode(true);
+        prevNode.className = 'left';
+        nav.appendChild(prevNode);
+      }
+      if (i < toc.length - 1) {
+        var nextNode = toc[i+1].cloneNode(true);
+        nextNode.className = 'right';
+        nav.appendChild(nextNode);
+      }
+      document.getElementById('page').appendChild(nav);
+      break;
+    }
+  }
+
+});
+</script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="playpen.js"></script>
+</div></div>
+
+
+</body>
+</html>
