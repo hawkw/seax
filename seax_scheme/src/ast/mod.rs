@@ -28,7 +28,7 @@ pub type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
 #[stable(feature = "compile", since = "0.0.3")]
 pub type CompileResult  = Result<Vec<SVMCell>, String>;
 
-static INDENT: &'static str = "\t";
+static INDENT: &'static str = "    ";
 
 /// Trait for a symbol table
 #[stable(feature = "compile",since = "0.1.0")]
