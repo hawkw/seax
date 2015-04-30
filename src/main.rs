@@ -4,6 +4,7 @@
 #![feature(collections)]
 extern crate rustc_serialize;
 extern crate docopt;
+extern crate regex;
 
 extern crate seax_svm as svm;
 extern crate seax_scheme as scheme;
@@ -12,6 +13,8 @@ extern crate seax_scheme as scheme;
 extern crate log;
 
 use docopt::Docopt;
+use regex::Regex;
+
 use std::io;
 use std::io::{Write, BufRead,BufReader};
 use std::error::Error;
@@ -19,7 +22,7 @@ use std::error::Error;
 static USAGE: &'static str = "
 Usage:
     seax repl [-vd]
-    seax [-vd] <bin>
+    seax [-vd] <file>
 
 Options:
     -v, --verbose   Enable verbose mode
@@ -29,7 +32,7 @@ Options:
 #[derive(RustcDecodable)]
 struct Args {
     cmd_repl: bool,
-    arg_bin: String,
+    arg_file: String,
     flag_verbose: bool,
     flag_debug: bool,
 }
@@ -40,6 +43,8 @@ fn main() {
     let args: Args = Docopt::new(USAGE)
                 .and_then(|d| d.decode())
                 .unwrap_or_else(|e| e.exit());
+
+    let ext_re = Regex::new(r".+?(?P<ext>\.[^.]*$|$)").unwrap();
 
     if args.flag_verbose {
         let _ = log::set_logger(|max_log_level| {
@@ -69,6 +74,19 @@ fn main() {
                 };
             print!("scheme> ");
             let _ = stdout.flush();
+        }
+    } else {
+        match ext_re
+            .captures(args.arg_file.as_ref())
+            .and_then(|c| c.name("ext")) {
+            Some(".scm")   => {
+                debug!("Interpreting Scheme file {}", args.arg_file);
+                unimplemented!()
+                }, // interpret scheme
+            _              => {
+                debug!("Executing binary {}", args.arg_file);
+                unimplemented!()
+            } // bin, figure out
         }
     }
 }
