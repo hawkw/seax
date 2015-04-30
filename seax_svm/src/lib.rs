@@ -121,6 +121,7 @@ impl State {
                 input: Option<u8>,
                 debug: bool)
                 -> EvalResult {
+        debug!("[eval]: Evaluating {:?}", self.control);
         // TODO: this (by which I mean "the whole caching deal") could likely be made
         // better and/or faster with some clever (mis?)use of RefCell; look into that.
         let mut prev = if debug { Some(self.clone()) } else { None };
@@ -746,7 +747,7 @@ impl State {
 pub fn eval_program(program: List<SVMCell>,
                     debug: bool)
     -> Result<List<SVMCell>,String> {
-    debug!("evaluating {}", program);
+    debug!("evaluating {:?}", program);
     let mut machine = State {
         stack:      Stack::empty(),
         env:        Stack::empty(),

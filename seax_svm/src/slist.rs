@@ -276,7 +276,7 @@ impl<T> List<T> {
     #[stable(feature="list", since="0.2.3")]
     pub fn append_chain(&mut self, it: T) -> &mut List<T> {
         match *self {
-            Cons(_, box ref mut tail) => {debug!("chaining to next!)"); tail.append_chain(it)},
+            Cons(_, box ref mut tail) => tail.append_chain(it),
             Nil => { *self = Cons(it, box Nil); self }
         }
 
