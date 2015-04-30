@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <title>Seax Scheme</title>
+    <title>The Scheme Programming Language</title>
 
     <link rel="stylesheet" type="text/css" href="../rust-book.css">
 
@@ -38,7 +38,7 @@
 </li>
 <li><a href='../background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
 </li>
-<li><a href='../background/secd.html'><b>2.4.</b> The SECD Architecture</a>
+<li><a href='../background/scheme.html'><b>2.4.</b> The Scheme Langauge</a>
 </li>
 <li><a href='../background/influences.html'><b>2.5.</b> Influences</a>
 </li>
@@ -50,9 +50,13 @@
 </li>
 <li><a href='../implementation/overview.html'><b>3.2.</b> Overview</a>
 </li>
-<li><a href='../implementation/svm.html'><b>3.3.</b> Seax Virtual Machine</a>
+<li><a href='../implementation/cons-list.html'><b>3.3.</b> The Singly-Linked List</a>
 </li>
-<li><a href='../implementation/scheme.html'><b>3.4.</b> Seax Scheme</a>
+<li><a href='../implementation/secd.html'><b>3.4.</b> The SECD Architecture</a>
+</li>
+<li><a href='../implementation/svm.html'><b>3.5.</b> Seax Virtual Machine</a>
+</li>
+<li><a href='../implementation/scheme.html'><b>3.6.</b> Seax Scheme</a>
 </li>
 </ul>
 </li>
@@ -62,10 +66,23 @@
 <div id='page'>
 
 
-    <h1 class="title">Seax Scheme</h1>
-    
+    <h1 class="title">The Scheme Programming Language</h1>
+    <p>Scheme is one of the most commonly used members of the Lisp family, rivalling Common Lisp in popularity. It dates back to the 1970s, and was initially designed by Guy L. Steele and Gerald Sussman, two great figures in the history of programming languages.</p>
+
+<h2 id="minimalism" class='section-header'><a
+                           href="#minimalism">Minimalism</a></h2>
+<p>Scheme is fairly minimalist in design. It provides relatively few primitive instructions, but is designed in order to support programmers extending its syntax easily. Both the beauty and the practical advantages of this design philosophy are communicated quite powerfully by Steele himself in his 1998 talk <a href="https://www.youtube.com/watch?v=_ahvzDzKdB0">&quot;Growing a Language&quot;</a>, which is in this author&#39;s opinion the single most important and powerful lecture in the history of the study of programming languages. A Scheme interpreter or compiler defines very few of the language&#39;s fundamental forms, as a majority of them may be implemented in Scheme as &#39;library forms&#39; using the language&#39;s other constructs.</p>
+
+<h2 id="scope" class='section-header'><a
+                           href="#scope">Scope</a></h2>
+<p>Scheme is a <a href="http://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping"><em>lexically scoped</em></a>) language. While lexical scoping is now very common, Scheme was one of the first such languages. This means that the scope of a Scheme program may be determined through analyzing the program&#39;s source text, rather than at run-time as in <em>dynamic scoping</em>. In Scheme, functions (either <code>lambda</code> expressions or named function definitions) and binding constructs (e.g. <code>let</code>, <code>letrec</code>, etc.) correspond to scopes.</p>
+
+<h2 id="functional-programming" class='section-header'><a
+                           href="#functional-programming">Functional Programming</a></h2>
+<p>Scheme is a functional programming language. It is, in fact, one of the first such languages, and was repsonsible for popularizing a number of important functional programming concepts, such as <a href="http://en.wikipedia.org/wiki/Anonymous_function">anonymous functions</a> (in the form of <code>lambda</code> expressions), <a href="http://en.wikipedia.org/wiki/Continuation">continuation-passing style</a>, and the use of tail recursion to express repeated computations or loops.</p>
+
     <script type="text/javascript">
-        window.playgroundUrl = "";
+        window.playgroundUrl = "http://play.rust-lang.org";
     </script>
     
 <script type="text/javascript">
@@ -109,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   }
 
   for (var i = 0; i < toc.length; i++) {
-    if (toc[i].attributes['href'].value === href) {
+    if (toc[i].attributes['href'].value.split('/').pop() === href) {
       var nav = document.createElement('p');
       if (i > 0) {
         var prevNode = toc[i-1].cloneNode(true);
@@ -128,6 +145,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 });
 </script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="playpen.js"></script>
 </div></div>
 
 

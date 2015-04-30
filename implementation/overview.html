@@ -38,7 +38,7 @@
 </li>
 <li><a href='../background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
 </li>
-<li><a href='../background/secd.html'><b>2.4.</b> The SECD Architecture</a>
+<li><a href='../background/scheme.html'><b>2.4.</b> The Scheme Langauge</a>
 </li>
 <li><a href='../background/influences.html'><b>2.5.</b> Influences</a>
 </li>
@@ -50,9 +50,13 @@
 </li>
 <li><a href='../implementation/overview.html'><b>3.2.</b> Overview</a>
 </li>
-<li><a href='../implementation/svm.html'><b>3.3.</b> Seax Virtual Machine</a>
+<li><a href='../implementation/cons-list.html'><b>3.3.</b> The Singly-Linked List</a>
 </li>
-<li><a href='../implementation/scheme.html'><b>3.4.</b> Seax Scheme</a>
+<li><a href='../implementation/secd.html'><b>3.4.</b> The SECD Architecture</a>
+</li>
+<li><a href='../implementation/svm.html'><b>3.5.</b> Seax Virtual Machine</a>
+</li>
+<li><a href='../implementation/scheme.html'><b>3.6.</b> Seax Scheme</a>
 </li>
 </ul>
 </li>
@@ -63,9 +67,16 @@
 
 
     <h1 class="title">An Overview of Seax</h1>
-    
+    <p>As discussed previously, Seax consists of three primary components. These three components are broken into separate software packages (&#39;crates&#39; in Rust parlance) in order to promote modularity and to permit the various components of Seax to be used independantly of one another. </p>
+
+<p>The <a href="http://hawkweisman.me/seax/api/seax_svm/"><code>seax_svm</code></a> crate contains the Seax virtual machine. This includes code for representing a VM <a href="http://hawkweisman.me/seax/api/seax_svm/struct.State.html">state</a> and <a href="http://hawkweisman.me/seax/api/seax_svm/struct.State.html#method.eval">evaluating</a> instructions, representations of SVM <a href="http://hawkweisman.me/seax/api/seax_svm/cell/enum.Atom.html">data types</a> and <a href="http://hawkweisman.me/seax/api/seax_svm/cell/enum.Inst.html">instructions</a>, and a <a href="cons-list.html">singly linked list</a> <a href="http://hawkweisman.me/seax/api/seax_svm/slist/index.html">implementation</a>.</p>
+
+<p>The <a href="http://hawkweisman.me/seax/api/seax_scheme/index.html"><code>seax_scheme</code></a> crate contains the Seax Scheme compiler. It includes the <a href="http://hawkweisman.me/seax/api/seax_scheme/parser/index.html">Scheme parser</a>, <a href="http://hawkweisman.me/seax/api/seax_scheme/ast/index.html">abstract syntax tree</a> implementation for representing and compiling programs, and an implementation of the <a href="http://hawkweisman.me/seax/api/seax_scheme/struct.ForkTable.html">ForkTable</a> data structure for internally representing scoped bindings.</p>
+
+<p>Finally, the <code>seax</code> crate contains the Seax command-line driver application. This contains very little code related to Scheme or to the virtual machine, and is simply responsible for parsing command-line instructions, reading source code files, and dispatching to the correct library functions from the compiler and virtual machine crates. The <code>seax</code> application contains functionality for interpreting Scheme source code files and a read-evaluate-print loop (REPL) for interactive programming. In the future, it will also include functionality for compiling Scheme programs to bytecode files, and executing Seax bytecode programs.</p>
+
     <script type="text/javascript">
-        window.playgroundUrl = "";
+        window.playgroundUrl = "http://play.rust-lang.org";
     </script>
     
 <script type="text/javascript">
@@ -109,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   }
 
   for (var i = 0; i < toc.length; i++) {
-    if (toc[i].attributes['href'].value === href) {
+    if (toc[i].attributes['href'].value.split('/').pop() === href) {
       var nav = document.createElement('p');
       if (i > 0) {
         var prevNode = toc[i-1].cloneNode(true);
@@ -128,6 +139,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 });
 </script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="playpen.js"></script>
 </div></div>
 
 
