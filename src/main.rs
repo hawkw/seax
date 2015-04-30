@@ -74,7 +74,7 @@ fn main() {
             match line.map_err(|error| String::from_str(error.description()) )
                 .and_then(  |ref code| scheme::compile(code) )
                 .and_then(  |program | svm::eval_program(program, args.flag_debug) ) {
-                    Ok(result)  => println!(">> {:?}",result),
+                    Ok(result)  => println!("===> {:?}",result),
                     Err(why)    => error!("{}", why)
                 };
             print!("scheme> ");
@@ -95,7 +95,7 @@ fn main() {
                             .map_err(|error| String::from_str(error.description()) ) })
                     .and_then(  |ref code| scheme::compile(code) )
                     .and_then(  |program | svm::eval_program(program, args.flag_debug) ) {
-                        Ok(result)  => println!(">> {:?}",result),
+                        Ok(result)  => println!("===> {:?}",result),
                         Err(why)    => error!("{}", why)
                 };
             },
