@@ -477,6 +477,7 @@ fn test_lex_string() {
         Ok((StringNode { value: "the\\worst string ever\"".to_string() }, ""))
     );
 }
+/*
 #[test]
 fn test_space_sexpr() {
  assert_eq!(parser(expr).parse("(+ 10 (if (nil? nil) 10 20) )"),
@@ -503,4 +504,4 @@ fn test_space_sexpr() {
             "")
         )
     )
-}
+}*/
