@@ -4,7 +4,7 @@
     * [Goals](background/goals.md)
     * [Why a virtual machine?](background/why-vm.md)
     * [Why Lisp?](background/why-lisp.md)
-    * [The Scheme Programming Langauge](background/scheme.md)
+    * [The Scheme Langauge](background/scheme.md)
     * [Influences](background/influences.md)
 * [Implementation](implementation/README.md)
     * [Why Rust?](implementation/why-rust.md)
