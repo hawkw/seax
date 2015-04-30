@@ -21,7 +21,7 @@ use std::io;
 use std::io::{Write, Read, BufRead,BufReader};
 use std::error::Error;
 use std::fs::File;
-use std::path::{PathBuf, Path};
+use std::path::PathBuf;
 use std::convert::AsRef;
 
 static USAGE: &'static str = "
