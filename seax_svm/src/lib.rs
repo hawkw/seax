@@ -30,10 +30,13 @@ mod tests;
 
 /// Contains the Seax Virtual Machine (SVM) and miscellaneous
 /// support code.
+
+// Reexports
 pub use self::slist::List;
 pub use self::slist::List::{Cons,Nil};
 pub use self::slist::Stack;
 pub use self::cell::{SVMCell,Atom,Inst};
+
 use self::cell::SVMCell::*;
 use self::cell::Atom::*;
 use self::cell::Inst::*;
@@ -42,18 +45,10 @@ use self::cell::Inst::*;
 #[derive(PartialEq,Clone,Debug)]
 #[stable(feature="vm_core", since="0.1.0")]
 pub struct State {
-
-#[stable(feature="vm_core", since="0.1.0")]
-    pub stack:  List<SVMCell>,
-
-#[stable(feature="vm_core", since="0.1.0")]
-    pub env:  List<SVMCell>,
-
-#[stable(feature="vm_core", since="0.1.0")]
-    pub control:  List<SVMCell>,
-
-#[stable(feature="vm_core", since="0.1.0")]
-    pub dump:  List<SVMCell>
+    stack:  List<SVMCell>,
+    env:    List<SVMCell>,
+    control:List<SVMCell>,
+    dump:   List<SVMCell>
 }
 
 /// A VM state's IO action
