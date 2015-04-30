@@ -9,3 +9,6 @@ homepage = "http://hawkweisman.me/seax"
 repository = "https://github.com/hawkw/seax"
 readme = "../README.md"
 keywords = ["vm","lisp","languages"]
+
+[dependencies]
+log = "0.3.1"

@@ -276,7 +276,7 @@ impl<T> List<T> {
     #[stable(feature="list", since="0.2.3")]
     pub fn append_chain(&mut self, it: T) -> &mut List<T> {
         match *self {
-            Cons(_, box ref mut tail) => tail.append_chain(it),
+            Cons(_, box ref mut tail) => {debug!("chaining to next!)"); tail.append_chain(it)},
             Nil => { *self = Cons(it, box Nil); self }
         }
 
@@ -433,13 +433,12 @@ impl<T> FromIterator<T> for List<T> {
     #[stable(feature="list", since="0.2.3")]
     fn from_iter<I>(iterable: I) -> List<T> where I: IntoIterator<Item=T> {
             debug!("started `from_iter`");
-            let mut result: List<T>  = List::new();
+            let mut result  = List::new();
             debug!("made new list");
-            iterable
-                .into_iter()
-                .fold(&mut result, |l, it| {
-                    debug!("appending");
-                    l.append_chain(it) });
+            for it in iterable.into_iter() {
+                debug!("appending");
+                result.append(it);
+            }
             debug!("help i'm trapped in a List<T> factory!");
             result
     }

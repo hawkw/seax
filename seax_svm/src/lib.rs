@@ -5,6 +5,9 @@
 #![feature(staged_api)]
 #![staged_api]
 
+#[macro_use]
+extern crate log;
+
 /// Singly-linked list and stack implementations.
 ///
 /// `List<T>` is a singly-linked `cons` list.
@@ -39,10 +42,18 @@ use self::cell::Inst::*;
 #[derive(PartialEq,Clone,Debug)]
 #[stable(feature="vm_core", since="0.1.0")]
 pub struct State {
-    stack:  List<SVMCell>,
-    env:  List<SVMCell>,
-    control:  List<SVMCell>,
-    dump:  List<SVMCell>
+
+#[stable(feature="vm_core", since="0.1.0")]
+    pub stack:  List<SVMCell>,
+
+#[stable(feature="vm_core", since="0.1.0")]
+    pub env:  List<SVMCell>,
+
+#[stable(feature="vm_core", since="0.1.0")]
+    pub control:  List<SVMCell>,
+
+#[stable(feature="vm_core", since="0.1.0")]
+    pub dump:  List<SVMCell>
 }
 
 /// A VM state's IO action
@@ -733,6 +744,7 @@ impl State {
 /// TODO: add (optional?) parameters for stdin and stdout
 #[stable(feature="vm_core",since="0.2.0")]
 pub fn eval_program(program: List<SVMCell>, debug: bool) -> List<SVMCell> {
+    debug!("evaluating {}", program);
     let mut machine = State {
         stack:      Stack::empty(),
         env:        Stack::empty(),
