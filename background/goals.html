@@ -38,9 +38,7 @@
 </li>
 <li><a href='../background/why-lisp.html'><b>2.3.</b> Why Lisp?</a>
 </li>
-<li><a href='../background/secd.html'><b>2.4.</b> The SECD Architecture</a>
-</li>
-<li><a href='../background/influences.html'><b>2.5.</b> Influences</a>
+<li><a href='../background/influences.html'><b>2.4.</b> Influences</a>
 </li>
 </ul>
 </li>
@@ -50,9 +48,13 @@
 </li>
 <li><a href='../implementation/overview.html'><b>3.2.</b> Overview</a>
 </li>
-<li><a href='../implementation/svm.html'><b>3.3.</b> Seax Virtual Machine</a>
+<li><a href='../implementation/cons-list.html'><b>3.3.</b> The Singly-Linked List</a>
 </li>
-<li><a href='../implementation/scheme.html'><b>3.4.</b> Seax Scheme</a>
+<li><a href='../implementation/secd.html'><b>3.4.</b> The SECD Architecture</a>
+</li>
+<li><a href='../implementation/svm.html'><b>3.5.</b> Seax Virtual Machine</a>
+</li>
+<li><a href='../implementation/scheme.html'><b>3.6.</b> Seax Scheme</a>
 </li>
 </ul>
 </li>
@@ -63,9 +65,34 @@
 
 
     <h1 class="title">Goals</h1>
-    
+    <p>While the Seax project was undertaken primarily for purposes of education and exploration, I have endeavoured to create a platform that could be used for the execution of non-trivial programs in the &#39;real world&#39; or, barring that, a prototype that can easily be scaled up to such a system. This objective has informed Seax design and development at every possible occasion, and a majority of the project&#39;s more specific goals are extrapolated from it.</p>
+
+<h2 id="seax-vm-as-a-general-purpose-platform-for-program-execution" class='section-header'><a
+                           href="#seax-vm-as-a-general-purpose-platform-for-program-execution">Seax VM as a general-purpose platform for program execution</a></h2>
+<p>Although the Seax Scheme compiler is the only extant programming language targeting the Seax Virtual Machine, an emphasis has been placed on ensuring that it may eventually be used as a platform for multiple programming languages. If the Seax VM is only capable of effectively executing Scheme programs, then it is not a runtime environment for programming languages as much as it is an unnecessarily complex Scheme interpreter, so it is important that an effort be made to ensure compatibility.</p>
+
+<p>One of the greatest lessons taught to us by Java, in my opinion, is that a simple VM performs excellently as a common runtime environment for programs written in a variety of languages. Programmers may complain about the wordiness and general inelegance of the Java language&#39;s syntax, but the Java <em>platform</em> plays host to a wide range of excellent languages, including Scala, Groovy, and Clojure. Oracle and Sun have both poured a great deal of engineering effort into <a href="http://en.wikipedia.org/wiki/Java_performance#Virtual_machine_optimization_techniques">optimizing the JVM&#39;s performance</a> to the extent that it is comparable to native code in many cases, and (amazingly), occasionally even <a href="http://benchmarksgame.alioth.debian.org/u64q/java.html#faster-programs-measurements">better</a>, and all of the languages that run on the Java platform can benefit from these improvements. Furthermore, all of these languages may take advantage of the JVM&#39;s cross-platform capabilities, and of the very large ecosystem of Java libraries and frameworks.</p>
+
+<h2 id="performance" class='section-header'><a
+                           href="#performance">Performance</a></h2>
+<blockquote>
+<p>&quot;The complexity for minimum component costs has increased at a rate of roughly a factor of two per year. Certainly over the short term this rate can be expected to continue, if not to increase.&quot;</p>
+
+<p>&mdash; Gordon Moore, 1965</p>
+</blockquote>
+
+<p>The importance of optimizing for performance has, in general, decreased rather significantly in software engineering over the last several years. Hardware manufacturers have expended a significant amount of energy on keeping up with Moore&#39;s above-quoted &#39;law&#39;, and (quite unlike the 1990s and early 2000s) the average user now has enough computing power at their disposal to accomplish any task they might require. Concern for performance has, therefore, slowly been confined to a handful of use-cases that are either very computationally intensive, such as video games, high-definition graphics, and scientific computing; or are significantly resource-constrained, such as mobile devices and embedded systems. </p>
+
+<p>A majority of software engineers have, given this observation, shifted focus from the languages and tools that are the most performant towards those which compose well and provide abstractions that reduce cognitive load. The prevalence of very high level programming languages, such as Python and Ruby, demonstrate this shift in priorities: while Python programs are often at least an order of magnitude slower than those written in C, users of Python applications rarely find that they must wait for long periods.</p>
+
+<p>One area in which a focus on performance must be maintained, however, is the implementation of software runtime environments. While, as noted above, Python&#39;s relative slowness is not a significant obstacle in most common applications, the primary Python interpreter is written in C. This is because the runtime environment, which acts as an additional layer of abstraction between the program and the computer, places a great deal of overhead on <em>every single instruction</em> in an interpreted language. Continuing with the example of Python, if that language&#39;s interpreter was not written with an upmost focus on performance, Python programs would likely be slow to the point of unusability.</p>
+
+<p>Therefore, high performance is a significant goal for the Seax Virtual Machine. This is one of the primary reasons that the <a href="/implementation/why-rust.html">Rust programming language</a> was chosen as the implementtion language for Seax. While a self-hosting Scheme implementation would be conceptually pleasing and perhaps easier to implement, it was necessary to choose a lower-level systems programming language in order to ensure that speed issues in the runtime environment do not make Seax programs unuseable.</p>
+
+<p>Performance is a lesser concern for the compiler, as it is intended that Seax Scheme programs will typically be distributed as bytecode detached from the compiler. If the compiler is being used as a line-by-line interpreter, it is likely that it is being used for debugging or as a read-eval-print loop (REPL) for educational or testing purposes. In such cases, performance is significantly less critical than in a production application. Therefore, some performance sacrifices were made in the Scheme compiler in the name of elegance, ease of implementation, and robustness.</p>
+
     <script type="text/javascript">
-        window.playgroundUrl = "";
+        window.playgroundUrl = "http://play.rust-lang.org";
     </script>
     
 <script type="text/javascript">
@@ -109,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
   }
 
   for (var i = 0; i < toc.length; i++) {
-    if (toc[i].attributes['href'].value === href) {
+    if (toc[i].attributes['href'].value.split('/').pop() === href) {
       var nav = document.createElement('p');
       if (i > 0) {
         var prevNode = toc[i-1].cloneNode(true);
@@ -128,6 +155,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 });
 </script>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="playpen.js"></script>
 </div></div>
 
 
