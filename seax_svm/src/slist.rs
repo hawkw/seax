@@ -432,14 +432,10 @@ impl<T> FromIterator<T> for List<T> {
     #[inline]
     #[stable(feature="list", since="0.2.3")]
     fn from_iter<I>(iterable: I) -> List<T> where I: IntoIterator<Item=T> {
-            debug!("started `from_iter`");
             let mut result  = List::new();
-            debug!("made new list");
-            for it in iterable.into_iter() {
-                debug!("appending");
-                result.append(it);
-            }
-            debug!("help i'm trapped in a List<T> factory!");
+            iterable
+                .into_iter()
+                .fold(&mut result, |l, it| l.append_chain(it));
             result
     }
 

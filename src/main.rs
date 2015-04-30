@@ -1,6 +1,7 @@
 #![feature(box_patterns,box_syntax)]
 #![feature(scheme)]
 #![feature(compile)]
+#![feature(collections)]
 extern crate rustc_serialize;
 extern crate docopt;
 
@@ -17,6 +18,7 @@ use svm::slist::{List,Stack};
 use svm::cell::{SVMCell,Inst};
 use svm::State;
 use std::iter::FromIterator;
+use std::error::Error;
 
 static USAGE: &'static str = "
 Usage:
@@ -37,28 +39,6 @@ struct Args {
 }
 
 mod loggers;
-
-pub fn eval_program(program: &List<SVMCell>, debug: bool) -> List<SVMCell> {
-    debug!("evaluating");
-    let mut machine = State {
-        stack:      Stack::empty(),
-        env:        Stack::empty(),
-        control:    program.clone(),
-        dump:       Stack::empty()
-    };
-    debug!("made state");
-    // while there are more instructions,
-    while {
-        machine.control.length() > 0usize &&
-        machine.control.peek()!= Some(&SVMCell::InstCell(Inst::STOP))
-    } {  //TODO: this is kinda heavyweight
-
-        debug!("evaling");
-        machine = machine.eval(None,debug).unwrap().0 // continue evaling
-    };
-    debug!("done, state: {:?}",machine);
-    machine.stack
-}
 
 fn main() {
     let args: Args = Docopt::new(USAGE)
@@ -85,23 +65,11 @@ fn main() {
         stdout.flush();
 
         for line in stdin.lines() {
-            match line {
-                Ok(ref line) => {
-                    debug!("before compile, line is: {}", line);
-                    let program = scheme::compile(line)
-                        .map(|prog: Vec<SVMCell> | {
-                            debug!("compiled: {:?}",prog);
-                            let result = List::from_iter(prog);
-                            debug!("control stack: {:?}", result);
-                            result
-                         }).unwrap();
-                    debug!("before eval: {:?}", program);
-                    let result = eval_program(&program, true);
-                    debug!("out of eval_program");
-                    println!(">> {:?}", result);
-                },
-                Err(why) => println!("{}", why)
-            }
+            line.map_err(   |error   | String::from_str(error.description()) )
+                .and_then(  |ref code| scheme::compile(code) )
+                .map(       |program | svm::eval_program(program, true) )
+                .map(       |result  | println!(">> {:?}", result) )
+                .map_err(   |err     | error!("{}", err));
             print!("scheme> ");
             stdout.flush();
         }

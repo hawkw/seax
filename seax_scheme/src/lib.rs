@@ -74,9 +74,15 @@ use self::ast::{ASTNode,ExprNode};
 ///
 /// TODO: Should this return a list of errors instead?
 #[unstable(feature="compile")]
-pub fn compile(program: &str) -> Result<Vec<SVMCell>, String> {
+pub fn compile(program: &str) -> Result<List<SVMCell>, String> {
     parser::parse(program)
         .and_then(|tree: ExprNode     | {
             debug!("parsed:\n{:?}",tree);
             tree.compile(&ForkTable::new()) })
+        .map(     |prog: Vec<SVMCell> | {
+            debug!("compiled: {:?}",prog);
+            let result = List::from_iter(prog);
+            debug!("control stack: {:?}", result);
+            result
+             })
 }
