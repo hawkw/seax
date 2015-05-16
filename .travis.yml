@@ -1,6 +1,6 @@
 sudo: false
 language: rust
-rust: stable
+rust: nightly
 script:
 - cargo build
 - cargo test
