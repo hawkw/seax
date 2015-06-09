@@ -71,7 +71,7 @@ fn main() {
         let _ = stdout.flush();
 
         for line in stdin.lines() {
-            match line.map_err(|error| String::from_str(error.description()) )
+            match line.map_err(|error| String::from(error.description()) )
                 .and_then(  |ref code| scheme::compile(code) )
                 .and_then(  |program | svm::eval_program(program, args.flag_debug) ) {
                     Ok(result)  => println!("===> {:?}",result),
@@ -88,11 +88,11 @@ fn main() {
                 debug!("Interpreting Scheme file {}", args.arg_file);
                 let path = PathBuf::from(args.arg_file.as_str());
                 match File::open(&path)
-                    .map_err(|error    | String::from_str(error.description()) )
+                    .map_err(|error    | String::from(error.description()) )
                     .and_then(|mut file| {
                         let mut s = String::new();
                         file.read_to_string(&mut s).map(|_| s)
-                            .map_err(|error| String::from_str(error.description()) ) })
+                            .map_err(|error| String::from(error.description()) ) })
                     .and_then(  |ref code| scheme::compile(code) )
                     .and_then(  |program | svm::eval_program(program, args.flag_debug) ) {
                         Ok(result)  => println!("===> {:?}",result),
