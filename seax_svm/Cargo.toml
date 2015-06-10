@@ -12,3 +12,6 @@ keywords = ["vm","lisp","languages"]
 
 [dependencies]
 log = "0.3.1"
+
+[dev-dependencies]
+quickcheck = "*"
