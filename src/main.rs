@@ -1,7 +1,6 @@
 #![feature(box_patterns,box_syntax)]
 #![feature(scheme)]
 #![feature(compile)]
-#![feature(collections)]
 #![feature(convert)]
 
 extern crate rustc_serialize;
@@ -24,6 +23,7 @@ use std::fs::File;
 use std::path::PathBuf;
 use std::convert::AsRef;
 
+#[allow(dead_code)]
 static USAGE: &'static str = "
 Usage:
     seax repl [-vd]
@@ -35,6 +35,7 @@ Options:
 ";
 
 #[derive(RustcDecodable)]
+#[allow(dead_code)]
 struct Args {
     cmd_repl: bool,
     arg_file: String,
@@ -44,6 +45,7 @@ struct Args {
 
 mod loggers;
 
+#[allow(dead_code)]
 fn main() {
     let args: Args = Docopt::new(USAGE)
                 .and_then(|d| d.decode())

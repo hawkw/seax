@@ -1,6 +1,8 @@
 use log::{LogRecord, LogLevel, LogMetadata, Log};
 
+#[allow(dead_code)]
 pub struct DefaultLogger;
+#[allow(dead_code)]
 pub struct DebugLogger;
 
 impl Log for DefaultLogger {

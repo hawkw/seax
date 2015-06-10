@@ -205,7 +205,7 @@ pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
             .or(string("!=")
                     .or(string(">="))
                     .or(string("<="))
-                    .map(String::from_str)
+                    .map(String::from)
                 )
             .parse_state(input)
     }
