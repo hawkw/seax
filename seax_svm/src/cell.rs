@@ -462,6 +462,12 @@ pub enum Inst {
     /// output stream.
     #[stable(feature="vm_io", since="0.2.0")]
     WRITEC,
+    /// `apcc`: `ap`ply with `c`urrent `c`ontinuation
+    ///
+    /// Applies a closure and captures the continuation that can
+    /// then be applied with `ap`.
+    #[unstable(feature="callcc")]
+    APCC
 }
 
 #[cfg(test)]

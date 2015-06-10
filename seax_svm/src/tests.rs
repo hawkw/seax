@@ -4,7 +4,11 @@ use super::State;
 use super::cell::Atom::*;
 use super::cell::SVMCell::*;
 use super::Inst::*;
+
 use std::io;
+
+use quickcheck::quickcheck;
+
 /*
 #[test]
 #[should_panic(expected="[fatal]: expected an instruction on control stack")]
@@ -164,6 +168,53 @@ fn test_mul_type_error () {
         dump:       Stack::empty(),
     }.eval(None, false);
 }*/
+
+
+#[test]
+fn prop_eval_ldc_sint () {
+    fn prop  (x: isize) -> bool {
+        let state = State {
+            stack: Stack::empty(),
+            env: Stack::empty(),
+            control: list!(InstCell(LDC),AtomCell(SInt(x))),
+            dump: Stack::empty()
+        }.eval(None, true).unwrap().0;
+
+        state.stack.peek() == Some(&AtomCell(SInt(x)))
+    }
+    quickcheck(prop as fn(isize) -> bool);
+}
+
+#[test]
+fn prop_eval_ldc_uint () {
+    fn prop (x: usize) -> bool {
+        let state = State {
+            stack: Stack::empty(),
+            env: Stack::empty(),
+            control: list!(InstCell(LDC),AtomCell(UInt(x))),
+            dump: Stack::empty()
+        }.eval(None, true).unwrap().0;
+
+        state.stack.peek() == Some(&AtomCell(UInt(x)))
+    }
+
+    quickcheck(prop as fn(usize) -> bool);
+}
+
+#[test]
+fn prop_eval_ldc_float () {
+    fn prop (x: f64) -> bool {
+        let state = State {
+            stack: Stack::empty(),
+            env: Stack::empty(),
+            control: list!(InstCell(LDC),AtomCell(Float(x))),
+            dump: Stack::empty()
+        }.eval(None, true).unwrap().0;
+
+        state.stack.peek() == Some(&AtomCell(Float(x)))
+    }
+    quickcheck(prop as fn(f64) -> bool);
+}
 
 #[test]
 fn test_empty_state() {
