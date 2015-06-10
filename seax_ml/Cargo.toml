@@ -1,0 +1,17 @@
+[package]
+name = "seax_ml"
+version = "0.0.1"
+authors = [
+    "Willem Yarbrough <yarbroughw@allegheny.edu",
+    "Hawk Weisman <hi@hawkweisman.me>"
+    ]
+description = "SML compiler for the Seax VM."
+license = "MIT"
+homepage = "http://hawkweisman.me/seax"
+repository = "https://github.com/hawkw/seax"
+readme = "../README.md"
+keywords = ["vm","sml","languages", "compiler"]
+
+[dependencies.seax_svm]
+path = "../seax_svm"
+version = "^0.2.2"
