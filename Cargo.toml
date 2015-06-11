@@ -16,6 +16,9 @@ regex = "*"
 rustc-serialize = "*"
 log = "0.3.1"
 
+[dev-dependencies]
+quickcheck = "*"
+
 [dependencies.seax_svm]
 path = "seax_svm"
 version = "^0.2.2"
