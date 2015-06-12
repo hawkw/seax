@@ -16,8 +16,9 @@ regex = "*"
 rustc-serialize = "*"
 log = "0.3.1"
 
-[dev-dependencies]
-quickcheck = "*"
+# QuickCheck property tests are disabled due to rust-lang/cargo/#860
+# [dev-dependencies]
+# quickcheck = "*"
 
 [dependencies.seax_svm]
 path = "seax_svm"

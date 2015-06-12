@@ -5,12 +5,10 @@
 #![feature(staged_api)]
 #![staged_api]
 
-
-#[cfg(test)]
-extern crate quickcheck;
-
 #[macro_use]
 extern crate log;
+
+extern crate byteorder;
 
 /// Singly-linked list and stack implementations.
 ///
