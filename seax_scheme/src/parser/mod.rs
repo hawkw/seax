@@ -4,7 +4,7 @@ use self::parser_combinators::{try, between, parser, many, many1, any_char,
     optional, hex_digit, not_followed_by, skip_many, newline,ParserExt,};
 use self::parser_combinators::combinator::With;
 use self::parser_combinators::primitives::{Parser, ParseResult, State};
-use self::parser_combinators::char::{space,spaces,Spaces,digit,satisfy,string};
+use self::parser_combinators::char::{spaces,Spaces,digit,satisfy,string};
 
 use super::ast::*;
 use super::ast::ExprNode::*;

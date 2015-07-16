@@ -5,7 +5,6 @@
 #![feature(box_syntax,box_patterns)]
 #![feature(vec_push_all)]
 #![feature(slice_patterns)]
-#![feature(collections)]
 #![feature(staged_api)]
 #![staged_api]
 
