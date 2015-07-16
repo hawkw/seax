@@ -612,15 +612,12 @@ impl ASTNode for NumNode {
     #[allow(unused_variables)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
        match *self {
-            NumNode::UIntConst(ref node)    => Ok(
-                    vec![InstCell(LDC),AtomCell(UInt(node.value))]
-                ),
-            NumNode::IntConst(ref node)     => Ok(
-                    vec![InstCell(LDC),AtomCell(SInt(node.value))]
-                ),
-            NumNode::FloatConst(ref node)   => Ok(
-                    vec![InstCell(LDC),AtomCell(Float(node.value))]
-                )
+            UIntConst(ref node)    =>
+                Ok(vec![InstCell(LDC),AtomCell(UInt(node.value))]),
+            IntConst(ref node)     =>
+                Ok(vec![InstCell(LDC),AtomCell(SInt(node.value))]),
+            FloatConst(ref node)   =>
+                Ok(vec![InstCell(LDC),AtomCell(Float(node.value))])
        }
     }
 
@@ -635,18 +632,12 @@ impl ASTNode for NumNode {
         result.push_str("Number: ");
 
         match *self {
-            NumNode::UIntConst(ref node) => {
-                result.push_str(format!("{}u", node.value).as_ref());
-                result.push('\n');
-            },
-            NumNode::IntConst(ref node) => {
-                result.push_str(format!("{}", node.value).as_ref());
-                result.push('\n');
-            },
-            NumNode::FloatConst(ref node) => {
-                result.push_str(format!("{}f", node.value).as_ref());
-                result.push('\n');
-            }
+            UIntConst(ref node)  =>
+                result.push_str(format!("{}u\n", node.value).as_ref()),
+            IntConst(ref node)   =>
+                result.push_str(format!("{}\n", node.value).as_ref()),
+            FloatConst(ref node) =>
+                result.push_str(format!("{}f\n", node.value).as_ref())
         }
         result
     }
@@ -694,9 +685,7 @@ impl ASTNode for BoolNode {
         let mut result = String::new();
 
         result.push_str(tab.as_ref());
-        result.push_str("Boolean: ");
-        result.push_str(format!("{}", self.value).as_ref());
-        result.push('\n');
+        result.push_str(format!("Boolean: {}\n", self.value).as_ref());
         result
     }
 }
@@ -751,15 +740,8 @@ impl ASTNode for StringNode {
                 )) ])
     }
     #[stable(feature = "ast", since = "0.0.2")]
+    #[allow(dead_code)]
     fn print_level(&self, level: usize) -> String {
-        let mut tab = String::new();
-        for _ in 0 .. level {tab.push_str(INDENT);};
-
-        let mut result = String::new();
-
-        result.push_str("String: \"");
-        result.push_str(self.value.as_ref());
-        result.push_str("\"\n");
-        result
+        format!("String: \"{}\"\n", self.value)
     }
 }
