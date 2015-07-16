@@ -177,6 +177,7 @@ impl fmt::Debug for RootNode {
 
 impl ASTNode for RootNode {
     #[unstable(feature="compile")]
+    #[allow(dead_code)]
     fn compile<'a>(&'a self, state: &'a SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED".to_string())
     }
@@ -475,6 +476,7 @@ impl fmt::Debug for ListNode {
 
 impl ASTNode for ListNode {
     #[unstable(feature="compile")]
+    #[allow(dead_code)]
     fn compile<'a>(&'a self, state: &SymTable<'a>) -> CompileResult {
         Err("UNINPLEMENTED".to_string())
     }
@@ -761,4 +763,3 @@ impl ASTNode for StringNode {
         result
     }
 }
-
