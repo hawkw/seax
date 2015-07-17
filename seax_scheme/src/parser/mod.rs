@@ -130,10 +130,7 @@ pub fn float_const(input: State<&str>) -> ParseResult<NumNode, &str> {
 
     parser(float_str)
         .map(|x| {
-            let mut s = String::new();
-            s.push_str( (x.0).0.as_ref() );
-            s.push( (x.0).1 );
-            s.push_str( x.1.as_ref() );
+            let s = format!("{}{}{}", (x.0).0, (x.0).1, x.1);
             NumNode::FloatConst(FloatNode{
                 value: f64::from_str(s.as_ref()).unwrap()
             })
@@ -162,10 +159,9 @@ pub fn bool_const(input: State<&str>) -> ParseResult<BoolNode, &str> {
     }
 
     satisfy(|c| c == '#')
-        .with(
-            parser(t_const)
-                .or(parser(f_const))
-            )
+        .with(parser(t_const)
+            .or(parser(f_const))
+        )
         .parse_state(input)
 }
 
@@ -196,8 +192,8 @@ pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
     fn operator(input: State<&str>) -> ParseResult<String, &str> {
 
         fn single_op(input: State<&str>) -> ParseResult<String, &str> {
-            satisfy(|c| c == '+' || c == '-' || c == '*' || c == '/' || c == '=')
-                .map(|c| { let mut s = String::new(); s.push(c); s})
+            satisfy( |c| c == '+' || c == '-' || c == '*' || c == '/' || c == '=')
+                .map(|c| format!("{}", c))
                 .parse_state(input)
         }
 
@@ -241,12 +237,7 @@ pub fn name(input: State<&str>) -> ParseResult<NameNode, &str> {
 
         parser(initial)
             .and(parser(rest))
-            .map(|x| {
-                let mut s = String::new();
-                s.push((x.0));
-                s.push_str(&(x.1));
-                s
-            })
+            .map(|x| format!("{}{}", x.0, x.1) )
             .parse_state(input)
     }
 
@@ -418,12 +409,11 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
     fn sexpr_inner(input: State<&str>) -> ParseResult<ExprNode, &str> {
         parser(expr)
             .and(lex(many(parser(expr))))
-            .map(|x| {
-                SExpr(SExprNode {
+            .map(|x| SExpr(SExprNode {
                     operator: box x.0,
                     operands: x.1
                 })
-            })
+            )
             .parse_state(input)
     }
 
@@ -446,11 +436,10 @@ pub fn expr(input: State<&str>) -> ParseResult<ExprNode, &str> {
             satisfy(|c| c == '('),
             lex(string(")").or(string(" )"))),
             lex(many(parser(expr))
-                .map(|x| {
-                    ListConst(ListNode {
+                .map(|x| ListConst(ListNode {
                         elements: x
                     })
-                }))
+                ))
         ).parse_state(input)
     }
 
