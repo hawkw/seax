@@ -10,6 +10,7 @@ use self::NumNode::*;
 use super::ForkTable;
 
 use std::fmt;
+use std::fmt::Write;
 use std::iter::FromIterator;
 use std::convert::Into;
 use std::hash::Hash;
@@ -22,11 +23,11 @@ mod tests;
 /// representing the location in the `$e` stack storing the value
 /// bound to that name.
 #[stable(feature = "forktable", since = "0.0.6")]
-pub type SymTable<'a>   = ForkTable<'a, &'a str, (usize,usize)>;
+pub type SymTable<'a> = ForkTable<'a, &'a str, (usize,usize)>;
 
 /// A `CompileResult` is either `Ok(SVMCell)` or `Err(&str)`
 #[stable(feature = "compile", since = "0.0.3")]
-pub type CompileResult  = Result<Vec<SVMCell>, String>;
+pub type CompileResult = Result<Vec<SVMCell>, String>;
 
 static INDENT: &'static str = "    ";
 
@@ -395,19 +396,18 @@ impl ASTNode for SExprNode {
         for _ in 0 .. level { tab.push_str(INDENT); };
 
         let mut result = String::new();
-        result.push_str(tab.as_ref());
-        result.push_str("S-Expression:\n");
+        write!(&mut result, "{}S-Expression:\n",tab);
         tab.push_str(INDENT);
 
         // op
-        result.push_str(tab.as_ref());
-        result.push_str("Operator:\n");
-        result.push_str(self.operator.print_level(level + 2).as_ref());
+        write!(&mut result, "{}Operator:\n{}", tab,
+            self.operator.print_level(level + 2)
+        );
 
         for ref operand in self.operands.iter() {
-            result.push_str(tab.as_ref());
-            result.push_str("Operand: \n");
-            result.push_str(operand.print_level(level + 2).as_ref());
+            write!(&mut result, "{}Operand: \n{}", tab,
+                operand.print_level(level + 2)
+            );
         };
         result
     }
@@ -491,9 +491,7 @@ impl ASTNode for ListNode {
         tab.push_str(INDENT);
 
         for elem in self.elements.iter() {
-            result.push_str(tab.as_ref());
-            result.push_str(elem.print_level(level + 1).as_ref());
-            result.push('\n');
+            write!(&mut result, "{}{}\n", tab, elem.print_level(level + 1));
         };
         result
     }
@@ -577,8 +575,7 @@ impl ASTNode for NameNode {
                         AtomCell(UInt(lvl)),
                         AtomCell(UInt(idx)))
                     )]),
-                None            => Err(format!(
-                    "[error] Unknown identifier `{}`", name))
+                None => Err(format!("[error] Unknown identifier `{}`", name))
             }
         }
     }
@@ -588,13 +585,7 @@ impl ASTNode for NameNode {
         let mut tab = String::new();
         for _ in 0 .. level {tab.push_str(INDENT)};
 
-        let mut result = String::new();
-        result.push_str(tab.as_ref());
-        result.push_str("Name: ");
-        result.push_str(self.name.as_ref());
-        result.push('\n');
-
-        result
+        format!("{}Name: {}\n", tab, self.name)
     }
 
 }
@@ -628,17 +619,14 @@ impl ASTNode for NumNode {
 
         let mut result = String::new();
 
-        result.push_str(tab.as_ref());
-        result.push_str("Number: ");
+        write!(&mut result, "{}Number:\n", tab);
 
         match *self {
-            UIntConst(ref node)  =>
-                result.push_str(format!("{}u\n", node.value).as_ref()),
-            IntConst(ref node)   =>
-                result.push_str(format!("{}\n", node.value).as_ref()),
-            FloatConst(ref node) =>
-                result.push_str(format!("{}f\n", node.value).as_ref())
-        }
+            UIntConst(ref node)  => write!(&mut result, "{}u\n", node.value),
+            IntConst(ref node)   => write!(&mut result, "{}\n", node.value),
+            FloatConst(ref node) => write!(&mut result, "{}f\n", node.value)
+        };
+
         result
     }
 }
@@ -682,11 +670,7 @@ impl ASTNode for BoolNode {
         let mut tab = String::new();
         for _ in 0 .. level {tab.push_str(INDENT);};
 
-        let mut result = String::new();
-
-        result.push_str(tab.as_ref());
-        result.push_str(format!("Boolean: {}\n", self.value).as_ref());
-        result
+        format!("{}Boolean: {}\n", tab, self.value)
     }
 }
 
@@ -710,12 +694,7 @@ impl ASTNode for CharNode {
         let mut tab = String::new();
         for _ in 0 .. level {tab.push_str(INDENT);};
 
-        let mut result = String::new();
-
-        result.push_str("Character: \'");
-        result.push(self.value);
-        result.push_str("\'\n");
-        result
+        format!("{}Character: \'{}\'\n", tab, self.value)
     }
 }
 
