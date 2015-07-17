@@ -396,18 +396,18 @@ impl ASTNode for SExprNode {
         for _ in 0 .. level { tab.push_str(INDENT); };
 
         let mut result = String::new();
-        write!(&mut result, "{}S-Expression:\n",tab);
+        write!(&mut result, "{}S-Expression:\n",tab).unwrap();
         tab.push_str(INDENT);
 
         // op
         write!(&mut result, "{}Operator:\n{}", tab,
             self.operator.print_level(level + 2)
-        );
+        ).unwrap();
 
         for ref operand in self.operands.iter() {
             write!(&mut result, "{}Operand: \n{}", tab,
                 operand.print_level(level + 2)
-            );
+            ).unwrap();
         };
         result
     }
@@ -491,7 +491,8 @@ impl ASTNode for ListNode {
         tab.push_str(INDENT);
 
         for elem in self.elements.iter() {
-            write!(&mut result, "{}{}\n", tab, elem.print_level(level + 1));
+            write!(&mut result, "{}{}\n", tab, elem.print_level(level + 1))
+                .unwrap();
         };
         result
     }
@@ -619,12 +620,15 @@ impl ASTNode for NumNode {
 
         let mut result = String::new();
 
-        write!(&mut result, "{}Number:\n", tab);
+        write!(&mut result, "{}Number:\n", tab).unwrap();
 
         match *self {
-            UIntConst(ref node)  => write!(&mut result, "{}u\n", node.value),
-            IntConst(ref node)   => write!(&mut result, "{}\n", node.value),
+            UIntConst(ref node)  => write!(&mut result, "{}u\n", node.value)
+                .unwrap(),
+            IntConst(ref node)   => write!(&mut result, "{}\n", node.value)
+                .unwrap(),
             FloatConst(ref node) => write!(&mut result, "{}f\n", node.value)
+                .unwrap()
         };
 
         result
