@@ -1,6 +1,0 @@
-[submodule "seax_svm"]
-	path = seax_svm
-	url = git://github.com/hawkw/seax_svm.git
-[submodule "seax_scheme"]
-	path = seax_scheme
-	url = git://github.com/hawkw/seax_scheme.git
