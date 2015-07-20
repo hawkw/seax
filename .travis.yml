@@ -4,8 +4,6 @@ rust: nightly
 script:
 - cargo build
 - cargo test
-- cargo test -p seax_svm
-- cargo test -p seax_scheme
 after_success:
 - .travis/release.sh
 env:
