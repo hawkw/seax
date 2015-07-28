@@ -7,7 +7,10 @@ This project is split across a number of separate Cargo crates, each with its ow
 
   + __Seax Command-Line Application (this repository)__
 
-    [![Build Status](https://img.shields.io/travis/hawkw/seax/master.svg?style=flat-square)](https://travis-ci.org/hawkw/seax) [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/hawkw/seax/LICENSE)
+  [![Build Status](https://img.shields.io/travis/hawkw/seax/master.svg?style=flat-square)](https://travis-ci.org/hawkw/seax)
+  [![Coverage](https://img.shields.io/codecov/c/github/hawkw/seax/master.svg?style=flat-square)](http://codecov.io/github/hawkw/seax?branch=master)
+  [![GitHub release](https://img.shields.io/github/release/hawkw/seax.svg?style=flat-square)](https://github.com/hawkw/seax/releases)
+  [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/hawkw/seax/LICENSE)
 
     A command-line application for compiling programs to SVM bytecode, executing SVM bytecode files, and invoking the  the Scheme interpreter, either on source code files or as a REPL. This is so that the individual components of the system may be written as libraries rather than as executable programs. If additional compilers targeting the SVM are developed, this main program may invoke them as well. This repository also contains the main documentation and issue tracker for Seax.
 
