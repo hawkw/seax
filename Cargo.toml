@@ -13,7 +13,7 @@ keywords = ["vm","lisp","languages"]
 [dependencies]
 # other Seax components
 seax_svm = "^0.2.7"
-seax_scheme = "^0.2.0"
+seax_scheme = "^0.3.0"
 
 # external dependencies
 docopt = "*"
