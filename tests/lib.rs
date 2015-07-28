@@ -1,15 +1,34 @@
 #![feature(box_syntax,box_patterns)]
 #![feature(compile)]
 #![feature(scheme)]
+#![feature(test)]
 
 #[macro_use]
 extern crate seax_svm as svm;
 extern crate seax_scheme as scheme;
 
+extern crate test;
+
 use svm::slist::Stack;
 use svm::slist::List::{Cons,Nil};
 use svm::cell::Atom::*;
 use svm::cell::SVMCell::*;
+
+macro_rules! impl_test {
+    ($name:ident, $it:expr, $exp:expr) => {
+        #[test]
+        fn $name() {
+            assert_eq!(
+                svm::eval_program(scheme::compile($it)
+                    .unwrap(), true)
+                    .unwrap()
+                    .peek(),
+                Some($exp)
+            )
+        }
+
+    }
+}
 
 /// Test for simple list construction through CONS.
 ///
@@ -17,15 +36,13 @@ use svm::cell::SVMCell::*;
 /// (cons 10 (cons 20 nil))
 /// ==> (10 . 20)
 /// ```
-#[test]
-fn run_list_construction() {
-    assert_eq!(
-        svm::eval_program(scheme::compile("(cons 10 (cons 20 nil))").unwrap(), true)
-            .unwrap()
-            .peek(),
-        Some(&ListCell( box list!(AtomCell(SInt(10)), AtomCell(SInt(20))) ))
-    )
-}
+impl_test!( test_list_construction,
+    "(cons 10 (cons 20 nil))",
+    &ListCell( box list!(
+        AtomCell(SInt(10)),
+        AtomCell(SInt(20))
+    ))
+);
 
 /// Test for simple list construction and deconstruction
 ///
@@ -33,15 +50,10 @@ fn run_list_construction() {
 /// (car (cons 20 (cons 10 nil)))
 /// ==> 20
 /// ```
-#[test]
-fn run_list_car() {
-    assert_eq!(
-        svm::eval_program(scheme::compile("(car (cons 20 (cons 10 nil)))").unwrap(), true)
-            .unwrap()
-            .peek(),
-        Some(&AtomCell(SInt(20)))
-    )
-}
+impl_test!( test_list_car,
+    "(car (cons 20 (cons 10 nil)))",
+    &AtomCell(SInt(20))
+);
 
 /// Test for simple list construction and destructuring
 ///
@@ -49,15 +61,10 @@ fn run_list_car() {
 /// (cdr (cons 20 (cons 10 nil)))
 /// ==> (10)
 /// ```
-#[test]
-fn run_list_cdr() {
-    assert_eq!(
-        svm::eval_program(scheme::compile("(cdr (cons 20 (cons 10 nil)))").unwrap(), true)
-            .unwrap()
-            .peek(),
-        Some(&ListCell(box list!(AtomCell(SInt(10)))))
-    )
-}
+impl_test!( test_list_cdr,
+    "(cdr (cons 20 (cons 10 nil)))",
+    &ListCell(box list!(AtomCell(SInt(10))))
+);
 
 /// Test for simple mathematics application
 ///
@@ -74,6 +81,7 @@ fn run_simple_add() {
         Some(&AtomCell(SInt(20)))
     )
 }
+
 
 /// Test for nested arithmetic
 ///
@@ -138,6 +146,7 @@ fn run_lambda_ap() {
         Some(&AtomCell(SInt(5)))
     )
 }
+
 
 /// Test for applying an expression with nested lambdas
 ///
