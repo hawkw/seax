@@ -36,3 +36,4 @@ deploy:
   file: /target/release/seax
   on:
     repo: hawkw/seax
+    tags: true
