@@ -28,6 +28,7 @@ static USAGE: &'static str = "
 Usage:
     seax repl [-vd]
     seax [-vd] <file>
+    seax compile [-vd] file
 
 Options:
     -v, --verbose   Enable verbose mode
@@ -38,6 +39,7 @@ Options:
 #[allow(dead_code)]
 struct Args {
     cmd_repl: bool,
+    cmd_compile: bool,
     arg_file: String,
     flag_verbose: bool,
     flag_debug: bool,
@@ -82,6 +84,8 @@ fn main() {
             print!("scheme> ");
             let _ = stdout.flush();
         }
+    } else if args.cmd_compile {
+        unimplemented!()
     } else {
         match ext_re
             .captures(args.arg_file.as_ref())
