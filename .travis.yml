@@ -20,6 +20,7 @@ env:
   - TRAVIS_CARGO_NIGHTLY_FEATURE=""
   - secure: iEGoVGb3OeqSqP4UP7nbLtMEmGi9JgI0nxjrpRrSg22pCCa+lMIIiYp9gY2558pwAbcxaJpahmTt3lYqe2wdKfXlGWRB7Tz99FR8lX+vRXpgxDLg1Sz8BAnN7X9bu+AGL/INwYOe6tVncXcQgKn4uSTYa001CqhlwPzMmtGSw/w=
   - secure: eKEXvvZrTIKGV7LouFW0EfjFPd09OgEI3Y6Z5QsWdEdv73zMvXzjz9xHu+9AmYirI8m/e0v2/RXefP/elcxjLKBa61b1MC/shQPjpbaqC4Y6UTQh5If1X/QN88cbc+VldD2dKgjP5gRX72TAfHoO466NLIxxigKkZJQsOawOVUs=
+  - secure: PbiLSZrdlRXp1eY0hZ83iL1eOMh83F3TYHX3PUzX6QQM5mtVBtM37g/jBWdWmlQcYdX9Wjbyib4aoj7eupxQ0iflpLc9z0qknWWafcijk9eiH73DsOsBTnnCP7wsHZsSm/SPL2Nd5tHk3wvOZ04AMQaiz41FDnNilSr0ooEQ8Ns=
 after_success:
 - travis-cargo coveralls --no-sudo
 - bash <(curl https://codecov.io/bash)
