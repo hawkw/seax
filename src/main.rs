@@ -3,7 +3,9 @@
 #![feature(box_patterns,box_syntax)]
 #![feature(scheme)]
 #![feature(compile)]
+#![feature(decode)]
 #![feature(convert)]
+#![feature(test)]
 
 //! Seax
 //! ----
@@ -18,8 +20,8 @@ extern crate regex;
 extern crate seax_svm as svm;
 extern crate seax_scheme as scheme;
 
-#[macro_use]
-extern crate log;
+#[macro_use] extern crate log;
+#[cfg(test)] extern crate test;
 
 use docopt::Docopt;
 use regex::Regex;
@@ -30,6 +32,8 @@ use std::error::Error;
 use std::fs::File;
 use std::path::PathBuf;
 use std::convert::AsRef;
+
+use svm::bytecode::decode_program;
 
 #[allow(dead_code)]
 static USAGE: &'static str = "
@@ -54,6 +58,8 @@ struct Args {
 }
 
 mod loggers;
+
+#[cfg(test)] mod tests;
 
 #[allow(dead_code)]
 fn main() {
@@ -95,28 +101,30 @@ fn main() {
     } else if args.cmd_compile {
         unimplemented!()
     } else {
-        match ext_re
+        let file = File::open(&PathBuf::from(args.arg_file.as_str()))
+            .map_err(|error| String::from(error.description()) );
+        let extension = ext_re // filename extension
             .captures(args.arg_file.as_ref())
-            .and_then(|c| c.name("ext")) {
-            Some(".scm")   => { // interpret scheme
+            .and_then(|c| c.name("ext"));
+        let result = match extension {
+            Some(".scm") => { // interpret scheme
                 debug!("Interpreting Scheme file {}", args.arg_file);
-                let path = PathBuf::from(args.arg_file.as_str());
-                match File::open(&path)
-                    .map_err(|error    | String::from(error.description()) )
-                    .and_then(|mut file| {
+                file.and_then( |mut file| {
                         let mut s = String::new();
                         file.read_to_string(&mut s).map(|_| s)
-                            .map_err(|error| String::from(error.description()) ) })
-                    .and_then(  |ref code| scheme::compile(code) )
-                    .and_then(  |program | svm::eval_program(program, args.flag_debug) ) {
-                        Ok(result)  => println!("===> {:?}",result),
-                        Err(why)    => error!("{}", why)
-                };
+                            .map_err(|error| String::from(error.description()) )
+                        })
+                    .and_then( |ref code| scheme::compile(code) )
             },
-            _              => {
+            _ => {
                 debug!("Executing binary {}", args.arg_file);
-                unimplemented!()
-            } // bin, figure out
+                file.and_then( |mut file| decode_program(&mut file) )
+            }
         }
+        .and_then( |program | svm::eval_program(program, args.flag_debug) );
+        match result {
+            Ok(value)   => println!("===> {:?}", value),
+            Err(why)    => error!("{}", why)
+        };
     }
 }
