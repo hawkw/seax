@@ -40,7 +40,7 @@ Instructions
 
 ### Building Seax
 
-Seax is implemented using the Rust programming language. In order to build Seax from source, you're going to need  [Cargo](http://doc.crates.io/guide.html), Rust's build automation tool. Continuous integration builds of Seax are built against the latest Rust nightly. Therefore, backwards compatibility with earlier Rust versions are not always guaranteed.
+Seax is implemented using the Rust programming language. In order to build Seax from source, you're going to need [Cargo](http://doc.crates.io/guide.html), Rust's build automation tool. Continuous integration builds of Seax are built against the latest Rust nightly. Therefore, backwards compatibility with earlier Rust versions are not always guaranteed.
 
 If you have Cargo and an up-to-date Rust install, you can build Seax quite easily by running `cargo build --release` from the root directory. This will build all of the Seax libraries and the application, which will be output to `target/release/seax`.
 
