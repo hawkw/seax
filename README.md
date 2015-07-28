@@ -58,7 +58,7 @@ Seax currently supports the following commands:
 The following flags are also supported:
 
 + `-v` or `--verbose` launches Seax in verbose mode. Prepare yourself for a _great deal_ of debug logging if you enable this flag.
-+ `-d` or `--debug` inables debugging state dumps from SVM fatal errors. This may incur a performance penalty.
++ `-d` or `--debug` enables debugging state dumps from SVM fatal errors. This may incur a performance penalty.
 
 Commands for running compiled Seax bytecode files and for compiling Scheme source code to Seax bytecode files will be added when these features reach a higher level of completion.
 
