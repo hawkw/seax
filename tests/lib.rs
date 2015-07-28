@@ -72,16 +72,10 @@ impl_test!( test_list_cdr,
 /// (+ 10 10)
 /// ==> 20
 /// ```
-#[test]
-fn run_simple_add() {
-    assert_eq!(
-        svm::eval_program(scheme::compile("(+ 10 10)").unwrap(), true)
-            .unwrap()
-            .peek(),
-        Some(&AtomCell(SInt(20)))
-    )
-}
-
+impl_test!( test_simple_add,
+    "(+ 10 10)",
+    &AtomCell(SInt(20))
+);
 
 /// Test for nested arithmetic
 ///
@@ -89,15 +83,11 @@ fn run_simple_add() {
 /// (- 20 (+ 5 5))
 /// ==> 10
 /// ```
-#[test]
-fn run_nested_arith() {
-    assert_eq!(
-        svm::eval_program(scheme::compile("(- 20 (+ 5 5))").unwrap(), true)
-            .unwrap()
-            .peek(),
-        Some(&AtomCell(SInt(10)))
-    )
-}
+impl_test!( test_nested_arith,
+    "(- 20 (+ 5 5))",
+    &AtomCell(SInt(10))
+);
+
 
 /// Test for basic branching with `if` expressions.
 ///
@@ -105,15 +95,10 @@ fn run_nested_arith() {
 /// ((if (= 0 (- 1 1)) #t #f)
 /// ==> #t
 /// ```
-#[test]
-fn run_basic_branching_1() {
-    assert_eq!(
-        svm::eval_program(scheme::compile("(if (= 0 (- 1 1)) #t #f)").unwrap(), true)
-            .unwrap()
-            .peek(),
-        Some(&AtomCell(SInt(1)))
-    )
-}
+impl_test!( test_basic_branching_1,
+    "(if (= 0 (- 1 1)) #t #f)",
+    &AtomCell(SInt(1))
+);
 
 /// Test for basic branching with `if` expressions.
 ///
@@ -121,15 +106,10 @@ fn run_basic_branching_1() {
 /// (+ 10 (if (nil? nil) 10 20))
 /// ==> 20
 /// ```
-#[test]
-fn run_basic_branching_2() {
-    assert_eq!(
-        svm::eval_program(scheme::compile("(+ 10 (if (nil? nil) 10 20))").unwrap(), true)
-            .unwrap()
-            .peek(),
-        Some(&AtomCell(SInt(20)))
-    )
-}
+impl_test!( test_basic_branching_2,
+    "(+ 10 (if (nil? nil) 10 20))",
+    &AtomCell(SInt(20))
+);
 
 /// Test for applying a lambda expression
 ///
@@ -137,16 +117,10 @@ fn run_basic_branching_2() {
 /// ((lambda (x y) (+ x y)) 2 3)
 /// ==> 5
 /// ```
-#[test]
-fn run_lambda_ap() {
-    assert_eq!(
-        svm::eval_program(scheme::compile("((lambda (x y) (+ x y)) 2 3)").unwrap(), true)
-            .unwrap()
-            .peek(),
-        Some(&AtomCell(SInt(5)))
-    )
-}
-
+impl_test!( test_lambda_ap,
+    "((lambda (x y) (+ x y)) 2 3)",
+    &AtomCell(SInt(5))
+);
 
 /// Test for applying an expression with nested lambdas
 ///
@@ -154,13 +128,7 @@ fn run_lambda_ap() {
 /// ((lambda (z) ((lambda (x y) (+ (- x y) z)) 3 5)) 6)
 /// ==> 4
 /// ```
-#[test]
-fn run_nested_lambda() {
-    assert_eq!(
-        svm::eval_program(
-            scheme::compile("((lambda (z) ((lambda (x y) (+ (- x y) z)) 3 5)) 6)").unwrap(), true)
-            .unwrap()
-            .peek(),
-        Some(&AtomCell(SInt(4)))
-    )
-}
+impl_test!( test_nested_lambda,
+    "((lambda (z) ((lambda (x y) (+ (- x y) z)) 3 5)) 6)",
+    &AtomCell(SInt(4))
+);
