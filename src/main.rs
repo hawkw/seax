@@ -3,6 +3,12 @@
 #![feature(compile)]
 #![feature(convert)]
 
+//! Seax
+//! ----
+//!
+//! Command-line application for [Seax](hawkweisman.me/seax), a VM-based
+//! platform for executing programs in functional languages.
+
 extern crate rustc_serialize;
 extern crate docopt;
 extern crate regex;
