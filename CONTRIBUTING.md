@@ -17,6 +17,6 @@ Ideally, all pull requests should add complete unit tests for all code added. We
 License and  Code of Conduct
 ----------------------------
 
-Seax and all associated subprojects are released under the terms of the [MIT license]((https://github.com/hawkw/seax/LICENSE). By contributing to Seax, you agree that any code contributed is your personal property and that you have the right to license it. Furthermore, you agree to permit that code to be distributed by Seax under the terms of the MIT license.
+Seax and all associated subprojects are released under the terms of the [MIT license](https://github.com/hawkw/seax/LICENSE). By contributing to Seax, you agree that any code contributed is your personal property and that you have the right to license it. Furthermore, you agree to permit that code to be distributed by Seax under the terms of the MIT license.
 
-Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
+Please note that this project is released with a [Contributor Code of Conduct](https://github.com/hawkw/seax/blob/master/CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
