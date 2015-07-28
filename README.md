@@ -61,3 +61,8 @@ The following flags are also supported:
 + `-d` or `--debug` inables debugging state dumps from SVM fatal errors. This may incur a performance penalty.
 
 Commands for running compiled Seax bytecode files and for compiling Scheme source code to Seax bytecode files will be added when these features reach a higher level of completion.
+
+Documentation
+-------------
+
+In addition to the RustDoc API documentation provided for each Seax library, the [Seax book](http://hawkweisman.me/seax/) contains detailed information on the design and implementation of Seax, as well as instructions on writing programs targeting the Seax platform. Note that the Seax book is currently under active development and is not yet complete.
