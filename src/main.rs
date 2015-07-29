@@ -1,7 +1,6 @@
 #![crate_name = "seax"]
 #![crate_type = "bin"]
 #![cfg_attr(test, feature(test))]
-#![feature(box_patterns,box_syntax)]
 #![feature(scheme)]
 #![feature(compile)]
 #![feature(decode)]
