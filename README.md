@@ -1,6 +1,8 @@
 Seax
 ====
 
+[![Join the chat at https://gitter.im/hawkw/seax](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hawkw/seax?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A virtual machine-based platform for executing programs in functional programming language.
 
 This project is split across a number of separate Cargo crates, each with its own Git repository:
