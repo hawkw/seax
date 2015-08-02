@@ -36,13 +36,13 @@ This project is split across a number of separate Cargo crates, each with its ow
 
     A Scheme interpreter/compiler targeting the Seax VM. This implementation aims to conform with the [Revised<sup>6</sup> Report on Scheme](http://www.r6rs.org) (R6RS) whenever possible, but may not be a complatible implementation. `seax-scheme` is released as a library, rather than an executable, so that it may be included in other applications which use Scheme as an embedded language.
 
-  + __[Seax Compiler Tools](https://github.com/hawkw/seax_compiler_tools)__
+  + __[Seax Utilities](https://github.com/hawkw/seax_compiler_tools)__
   
-  [![Build Status](https://img.shields.io/travis/hawkw/seax_compiler_tools/master.svg?style=flat-square)](https://travis-ci.org/hawkw/seax_compiler_tools)
-[![Coverage](https://img.shields.io/codecov/c/github/hawkw/seax_compiler_tools/master.svg?style=flat-square)](http://codecov.io/github/hawkw/seax_compiler_tools?branch=master)
-[![Latest RustDoc](https://img.shields.io/badge/rustdoc-latest-green.svg?style=flat-square)](http://hawkweisman.me/seax/api/seax_compiler_tools/)
-[![Latest release](https://img.shields.io/crates/v/seax_compiler_tools.svg?style=flat-square)](https://crates.io/crates/seax_svm)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/hawkw/seax/LICENSE)
+  [![Build Status](https://img.shields.io/travis/hawkw/seax_util/master.svg?style=flat-square)](https://travis-ci.org/hawkw/seax_util)
+  [![Coverage](https://img.shields.io/codecov/c/github/hawkw/seax_util/master.svg?style=flat-square)](http://codecov.io/github/hawkw/seax_util?branch=master)
+  [![Latest RustDoc](https://img.shields.io/badge/rustdoc-latest-green.svg?style=flat-square)](http://hawkweisman.me/seax/api/seax_util/)
+  [![Latest release](https://img.shields.io/crates/v/seax_util.svg?style=flat-square)](https://crates.io/crates/seax_util)
+  [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/hawkw/seax/LICENSE)
 
     A library of general-purpose reusable code for writing compilers targeting the Seax platform. This crate includes traits for abstract syntax tree nodes for Seax programs, and an implementation of the ForkTable data structure for representing scopes and symbol tables.
 
