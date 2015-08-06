@@ -40,7 +40,7 @@ This project is split across a number of separate Cargo crates, each with its ow
   
   [![Build Status](https://img.shields.io/travis/hawkw/seax_util/master.svg?style=flat-square)](https://travis-ci.org/hawkw/seax_util)
   [![Coverage](https://img.shields.io/codecov/c/github/hawkw/seax_util/master.svg?style=flat-square)](http://codecov.io/github/hawkw/seax_util?branch=master)
-  [![Latest RustDoc](https://img.shields.io/badge/rustdoc-latest-green.svg?style=flat-square)](http://hawkweisman.me/seax/api/seax_util/)
+  [![Latest RustDoc](https://img.shields.io/badge/rustdoc-latest-green.svg?style=flat-square)](http://hawkweisman.me/seax_util/seax_util/index.html)
   [![Latest release](https://img.shields.io/crates/v/seax_util.svg?style=flat-square)](https://crates.io/crates/seax_util)
   [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/hawkw/seax/LICENSE)
 
