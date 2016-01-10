@@ -35,7 +35,7 @@ This project is split across a number of separate Cargo crates, each with its ow
     A Scheme interpreter/compiler targeting the Seax VM. This implementation aims to conform with the [Revised<sup>6</sup> Report on Scheme](http://www.r6rs.org) (R6RS) whenever possible, but may not be a complatible implementation. `seax-scheme` is released as a library, rather than an executable, so that it may be included in other applications which use Scheme as an embedded language.
 
   + __[Seax Compiler Tools](https://github.com/hawkw/seax_compiler_tools)__
-  
+
   [![Build Status](https://img.shields.io/travis/hawkw/seax_compiler_tools/master.svg?style=flat-square)](https://travis-ci.org/hawkw/seax_compiler_tools)
 [![Coverage](https://img.shields.io/codecov/c/github/hawkw/seax_compiler_tools/master.svg?style=flat-square)](http://codecov.io/github/hawkw/seax_compiler_tools?branch=master)
 [![Latest RustDoc](https://img.shields.io/badge/rustdoc-latest-green.svg?style=flat-square)](http://hawkweisman.me/seax/api/seax_compiler_tools/)
@@ -75,3 +75,19 @@ Documentation
 -------------
 
 In addition to the RustDoc API documentation provided for each Seax library, the [Seax book](http://hawkweisman.me/seax/) contains detailed information on the design and implementation of Seax, as well as instructions on writing programs targeting the Seax platform. Note that the Seax book is currently under active development and is not yet complete.
+
+License
+-------
+
+Licensed under either of
+
+ * Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+ * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+
+at your option.
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any
+additional terms or conditions.
