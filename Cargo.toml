@@ -4,7 +4,7 @@ name = "seax"
 version = "0.0.2"
 authors = ["Hawk Weisman <hi@hawkweisman.me>"]
 description = "A virtual machine-based runtime environment for programming languages."
-license = "MIT"
+license = "MIT/Apache-2.0"
 homepage = "http://hawkweisman.me/seax"
 repository = "https://github.com/hawkw/seax"
 readme = "README.md"
@@ -12,8 +12,9 @@ keywords = ["vm","lisp","languages"]
 
 [dependencies]
 # other Seax components
-seax_svm = "^0.2.7"
-seax_scheme = "^0.3.0"
+seax_svm = "^0.2.8"
+seax_scheme = "^0.3.1"
+seax_util = "^0.1.1"
 
 # external dependencies
 docopt = "*"

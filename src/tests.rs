@@ -17,18 +17,15 @@ macro_rules! impl_bench {
     }
 }
 
-impl_bench!(
-    bench_list_creation,
+impl_bench!( bench_list_creation,
     "(cons 10 (cons 20 nil))"
 );
 
-impl_bench!(
-    bench_list_car,
+impl_bench!( bench_list_car,
     "(car (cons 20 (cons 10 nil)))"
 );
 
-impl_bench!(
-    bench_list_cdr,
+impl_bench!( bench_list_cdr,
     "(cdr (cons 20 (cons 10 nil)))"
 );
 
